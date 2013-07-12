@@ -276,7 +276,8 @@ public class IntrospectionParser
                 });
                 characteristics.add(new String[] {
                     "c-name",
-                    object.getAttributeValue("type", C_NAMESPACE)
+                    object.getAttributeValue("type", C_NAMESPACE) == null ? object.getAttributeValue(
+                            "type-name", GLIB_NAMESPACE) : object.getAttributeValue("type", C_NAMESPACE)
                 });
                 /*
                  * System.out.println(object.getAttributeValue("type",
@@ -808,6 +809,9 @@ public class IntrospectionParser
             /*
              * Parse introspection data.
              */
+
+            System.out.println("Parsing " + file.getAbsolutePath());
+
             defs.putAll(convertIntrospectionToDefs(file));
         }
 
