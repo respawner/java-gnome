@@ -35,9 +35,9 @@ import com.operationaldynamics.driver.DefsFile;
  * There isn't a whole lot that this gains by being a subclass of
  * FunctionBlock, but it seems as good a place as any to slot it in.
  */
-class VirtualBlock extends FunctionBlock
+public class VirtualBlock extends FunctionBlock
 {
-    VirtualBlock(String blockName, final List<String[]> characteristics, final List<String[]> parameters) {
+    public VirtualBlock(String blockName, final List<String[]> characteristics, final List<String[]> parameters) {
         super(blockName, characteristics, parameters);
     }
 

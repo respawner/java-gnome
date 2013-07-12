@@ -48,14 +48,14 @@ import com.operationaldynamics.driver.DefsFile;
  * 
  * @author Andrew Cowie
  */
-class MethodBlock extends FunctionBlock
+public class MethodBlock extends FunctionBlock
 {
     /*
      * NOTE: ofObject should be here (by the defs file legacy), but its needed
      * at FunctionGenerator level, and VirtualBlocks have it too.
      */
 
-    MethodBlock(final String blockName, final List<String[]> characteristics,
+    public MethodBlock(final String blockName, final List<String[]> characteristics,
             final List<String[]> parameters) {
         super(blockName, characteristics, parameters);
 

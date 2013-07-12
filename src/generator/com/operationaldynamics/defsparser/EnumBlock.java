@@ -55,7 +55,7 @@ public class EnumBlock extends TypeBlock
 {
     protected String[][] values;
 
-    EnumBlock(String blockName, List<String[]> characteristics, List<String[]> values) {
+    public EnumBlock(String blockName, List<String[]> characteristics, List<String[]> values) {
         super(blockName, characteristics);
 
         processValues(values);

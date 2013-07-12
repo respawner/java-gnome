@@ -51,7 +51,7 @@ import com.operationaldynamics.driver.DefsFile;
  */
 public class FlagsBlock extends EnumBlock
 {
-    FlagsBlock(String blockName, List<String[]> characteristics, List<String[]> values) {
+    public FlagsBlock(String blockName, List<String[]> characteristics, List<String[]> values) {
         super(blockName, characteristics, values);
     }
 

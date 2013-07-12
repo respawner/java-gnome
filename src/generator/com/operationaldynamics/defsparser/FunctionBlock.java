@@ -58,7 +58,7 @@ public class FunctionBlock extends Block
 
     protected String isConstructorOf;
 
-    FunctionBlock(final String blockName, final List<String[]> characteristics,
+    public FunctionBlock(final String blockName, final List<String[]> characteristics,
             final List<String[]> parameters) {
         super(blockName, characteristics);
 
