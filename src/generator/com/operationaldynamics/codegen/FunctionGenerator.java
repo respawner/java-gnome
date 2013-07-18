@@ -90,10 +90,8 @@ public class FunctionGenerator extends Generator
      *            generating code for pertains.
      * @param blockName
      *            however the .defs data named this block. Usually it's a
-     *            "short" name such as "set_label". Will be
-     *            transfencodeJavaClassName(proxyType.bindingsPackage,
-     *            proxyType.bindingsClass)ormed into the translation method
-     *            name.
+     *            "short" name such as "set_label". Will be transformed into
+     *            the translation method name.
      * @param gReturnType
      *            the return type, as specified in the .defs data
      * @param cFunctionName
