@@ -376,7 +376,7 @@ def compileGeneratorClasses():
 	changed = filesNeedBuilding(pairs)
 	if not changed:
 		return
-	compileJavaCode("tmp/generator/", "", "src/generator/", changed)
+	compileJavaCode("tmp/generator/", config['XOM_JARS']+":"+config['JAXEN_JARS'], "src/generator/", changed)
 
 
 def generateTranslationAndJniLayers():
@@ -394,7 +394,7 @@ def generateTranslationAndJniLayers():
 	if not verbose:
 		redirect = "> /dev/null"
 
-	runJavaClass("BindingsGenerator", "tmp/generator/", redirect)
+	runJavaClass("BindingsGenerator", "tmp/generator/:"+ config['XOM_JARS']+":"+config['JAXEN_JARS'], redirect)
 	touchFile(stamp)
 
 

@@ -1,4 +1,30 @@
-package introspection;
+package com.operationaldynamics.defsparser;
+
+/*
+ * java-gnome, a UI library for writing GTK and GNOME programs from Java!
+ *
+ * Copyright © 2013 Operational Dynamics Consulting, Pty Ltd and Others
+ *
+ * The code in this file, and the program it is a part of, is made available
+ * to you by its authors as open source software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License version
+ * 2 ("GPL") as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GPL for more details.
+ *
+ * You should have received a copy of the GPL along with this program. If not,
+ * see http://www.gnu.org/licenses/. The authors of this program may be
+ * contacted through http://java-gnome.sourceforge.net/.
+ */
+
+/*
+ * This code started life as prototype written during the Google Summer of Code
+ * 2013. It is based on the code made by Serkan Kaba from an old branch about
+ * GObject Introspection. This parser aims to replace the old but well working
+ * .defs parser being used by java-gnome for several years. 
+ */
 
 import java.io.File;
 import java.io.IOException;
@@ -14,29 +40,56 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-import com.operationaldynamics.defsparser.Block;
-import com.operationaldynamics.defsparser.BoxedBlock;
-import com.operationaldynamics.defsparser.EnumBlock;
-import com.operationaldynamics.defsparser.FlagsBlock;
-import com.operationaldynamics.defsparser.FunctionBlock;
-import com.operationaldynamics.defsparser.InterfaceBlock;
-import com.operationaldynamics.defsparser.MethodBlock;
-import com.operationaldynamics.defsparser.ObjectBlock;
-import com.operationaldynamics.defsparser.VirtualBlock;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
 
+/**
+ * A .gir file parser: convert XML data into an array of Block objects
+ * suitable to be used to instantiate code generators.
+ * 
+ * <p>
+ * Observation: we can only use this parser to parse .gir files containing
+ * data in XML.
+ * 
+ * @author Guillaume Mazoyer
+ */
 public class IntrospectionParser
 {
-    public static final String CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
+    public static final String CORE_NAMESPACE;
 
-    public static final String C_NAMESPACE = "http://www.gtk.org/introspection/c/1.0";
+    public static final String C_NAMESPACE;
 
-    public static final String GLIB_NAMESPACE = "http://www.gtk.org/introspection/glib/1.0";
+    public static final String GLIB_NAMESPACE;
 
-    private static final File dataDirectory = new File("tests/prototype/introspection/data/");
+    private File introspectionFile;
 
-    public static final String guessParent(Element object, String module) {
+    static {
+        CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
+        C_NAMESPACE = "http://www.gtk.org/introspection/c/1.0";
+        GLIB_NAMESPACE = "http://www.gtk.org/introspection/glib/1.0";
+    }
+
+    /**
+     * Initialize the parser for a given file containg Introspection data.
+     * 
+     * @param introspectionFile
+     *            a file object that is a reference to a .gir file to be
+     *            parsed.
+     */
+    public IntrospectionParser(final File introspectionFile) {
+        this.introspectionFile = introspectionFile;
+    }
+
+    /**
+     * Return a String representation of the parent of the given object.
+     * 
+     * @param object
+     *            the XML reference to the object.
+     * @param module
+     *            the name of the module the object belongs to.
+     * @return the parent class of the given object,
+     */
+    private static final String guessParent(Element object, String module) {
         String parent;
 
         parent = object.getAttributeValue("parent");
@@ -65,13 +118,24 @@ public class IntrospectionParser
              * The parent is in the same module so we append the module name.
              */
 
-            parent = module + parent;
+            if (module.equals("GdkPixbuf")) {
+                parent = "Gdk" + parent;
+            } else {
+                parent = module + parent;
+            }
         }
 
         return parent;
     }
 
-    public static final String[] getReturnType(Element function) {
+    /**
+     * Return the return-type of the given function.
+     * 
+     * @param function
+     *            the XML representation of the function.
+     * @return an array containing the return type of the given function.
+     */
+    private static final String[] getReturnType(Element function) {
         Element type;
         String typeString;
 
@@ -97,17 +161,27 @@ public class IntrospectionParser
          * Handle the case where the function does not return anything.
          */
 
-        if ((typeString != null) && typeString.equals("void")) {
+        if (typeString == null) {
+            typeString = type.getAttributeValue("name");
+        } else if (typeString.equals("void")) {
             typeString = "none";
         }
 
         return new String[] {
             "return-type",
-            typeString
+            typeString.replace(" ", "-")
         };
     }
 
-    public static final String[] getCallerOwnsReturn(Element function) {
+    /**
+     * Return whether the caller owns the return of the function.
+     * 
+     * @param function
+     *            the XML representation of the function.
+     * @return an array containing the definition of the ownership transfer or
+     *         null.
+     */
+    private static final String[] getCallerOwnsReturn(Element function) {
         final String callerOwnsReturn;
 
         callerOwnsReturn = function.getFirstChildElement("return-value", CORE_NAMESPACE)
@@ -119,11 +193,27 @@ public class IntrospectionParser
         } : null);
     }
 
-    public static final boolean hasVarArgs(Element function) {
+    /**
+     * Check if the function has var args.
+     * 
+     * @param function
+     *            the XML representation of the function.
+     * @return a boolean value telling if there are var args (true) or not
+     *         (false).
+     */
+    private static final boolean hasVarArgs(Element function) {
         return (function.toXML().indexOf("varargs") > 0);
     }
 
-    public static final List<String[]> getParameters(Element function) {
+    /**
+     * Return a list containing all the parameters for the given function.
+     * 
+     * @param function
+     *            the XML representation of the function.
+     * @return a list of String array, one String array contains the name, the
+     *         type of a parameter and if it can be null.
+     */
+    private static final List<String[]> getParameters(Element function) {
         final List<String[]> parameters;
         final Element element;
         final Elements list;
@@ -145,6 +235,7 @@ public class IntrospectionParser
             final Element parameter;
             final String name;
             Element type;
+            String typeString;
 
             parameter = list.get(parameterIndex);
             name = parameter.getAttributeValue("name");
@@ -168,13 +259,19 @@ public class IntrospectionParser
                     continue;
                 }
 
+                if (type.getAttributeValue("type", C_NAMESPACE) == null) {
+                    typeString = type.getAttributeValue("name").replace(".", "");
+                } else {
+                    typeString = type.getAttributeValue("type", C_NAMESPACE).replace(" ", "-");
+                }
+
                 /*
                  * Add the parameter to the parameters list and tell if 'null'
                  * can be used.
                  */
 
                 parameters.add(new String[] {
-                    type.getAttributeValue("type", C_NAMESPACE),
+                    typeString,
                     name,
                     ((parameter.getAttributeValue("allow-none") != null)
                             && parameter.getAttributeValue("allow-none").equals("1") ? "yes" : "no")
@@ -185,7 +282,20 @@ public class IntrospectionParser
         return parameters;
     }
 
-    public static final Map<String, DefsFile> convertIntrospectionToDefs(File file) {
+    /**
+     * Run the parser across the XML data and return a map of DefsFile objects
+     * representing the blocks found there.
+     * 
+     * @return a map of DefsFile objects identified by a String which is the
+     *         name of the object.
+     * @throws ParsingException
+     *             if an error occurs while parsing the XML file.
+     * @throws ValidityException
+     *             if the XML file does not seem valid.
+     * @throws IOException
+     *             if the XML file cannot be read.
+     */
+    public Map<String, DefsFile> parseData() throws ValidityException, ParsingException, IOException {
         final Map<String, DefsFile> defs;
         final Builder builder;
         Document document;
@@ -196,19 +306,11 @@ public class IntrospectionParser
         builder = new Builder();
         document = null;
 
-        try {
-            /*
-             * Start the parsing of the XML data.
-             */
+        /*
+         * Start the parsing of the XML data.
+         */
 
-            document = builder.build(file);
-        } catch (ValidityException e) {
-            e.printStackTrace();
-        } catch (ParsingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        document = builder.build(this.introspectionFile);
 
         /*
          * Get the first elements that are available (namespaces).
@@ -259,7 +361,7 @@ public class IntrospectionParser
 
                 constructors = object.getChildElements("constructor", CORE_NAMESPACE);
                 methods = object.getChildElements("method", CORE_NAMESPACE);
-                signals = object.getChildElements("signal", GLIB_NAMESPACE);
+                signals = object.getChildElements("virtual-method", CORE_NAMESPACE);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -279,11 +381,10 @@ public class IntrospectionParser
                     object.getAttributeValue("type", C_NAMESPACE) == null ? object.getAttributeValue(
                             "type-name", GLIB_NAMESPACE) : object.getAttributeValue("type", C_NAMESPACE)
                 });
-                /*
-                 * System.out.println(object.getAttributeValue("type",
-                 * C_NAMESPACE) + " <-- " + guessParent(object, namespaceName)
-                 * + " | " + object.getAttributeValue("parent"));
-                 */
+
+                System.out.println(object.getAttributeValue("type", C_NAMESPACE) + " <-- "
+                        + guessParent(object, namespaceName) + " | "
+                        + object.getAttributeValue("parent"));
 
                 /*
                  * Build the object blocks based on the info we have.
@@ -787,39 +888,5 @@ public class IntrospectionParser
         }
 
         return defs;
-    }
-
-    public static void main(String[] args) {
-        final File[] introspectionFiles;
-        final Map<String, DefsFile> defs;
-
-        introspectionFiles = dataDirectory.listFiles();
-        defs = new HashMap<String, DefsFile>();
-
-        if ((introspectionFiles == null) || (introspectionFiles.length < 1)) {
-            System.out.println("No data introspection file in " + dataDirectory.getAbsolutePath());
-            return;
-        }
-
-        /*
-         * Process introspection for each files.
-         */
-
-        for (File file : introspectionFiles) {
-            /*
-             * Parse introspection data.
-             */
-
-            System.out.println("Parsing " + file.getAbsolutePath());
-
-            defs.putAll(convertIntrospectionToDefs(file));
-        }
-
-        int i = 0;
-        for (Map.Entry<String, DefsFile> defsFile : defs.entrySet()) {
-            System.out.println(defsFile.getKey() + " | " + defsFile.getValue());
-            i++;
-        }
-        System.out.println("Handled " + i + " objects");
     }
 }

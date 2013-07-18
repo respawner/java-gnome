@@ -690,6 +690,8 @@ output "\n";
 # --------------------------------------------------------------------
 
 my @junit_jars;
+my @xom_jars;
+my @jaxen_jars;
 my $jni_path;
 
 output "Check for required jar files:\n";
@@ -707,7 +709,6 @@ if ($os eq "gentoo") {
 		"junit",
 		"/usr/share/junit/lib/junit.jar");
 
-
 } elsif ($os eq "debian") {
 
 	check_prereq(@junit_jars,
@@ -715,6 +716,15 @@ if ($os eq "gentoo") {
 		"junit",
 		"/usr/share/java/junit.jar");
 
+	check_prereq(@xom_jars,
+		"XOM XML API",
+		"libxom-java",
+		"/usr/share/java/xom.jar");
+
+	check_prereq(@jaxen_jars,
+		"Jaxen XPath library",
+		"libjaxen-java",
+		"/usr/share/java/jaxen.jar");
 	
 } elsif ($os eq "fedora") {
 
@@ -1092,6 +1102,8 @@ print CONFIG <<HERE ;
 HERE
 
 print CONFIG "JUNIT_JARS=".join(":",@junit_jars)."\n";
+print CONFIG "XOM_JARS=".join(":",@xom_jars)."\n";
+print CONFIG "JAXEN_JARS=".join(":",@jaxen_jars)."\n";
 
 output "\n";
 

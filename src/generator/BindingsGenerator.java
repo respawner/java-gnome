@@ -25,12 +25,18 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 
 import com.operationaldynamics.defsparser.Block;
 import com.operationaldynamics.defsparser.DefsLineNumberReader;
 import com.operationaldynamics.defsparser.DefsParser;
+import com.operationaldynamics.defsparser.IntrospectionParser;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
 
@@ -108,8 +114,14 @@ import com.operationaldynamics.driver.ImproperDefsFileException;
  */
 public class BindingsGenerator
 {
+    private static final boolean USE_INTROSPECTION = true;
+
     public static void main(String[] args) throws IOException {
-        runGeneratorOutputToFiles(new File("src/defs/"), new File("generated/bindings/"));
+        if (USE_INTROSPECTION) {
+            runGeneratorOutputIntrospectionToFiles(new File("src/gir/"), new File("generated/bindings/"));
+        } else {
+            runGeneratorOutputToFiles(new File("src/defs/"), new File("generated/bindings/"));
+        }
     }
 
     /**
@@ -188,6 +200,119 @@ public class BindingsGenerator
             PrintWriter trans, jni;
 
             data = iter.next();
+
+            packageAndClassName = data.getType().fullyQualifiedTranslationClassName().replace('.', '/');
+            transTarget = new File(outputDir, packageAndClassName + ".java");
+            jniTarget = new File(outputDir, packageAndClassName + ".c");
+
+            if (!transTarget.getParentFile().isDirectory()) {
+                transTarget.getParentFile().mkdirs();
+            }
+
+            try {
+                trans = new PrintWriter(new BufferedWriter(new FileWriter(transTarget)));
+                jni = new PrintWriter(new BufferedWriter(new FileWriter(jniTarget)));
+            } catch (IOException ioe) {
+                System.err.println("How come we can't open a file for writing?\n" + ioe);
+                return;
+            }
+
+            try {
+                data.generateTranslationLayer(trans);
+            } catch (UnsupportedOperationException uoe) {
+                // act to remove that file? Or close it off, or...
+            }
+
+            try {
+                data.generateJniLayer(jni);
+            } catch (UnsupportedOperationException uoe) {
+                // act to remove the file in the event there was nothing
+                // printed?
+            }
+
+            typeMapping.println(data.getType().bareTranslationClassName() + "="
+                    + data.getType().fullyQualifiedJavaClassName());
+
+            trans.close();
+            jni.close();
+        }
+        typeMapping.close();
+    }
+
+    /**
+     * This is building towards the main loop that will drive the .gir file
+     * parser and subsequent runs of the bindings code generators, but it is
+     * still an intermediate form.
+     */
+    private static void runGeneratorOutputIntrospectionToFiles(final File sourceDir, final File outputDir) {
+        final File[] files;
+        final Map<String, DefsFile> all;
+        IntrospectionParser parser;
+        Map<String, DefsFile> parsed;
+        DefsFile data;
+        PrintWriter typeMapping;
+
+        files = sourceDir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                if (name.endsWith(".gir")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        all = new HashMap<String, DefsFile>();
+
+        /*
+         * Load the all the .gir files into DefsFile objects, one per type.
+         * Along the way, this registers the type information.
+         */
+
+        for (File file : files) {
+            parser = new IntrospectionParser(file);
+
+            try {
+                parsed = parser.parseData();
+
+                all.putAll(parsed);
+            } catch (ValidityException e) {
+                System.out.println("Couldn't get sufficient information from " + file + ":");
+                System.out.println(e.getMessage());
+                System.out.println("[continuing next file]\n");
+            } catch (ParsingException e) {
+                System.out.println("Couldn't get sufficient information from " + file + ":");
+                System.out.println(e.getMessage());
+                System.out.println("[continuing next file]\n");
+            } catch (IOException e) {
+                System.out.println("I/O problem when trying to parse " + file);
+                System.out.println(e.getMessage());
+                System.out.println("[continuing next file]\n");
+                continue;
+            } finally {
+                System.out.flush();
+            }
+        }
+
+        /*
+         * Now, with the meta data completely loaded, we can generate the
+         * bindings code.
+         */
+        try {
+            typeMapping = new PrintWriter(new BufferedWriter(new FileWriter(
+                    "generated/bindings/typeMapping.properties")));
+        } catch (IOException ie) {
+            System.err.println("Can't open typeMapping file for writing!\n" + ie);
+            return;
+        }
+        int i=0;
+        for (Map.Entry<String, DefsFile> element : all.entrySet()) {
+            String packageAndClassName;
+            File transTarget, jniTarget;
+            PrintWriter trans, jni;
+
+            data = element.getValue();
+            System.out.println(++i + " | " + element.getKey() + " | " + data);
 
             packageAndClassName = data.getType().fullyQualifiedTranslationClassName().replace('.', '/');
             transTarget = new File(outputDir, packageAndClassName + ".java");
