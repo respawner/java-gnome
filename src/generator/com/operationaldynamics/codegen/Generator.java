@@ -74,7 +74,7 @@ public abstract class Generator
     protected static final String encodeJavaMethodName(String javaClassName) {
         StringBuffer buf;
         int i;
-        
+
         buf = new StringBuffer(javaClassName);
         i = 0;
 
