@@ -415,7 +415,7 @@ public class IntrospectionParser
                     });
                     constructorCharacteristics.add(new String[] {
                         "c-name",
-                        object.getAttributeValue("identifier", C_NAMESPACE)
+                        constructor.getAttributeValue("identifier", C_NAMESPACE)
                     });
 
                     /*
@@ -449,6 +449,7 @@ public class IntrospectionParser
                     final Element method;
                     final List<String[]> methodCharacteristics;
                     final String[] callerOwnsReturn;
+                    String ofObject;
 
                     method = methods.get(methodIndex);
                     methodCharacteristics = new ArrayList<String[]>();
@@ -458,9 +459,15 @@ public class IntrospectionParser
                      * name of this method.
                      */
 
+                    ofObject = object.getAttributeValue("type", C_NAMESPACE);
+
+                    if (ofObject == null) {
+                        ofObject = object.getAttributeValue("type-name", GLIB_NAMESPACE);
+                    }
+
                     methodCharacteristics.add(new String[] {
                         "of-object",
-                        object.getAttributeValue("type", C_NAMESPACE)
+                        ofObject
                     });
                     methodCharacteristics.add(new String[] {
                         "c-name",
@@ -694,11 +701,17 @@ public class IntrospectionParser
 
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
+                    String nick;
 
                     value = valuesList.get(valueIndex);
+                    nick = value.getAttributeValue("nick", GLIB_NAMESPACE);
+
+                    if (nick == null) {
+                        nick = value.getAttributeValue("name");
+                    }
 
                     values.add(new String[] {
-                        value.getAttributeValue("nick", GLIB_NAMESPACE),
+                        nick,
                         value.getAttributeValue("identifier", C_NAMESPACE)
                     });
                 }
