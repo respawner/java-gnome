@@ -27,11 +27,14 @@ package com.operationaldynamics.defsparser;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -61,12 +64,23 @@ public class IntrospectionParser
 
     public static final String GLIB_NAMESPACE;
 
+    private static final Properties packageOverrides;
+
     private File introspectionFile;
 
     static {
         CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
         C_NAMESPACE = "http://www.gtk.org/introspection/c/1.0";
         GLIB_NAMESPACE = "http://www.gtk.org/introspection/glib/1.0";
+
+        packageOverrides = new Properties();
+        try {
+            packageOverrides.load(new FileInputStream("src/generator/packages-override.properties"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -78,6 +92,21 @@ public class IntrospectionParser
      */
     public IntrospectionParser(final File introspectionFile) {
         this.introspectionFile = introspectionFile;
+    }
+
+    /**
+     * Return the Java package name to use for the given namespace.
+     * 
+     * @param introspectionNamespace
+     *            the GObject Introspection namespace.
+     * @return the Java package name to use.
+     */
+    private static final String getActualJavaPackage(String introspectionNamespace) {
+        final String javaPackage;
+
+        javaPackage = packageOverrides.getProperty(introspectionNamespace);
+
+        return ((javaPackage == null) ? introspectionNamespace : javaPackage);
     }
 
     /**
@@ -370,7 +399,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    namespaceName
+                    getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "parent",
@@ -382,9 +411,11 @@ public class IntrospectionParser
                             "type-name", GLIB_NAMESPACE) : object.getAttributeValue("type", C_NAMESPACE)
                 });
 
-                System.out.println(object.getAttributeValue("type", C_NAMESPACE) + " <-- "
-                        + guessParent(object, namespaceName) + " | "
-                        + object.getAttributeValue("parent"));
+                /*
+                 * System.out.println(object.getAttributeValue("type",
+                 * C_NAMESPACE) + " <-- " + guessParent(object, namespaceName)
+                 * + " | " + object.getAttributeValue("parent"));
+                 */
 
                 /*
                  * Build the object blocks based on the info we have.
@@ -566,7 +597,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    namespaceName
+                    getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -692,7 +723,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    namespaceName
+                    getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -701,18 +732,29 @@ public class IntrospectionParser
 
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
-                    String nick;
+                    String nick, identifier;
 
                     value = valuesList.get(valueIndex);
                     nick = value.getAttributeValue("nick", GLIB_NAMESPACE);
+                    identifier = value.getAttributeValue("identifier", C_NAMESPACE);
 
                     if (nick == null) {
                         nick = value.getAttributeValue("name");
                     }
 
+                    /*
+                     * FIXME: Exception for GdkEventType cases (but there are
+                     * valid aliases which are available.
+                     */
+
+                    if (identifier.startsWith(namespaceName.toUpperCase() + "_2")
+                            || identifier.startsWith(namespaceName.toUpperCase() + "_3")) {
+                        continue;
+                    }
+
                     values.add(new String[] {
                         nick,
-                        value.getAttributeValue("identifier", C_NAMESPACE)
+                        identifier
                     });
                 }
 
@@ -753,7 +795,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    namespaceName
+                    getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -831,7 +873,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    namespaceName
+                    getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",

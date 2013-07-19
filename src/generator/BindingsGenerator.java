@@ -254,11 +254,7 @@ public class BindingsGenerator
 
         files = sourceDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                if (name.endsWith(".gir")) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return name.endsWith(".gir");
             }
         });
 
@@ -305,14 +301,13 @@ public class BindingsGenerator
             System.err.println("Can't open typeMapping file for writing!\n" + ie);
             return;
         }
-        int i=0;
+
         for (Map.Entry<String, DefsFile> element : all.entrySet()) {
             String packageAndClassName;
             File transTarget, jniTarget;
             PrintWriter trans, jni;
 
             data = element.getValue();
-            System.out.println(++i + " | " + element.getKey() + " | " + data);
 
             packageAndClassName = data.getType().fullyQualifiedTranslationClassName().replace('.', '/');
             transTarget = new File(outputDir, packageAndClassName + ".java");
