@@ -117,8 +117,8 @@ public class BindingsGenerator
     private static final boolean USE_INTROSPECTION = true;
 
     public static void main(String[] args) throws IOException {
-        if (USE_INTROSPECTION) {
-            runGeneratorOutputIntrospectionToFiles(new File("src/gir/"), new File("generated/bindings/"));
+        if (USE_INTROSPECTION && (args.length >= 1)) {
+            runGeneratorOutputIntrospectionToFiles(args, new File("generated/bindings/"));
         } else {
             runGeneratorOutputToFiles(new File("src/defs/"), new File("generated/bindings/"));
         }
@@ -244,7 +244,8 @@ public class BindingsGenerator
      * parser and subsequent runs of the bindings code generators, but it is
      * still an intermediate form.
      */
-    private static void runGeneratorOutputIntrospectionToFiles(final File sourceDir, final File outputDir) {
+    private static void runGeneratorOutputIntrospectionToFiles(final String[] introspectionFiles,
+            final File outputDir) {
         final File[] files;
         final Map<String, DefsFile> all;
         IntrospectionParser parser;
@@ -252,11 +253,10 @@ public class BindingsGenerator
         DefsFile data;
         PrintWriter typeMapping;
 
-        files = sourceDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".gir");
-            }
-        });
+        files = new File[introspectionFiles.length];
+        for (int i = 0; i < files.length; i++) {
+            files[i] = new File(introspectionFiles[i]);
+        }
 
         all = new HashMap<String, DefsFile>();
 

@@ -394,7 +394,7 @@ def generateTranslationAndJniLayers():
 	if not verbose:
 		redirect = "> /dev/null"
 
-	runJavaClass("BindingsGenerator", "tmp/generator/:"+ config['XOM_JARS']+":"+config['JAXEN_JARS'], redirect)
+	runJavaClass("BindingsGenerator", "tmp/generator/:"+ config['XOM_JARS']+":"+config['JAXEN_JARS'], config['GIR_FILES']+" "+redirect)
 	touchFile(stamp)
 
 

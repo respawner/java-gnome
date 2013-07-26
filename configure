@@ -224,6 +224,56 @@ sub check_prereq (\@$$@) {
 	push (@$jararrayref, $found);
 }
 
+sub check_multi_prereq (\@$$@) {
+	my ($jararrayref, $item, $package, @files) = @_;
+
+	output " - ".$item;
+
+	my $str;
+	my $tries = "";
+	my $notfound = "";
+
+	foreach my $file ( @files ) {
+		if ( ! -f "$file" ) {
+			$notfound = $file;
+		} else {
+			push(@$jararrayref, $file);
+		}
+		$tries .= ($tries ? ", or" : "" ) . "\n\t".  basename($file) . "\t(looked in ".dirname($file).")";
+	}
+
+	if ( "$notfound" ) {
+		$str = "In order to build java-gnome, you need\n".$tries;
+		$str .= "\n\nwhich is part of the $item Java library.\n";
+		$str .= "On a ".ucfirst($os)." system, you should be able to get this requirement by doing:\n\n";
+		$str .= "     # ";
+
+		if ($os eq "gentoo") {
+			$str .= "emerge";
+		} elsif ($os eq "debian") {
+			$str .= "apt-get install";
+		} elsif ($os eq "fedora") {
+			$str .= "yum install";
+		} elsif ($os eq "suse") {
+			$str .= "zypper install";
+		} elsif ($os eq "arch") {
+			$str .= "pacman -S";
+		} elsif ($os eq "mandriva") {
+			$str .= "urpmi";
+		} elsif ($os eq "solaris") {
+			$str .= "pkgadd";
+		} elsif ($os eq "slackware") {
+			$str .= "slackpkg install";
+		} else {
+			$str .= "[FIXME fetch and install command for this OS]"; 
+		}
+		$str .= " $package";
+
+		bail "not found!", $str;
+	}
+	print "found\n";
+}
+
 # if we return without setting the variable pointed at by scalarref, its being
 # empty will be used later to indicate that this compiler wasn't present /
 # usable.
@@ -754,7 +804,6 @@ if ($os eq "gentoo") {
 		"junit",
 		"/usr/share/java/junit.jar");
 
-
 } elsif ($os eq "solaris") {
 
 	check_prereq(@junit_jars,
@@ -776,7 +825,6 @@ if ($os eq "gentoo") {
 		"junit",
 		"/usr/share/java/junit.jar");
 	
-	
 } else {
 	bail "failed!", "This OS not configured with defaults!\nTHIS IS AN INTERNAL ERROR, PLEASE FILE A BUG.";
 }
@@ -786,6 +834,7 @@ if ($os eq "gentoo") {
 # Paths mentioned here, are relative to the prefix.
 
 my @gnomedev_libs;
+my @gir_files;
 
 output "\nCheck for required system libraries:\n";
 
@@ -907,6 +956,24 @@ if ($os eq "gentoo") {
 #			"GtkSpell",
 #			"libgtkspell-dev");
 
+	check_system_library(@gnomedev_libs,
+			"gobject-introspection-1.0",
+			"GObject Introspection",
+			"libgirepository1.0-dev");
+
+	check_multi_prereq(@gir_files,
+		"GObject Introspection files",
+		"libgirepository1.0-dev",
+		"/usr/share/gir-1.0/Atk-1.0.gir",
+		"/usr/share/gir-1.0/cairo-1.0.gir",
+		"/usr/share/gir-1.0/Gdk-3.0.gir",
+		"/usr/share/gir-1.0/GdkPixbuf-2.0.gir",
+		"/usr/share/gir-1.0/Gio-2.0.gir",
+		"/usr/share/gir-1.0/GLib-2.0.gir",
+		"/usr/share/gir-1.0/Gtk-3.0.gir",
+		"/usr/share/gir-1.0/Notify-0.7.gir",
+		"/usr/share/gir-1.0/Pango-1.0.gir",
+		"/usr/share/gir-1.0/Rsvg-2.0.gir");
 
 } elsif ($os eq "arch") {
 	check_system_library(@gnomedev_libs,
@@ -1104,6 +1171,7 @@ HERE
 print CONFIG "JUNIT_JARS=".join(":",@junit_jars)."\n";
 print CONFIG "XOM_JARS=".join(":",@xom_jars)."\n";
 print CONFIG "JAXEN_JARS=".join(":",@jaxen_jars)."\n";
+print CONFIG "GIR_FILES=".join(" ",@gir_files)."\n";
 
 output "\n";
 
