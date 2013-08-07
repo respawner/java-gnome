@@ -93,8 +93,8 @@ public abstract class Plumbing extends org.gnome.glib.Plumbing
                 break;
 
             case GdkEventType.BUTTON_PRESS:
-            case GdkEventType.BUTTON_PRESS_DOUBLE:
-            case GdkEventType.BUTTON_PRESS_TRIPLE:
+            case GdkEventType.DOUBLE_BUTTON_PRESS:
+            case GdkEventType.TRIPLE_BUTTON_PRESS:
             case GdkEventType.BUTTON_RELEASE:
                 type = EventButton.class;
                 break;
@@ -166,7 +166,6 @@ public abstract class Plumbing extends org.gnome.glib.Plumbing
              */
             case GdkEventType.SETTING:
             case GdkEventType.CLIENT_EVENT:
-            case GdkEventType.NO_EXPOSE:
             default:
                 throw new UnsupportedOperationException("What GdkEventType is this?");
             }

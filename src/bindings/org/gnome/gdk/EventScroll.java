@@ -57,7 +57,7 @@ public final class EventScroll extends Event
      * {@link ModifierType} for usage details.
      */
     public ModifierType getState() {
-        return GdkKeyvalOverride.flagFor(GdkEventScroll.getState(this));
+        return GdkEventScroll.getState(this);
     }
 
     /**

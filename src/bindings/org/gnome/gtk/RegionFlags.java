@@ -1,7 +1,7 @@
 /*
  * java-gnome, a UI library for writing GTK and GNOME programs from Java!
  *
- * Copyright © 2011 Operational Dynamics Consulting, Pty Ltd and Others
+ * Copyright © 2011-2013 Operational Dynamics Consulting, Pty Ltd and Others
  *
  * The code in this file, and the program it is a part of, is made available
  * to you by its authors as open source software: you can redistribute it
@@ -32,7 +32,7 @@
  */
 package org.gnome.gtk;
 
-import org.freedesktop.bindings.Constant;
+import org.freedesktop.bindings.Flag;
 
 /**
  * Describe a region within a widget.
@@ -40,7 +40,7 @@ import org.freedesktop.bindings.Constant;
  * @author Guillaume Mazoyer
  * @since 4.1.2
  */
-public final class RegionFlags extends Constant
+public final class RegionFlags extends Flag
 {
     protected RegionFlags(int ordinal, String nickname) {
         super(ordinal, nickname);

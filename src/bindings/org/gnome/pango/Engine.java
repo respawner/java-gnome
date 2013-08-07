@@ -32,7 +32,7 @@
  */
 package org.gnome.pango;
 
-import org.gnome.glib.Object;
+import org.gnome.glib.Boxed;
 
 /*
  * FIXME this is a placeholder stub for what will become the public API for
@@ -42,9 +42,14 @@ import org.gnome.glib.Object;
  * are made about this class until it has been reviewed by a hacker and this
  * comment has been replaced.
  */
-public class Engine extends Object
+public class Engine extends Boxed
 {
     protected Engine(long pointer) {
         super(pointer);
+    }
+
+    @Override
+    protected void release() {
+        // TODO Auto-generated method stub
     }
 }

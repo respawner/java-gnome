@@ -116,8 +116,8 @@ public final class EventType extends Constant
      * underlying library; we had to rename it slightly for translation into a
      * legal Java identifier.</i>
      */
-    public static final EventType BUTTON_PRESS_DOUBLE = new EventType(GdkEventType.BUTTON_PRESS_DOUBLE,
-            "BUTTON_PRESS_DOUBLE");
+    public static final EventType BUTTON_PRESS_DOUBLE = new EventType(GdkEventType.DOUBLE_BUTTON_PRESS,
+            "DOUBLE_BUTTON_PRESS");
 
     /**
      * A mouse button has been clicked three times in a brief period. You
@@ -141,8 +141,8 @@ public final class EventType extends Constant
     /*
      * Thanks to Ryan Lortie for helping document the Event sequence.
      */
-    public static final EventType BUTTON_PRESS_TRIPLE = new EventType(GdkEventType.BUTTON_PRESS_TRIPLE,
-            "BUTTON_PRESS_TRIPLE");
+    public static final EventType BUTTON_PRESS_TRIPLE = new EventType(GdkEventType.TRIPLE_BUTTON_PRESS,
+            "TRIPLE_BUTTON_PRESS");
 
     /**
      * A previously pressed mouse button has been released. This EventType
@@ -278,13 +278,6 @@ public final class EventType extends Constant
      */
     public static final EventType VISIBILITY_NOTIFY = new EventType(GdkEventType.VISIBILITY_NOTIFY,
             "VISIBILITY_NOTIFY");
-
-    /**
-     * The source region was completely available when parts of a drawable
-     * were copied. "This is not very useful" says the underlying API
-     * documentation. Really!
-     */
-    public static final EventType NO_EXPOSE = new EventType(GdkEventType.NO_EXPOSE, "NO_EXPOSE");
 
     /**
      * The scroll wheel was turned.

@@ -971,6 +971,7 @@ if ($os eq "gentoo") {
 		"/usr/share/gir-1.0/Gio-2.0.gir",
 		"/usr/share/gir-1.0/GLib-2.0.gir",
 		"/usr/share/gir-1.0/Gtk-3.0.gir",
+		"/usr/share/gir-1.0/GtkSource-3.0.gir",
 		"/usr/share/gir-1.0/Notify-0.7.gir",
 		"/usr/share/gir-1.0/Pango-1.0.gir",
 		"/usr/share/gir-1.0/Rsvg-2.0.gir");

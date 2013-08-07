@@ -81,9 +81,4 @@ public final class Unit extends Constant
      * are, obviously, completely baseless.</i>
      */
     public static final Unit INCH = new Unit(GtkUnit.INCH, "INCH");
-
-    /*
-     * What good is this?
-     */
-    public static final Unit PIXEL = new Unit(GtkUnit.PIXEL, "PIXEL");
 }
