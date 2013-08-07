@@ -47,13 +47,6 @@ import org.freedesktop.bindings.Constant;
 public final class ButtonBoxStyle extends Constant
 {
     /**
-     * Default packing, allowing the theme engine to control the presentation
-     * of ButtonBoxes.
-     */
-    public static final ButtonBoxStyle DEFAULT_STYLE = new ButtonBoxStyle(
-            GtkButtonBoxStyle.DEFAULT_STYLE, "DEFAULT_STYLE");
-
-    /**
      * Buttons are to be evenly spread across the Box.
      */
     public static final ButtonBoxStyle SPREAD = new ButtonBoxStyle(GtkButtonBoxStyle.SPREAD, "SPREAD");

@@ -91,10 +91,6 @@ public class CustomPaperSize extends PaperSize
     }
 
     private static Unit checkUnits(Unit units) {
-        if (units == Unit.PIXEL) {
-            throw new IllegalArgumentException(
-                    "Size can't be specified in pixels. You have to use a physical measurement");
-        }
         return units;
     }
 }

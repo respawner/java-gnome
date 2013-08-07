@@ -129,7 +129,7 @@ public class Tooltip extends Object
      * @since 4.1.3
      */
     public void setStockIcon(Stock stock, IconSize size) {
-        GtkTooltip.setIcon(this, stock.getStockId(), size);
+        GtkTooltip.setIconFromStock(this, stock.getStockId(), size);
     }
 
     /**

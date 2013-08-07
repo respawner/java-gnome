@@ -88,7 +88,7 @@ public class Application extends Object
             throw new IllegalArgumentException("identifier must not exceed 255 characters.");
         }
 
-        if (!GApplication.isValidId(id)) {
+        if (!GApplication.idIsValid(id)) {
             /*
              * Note: if you've found yourself here, they've changed the rules
              * for valid application IDs.
@@ -187,7 +187,7 @@ public class Application extends Object
      * @since 4.1.2
      */
     public boolean isRemote() {
-        return GApplication.isRemote(this);
+        return GApplication.getIsRemote(this);
     }
 
     /**
