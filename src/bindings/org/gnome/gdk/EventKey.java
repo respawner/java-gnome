@@ -81,6 +81,6 @@ public final class EventKey extends Event
      * @since 4.0.6
      */
     public ModifierType getState() {
-        return GdkKeyvalOverride.flagFor(GdkEventKey.getState(this));
+        return GdkEventKey.getState(this);
     }
 }

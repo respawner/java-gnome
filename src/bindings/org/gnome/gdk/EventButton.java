@@ -66,7 +66,7 @@ public final class EventButton extends Event
      * @since 4.0.6
      */
     public ModifierType getState() {
-        return GdkKeyvalOverride.flagFor(GdkEventButton.getState(this));
+        return GdkEventButton.getState(this);
     }
 
     /**

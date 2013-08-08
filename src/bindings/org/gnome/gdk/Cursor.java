@@ -32,7 +32,7 @@
  */
 package org.gnome.gdk;
 
-import org.gnome.glib.Boxed;
+import org.gnome.glib.Object;
 
 /**
  * That which indicateth where your mouse is pointing!
@@ -78,7 +78,7 @@ import org.gnome.glib.Boxed;
  * @author Andrew Cowie
  * @since 4.0.6
  */
-public final class Cursor extends Boxed
+public final class Cursor extends Object
 {
     protected Cursor(long pointer) {
         super(pointer);
@@ -119,10 +119,6 @@ public final class Cursor extends Boxed
         } else {
             return null;
         }
-    }
-
-    protected void release() {
-        GdkCursor.unref(this);
     }
 
     /**
