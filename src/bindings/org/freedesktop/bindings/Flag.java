@@ -50,7 +50,6 @@ package org.freedesktop.bindings;
  */
 public abstract class Flag extends Constant
 {
-
     protected Flag(int ordinal, String nickname) {
         super(ordinal, nickname);
     }

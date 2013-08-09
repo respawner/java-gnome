@@ -194,13 +194,13 @@ public class MenuItem extends Bin implements Activatable
         }
 
         if (exists) {
-            result = GtkAccelMap.changeEntry(path, keyval, modifier, true);
+            result = GtkAccelMap.changeEntry(path, keyval.toUnicode(), modifier, true);
 
             if (!result) {
                 throw new IllegalStateException("Can't change exising accelerator");
             }
         } else {
-            GtkAccelMap.addEntry(path, keyval, modifier);
+            GtkAccelMap.addEntry(path, keyval.toUnicode(), modifier);
         }
     }
 }

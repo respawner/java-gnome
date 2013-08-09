@@ -53,7 +53,6 @@ package org.freedesktop.bindings;
  */
 public abstract class Constant
 {
-
     /*
      * This is package visible so that Plumbing can see it, and final so that
      * only the constructor here can set it.
