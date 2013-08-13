@@ -654,6 +654,8 @@ public class IntrospectionParser
             String namespace) {
         final List<String[]> constructorCharacteristics;
         final String[] callerOwnsReturn;
+        final List<String[]> parameters;
+        final boolean throwsGError;
 
         constructorCharacteristics = new ArrayList<String[]>();
 
@@ -689,8 +691,27 @@ public class IntrospectionParser
             });
         }
 
+        /*
+         * Handle parameters.
+         */
+
+        parameters = getParameters(constructor, namespace);
+        throwsGError = constructor.getAttribute("throws") != null;
+
+        /*
+         * Add the corresponding C parameter if the function throws an error.
+         */
+
+        if (throwsGError) {
+            parameters.add(new String[] {
+                "GError**",
+                "error",
+                "no"
+            });
+        }
+
         return new FunctionBlock(constructor.getAttributeValue("identifier", C_NAMESPACE),
-                constructorCharacteristics, getParameters(constructor, namespace));
+                constructorCharacteristics, parameters);
     }
 
     /**
@@ -709,6 +730,8 @@ public class IntrospectionParser
     private static final FunctionBlock parseFunction(Element object, Element function, String namespace) {
         final List<String[]> functionCharacteristics;
         final String[] callerOwnsReturn;
+        final List<String[]> parameters;
+        final boolean throwsGError;
 
         functionCharacteristics = new ArrayList<String[]>();
 
@@ -744,8 +767,26 @@ public class IntrospectionParser
             });
         }
 
-        return new FunctionBlock(function.getAttributeValue("name"), functionCharacteristics,
-                getParameters(function, namespace));
+        /*
+         * Handle parameters.
+         */
+
+        parameters = getParameters(function, namespace);
+        throwsGError = function.getAttribute("throws") != null;
+
+        /*
+         * Add the corresponding C parameter if the function throws an error.
+         */
+
+        if (throwsGError) {
+            parameters.add(new String[] {
+                "GError**",
+                "error",
+                "no"
+            });
+        }
+
+        return new FunctionBlock(function.getAttributeValue("name"), functionCharacteristics, parameters);
     }
 
     /**
@@ -766,6 +807,8 @@ public class IntrospectionParser
             List<String[]> objectCharacteristics, String namespace) throws IllegalStateException {
         final List<String[]> methodCharacteristics;
         final String[] callerOwnsReturn;
+        final List<String[]> parameters;
+        final boolean throwsGError;
         String ofObject;
 
         if (method.getAttributeValue("name").startsWith("_")) {
@@ -832,8 +875,26 @@ public class IntrospectionParser
             });
         }
 
-        return new MethodBlock(method.getAttributeValue("name"), methodCharacteristics, getParameters(
-                method, namespace));
+        /*
+         * Handle parameters.
+         */
+
+        parameters = getParameters(method, namespace);
+        throwsGError = method.getAttribute("throws") != null;
+
+        /*
+         * Add the corresponding C parameter if the function throws an error.
+         */
+
+        if (throwsGError) {
+            parameters.add(new String[] {
+                "GError**",
+                "error",
+                "no"
+            });
+        }
+
+        return new MethodBlock(method.getAttributeValue("name"), methodCharacteristics, parameters);
     }
 
     /**
@@ -854,6 +915,8 @@ public class IntrospectionParser
             List<String> signalNames) {
         final List<String[]> virtualCharacteristics;
         final String virtualName;
+        final List<String[]> parameters;
+        final boolean throwsGError;
 
         virtualName = virtual.getAttributeValue("name").replace("-", "_");
         virtualCharacteristics = new ArrayList<String[]>();
@@ -880,7 +943,26 @@ public class IntrospectionParser
 
         virtualCharacteristics.add(getReturnType(virtual, namespace));
 
-        return new VirtualBlock(virtualName, virtualCharacteristics, getParameters(virtual, namespace));
+        /*
+         * Handle parameters.
+         */
+
+        parameters = getParameters(virtual, namespace);
+        throwsGError = virtual.getAttribute("throws") != null;
+
+        /*
+         * Add the corresponding C parameter if the function throws an error.
+         */
+
+        if (throwsGError) {
+            parameters.add(new String[] {
+                "GError**",
+                "error",
+                "no"
+            });
+        }
+
+        return new VirtualBlock(virtualName, virtualCharacteristics, parameters);
     }
 
     /**
@@ -901,6 +983,8 @@ public class IntrospectionParser
             List<String> signalNames) throws IllegalStateException {
         final List<String[]> signalCharacteristics;
         final String signalName;
+        final List<String[]> parameters;
+        final boolean throwsGError;
 
         signalName = signal.getAttributeValue("name").replace("-", "_");
         signalCharacteristics = new ArrayList<String[]>();
@@ -928,7 +1012,26 @@ public class IntrospectionParser
 
         signalCharacteristics.add(getReturnType(signal, namespace));
 
-        return new VirtualBlock(signalName, signalCharacteristics, getParameters(signal, namespace));
+        /*
+         * Handle parameters.
+         */
+
+        parameters = getParameters(signal, namespace);
+        throwsGError = signal.getAttribute("throws") != null;
+
+        /*
+         * Add the corresponding C parameter if the function throws an error.
+         */
+
+        if (throwsGError) {
+            parameters.add(new String[] {
+                "GError**",
+                "error",
+                "no"
+            });
+        }
+
+        return new VirtualBlock(signalName, signalCharacteristics, parameters);
     }
 
     /**
