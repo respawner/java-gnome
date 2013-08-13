@@ -1,0 +1,7 @@
+(define-virtual forward
+  (of-object "GtkAssistant")
+  (return-type "gint")
+  (parameters
+    '("gint" "current")
+  )
+)

@@ -1,0 +1,9 @@
+(define-function g_file_new_for_path
+  (is-constructor-of "GFile")
+  (c-name "g_file_new_for_path")
+  (caller-owns-return #t)
+  (return-type "GFile*")
+  (parameters
+    '("const-char*" "path")
+  )
+)

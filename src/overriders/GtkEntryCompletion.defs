@@ -1,0 +1,8 @@
+(define-virtual match
+  (of-object "GtkEntryCompletion")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "key")
+    '("GtkTreeIter*" "iter")
+  )
+)

@@ -1,0 +1,8 @@
+;; terrible terrible hack, attempting to create the effect of _exit() 
+;; as a placeholder until the real function shows up in Glib.
+(define-method broken
+  (of-object "GApplicationCommandLine")
+  (c-name "g_object_unref")
+  (return-type "none")
+)
+

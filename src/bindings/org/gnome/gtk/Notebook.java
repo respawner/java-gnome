@@ -214,7 +214,7 @@ public class Notebook extends Container
             this.handler = handler;
         }
 
-        public void onSwitchPage(Notebook source, long page, int pageNum) {
+        public void onSwitchPage(Notebook source, Widget page, int pageNum) {
             handler.onSwitchPage(source, pageNum);
         }
     }

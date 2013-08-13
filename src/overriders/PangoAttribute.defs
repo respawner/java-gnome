@@ -1,0 +1,145 @@
+(define-function pango_attribute_new_language
+  (c-name "pango_attr_language_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoLanguage*" "language")
+  )
+)
+
+(define-function pango_attribute_new_foreground
+  (c-name "pango_attr_foreground_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("guint16" "red")
+    '("guint16" "green")
+    '("guint16" "blue")
+  )
+)
+
+(define-function pango_attribute_new_background
+  (c-name "pango_attr_background_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("guint16" "red")
+    '("guint16" "green")
+    '("guint16" "blue")
+  )
+)
+
+(define-function pango_attribute_new_size
+  (c-name "pango_attr_size_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("int" "size")
+  )
+)
+
+(define-function pango_attribute_new_style
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_style_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoStyle" "style")
+  )
+)
+
+(define-function pango_attribute_new_weight
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_weight_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoWeight" "weight")
+  )
+)
+
+(define-function pango_attribute_new_variant
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_variant_new")
+  (return-type "PangoAttribute*")
+  (caller-owns-return #t)
+  (parameters
+    '("PangoVariant" "variant")
+  )
+)
+
+(define-function pango_attribute_new_font_description
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_font_desc_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("const-PangoFontDescription*" "desc")
+  )
+)
+
+(define-function pango_attribute_new_underline
+  (c-name "pango_attr_underline_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoUnderline" "underline")
+  )
+)
+
+(define-function pango_attribute_new_underline_color
+  (c-name "pango_attr_underline_color_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("guint16" "red")
+    '("guint16" "green")
+    '("guint16" "blue")
+  )
+)
+
+(define-function pango_attribute_new_rise
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_rise_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("int" "rise")
+  )
+)
+
+(define-function pango_attr_new_fallback
+  (c-name "pango_attr_fallback_new")
+  (is-constructor-of "PangoAttribute")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("gboolean" "fallback")
+  )
+)
+
+(define-function pango_attribute_new_gravity
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_gravity_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoGravity" "gravity")
+  )
+)
+
+(define-function pango_attribute_new_gravity_hint
+  (is-constructor-of "PangoAttribute")
+  (c-name "pango_attr_gravity_hint_new")
+  (caller-owns-return #t)
+  (return-type "PangoAttribute*")
+  (parameters
+    '("PangoGravityHint" "hint")
+  )
+)

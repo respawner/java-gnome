@@ -1,0 +1,9 @@
+(define-function pango_layout_new_from_cairo
+  (is-constructor-of "PangoLayout")
+  (c-name "pango_cairo_create_layout")
+  (caller-owns-return #t)
+  (return-type "PangoLayout*")
+  (parameters
+    '("cairo_t*" "context")
+  )
+)

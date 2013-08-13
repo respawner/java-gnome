@@ -1,0 +1,9 @@
+(define-function gtk_tree_model_filter_new
+  (is-constructor-of "GtkTreeModelFilter")
+  (c-name "gtk_tree_model_filter_new")
+  (return-type "GtkTreeModel*")
+  (parameters
+    '("GtkTreeModel*" "child_model")
+    '("GtkTreePath*" "root" (default "NULL") (null-ok))
+  )
+)

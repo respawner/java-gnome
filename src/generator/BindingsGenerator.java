@@ -1,7 +1,7 @@
 /*
  * java-gnome, a UI library for writing GTK and GNOME programs from Java!
  *
- * Copyright © 2007-2010 Operational Dynamics Consulting, Pty Ltd
+ * Copyright © 2007-2013 Operational Dynamics Consulting, Pty Ltd
  *
  * The code in this file, and the program it is a part of, is made available
  * to you by its authors as open source software: you can redistribute it
@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,10 @@ import nu.xom.ValidityException;
 import com.operationaldynamics.defsparser.Block;
 import com.operationaldynamics.defsparser.DefsLineNumberReader;
 import com.operationaldynamics.defsparser.DefsParser;
+import com.operationaldynamics.defsparser.FunctionBlock;
 import com.operationaldynamics.defsparser.IntrospectionParser;
+import com.operationaldynamics.defsparser.MethodBlock;
+import com.operationaldynamics.defsparser.VirtualBlock;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
 
@@ -45,24 +47,24 @@ import com.operationaldynamics.driver.ImproperDefsFileException;
  * 
  * <p>
  * The biggest problem architecturally is transforming information from the
- * form that the upstream .defs data provides to one we can do something
- * useful with in our context. The code generator, then is essentially two
- * separate pieces that have nothing to do with each other:
+ * form that the upstream .gir data provides to one we can do something useful
+ * with in our context. The code generator, then is essentially two separate
+ * pieces that have nothing to do with each other:
  * 
  * <ul>
- * <li>At the front end is the .defs file parser. DefsParser takes an input
- * stream of GNOME defs metadata s-expressions and turns it into an array of
- * Block objects. Blocks are Java objects representing the contents of a given
- * (define-...) stanza.
+ * <li>At the front end is the .gir file parser. IntrospectionParser takes an
+ * input file of GNOME GIR XML metadata and turns it into an array of Block
+ * objects. Blocks are Java objects representing the contents of a given XML
+ * description.
  * 
  * <li>Completely independent of the parser is the code generator. A hierarchy
  * of Generator objects exist with the code to output the necessary Java and C
  * code They have constructors which minutely specify the information they
  * require (and with variables names that means something to the task of
- * bindings generation, rather than whatever the origin .defs data might have
+ * bindings generation, rather than whatever the origin .gir data might have
  * called it). The types information describing the underlying library is
  * stored in a hash table of which uses the underlying type (as found in the
- * source .defs data) as a key, and a Thing object as the value containing all
+ * source .gir data) as a key, and a Thing object as the value containing all
  * the necessary mappings of that type to the actual Java or C language type
  * used at each layer of the bindings.
  * </ul>
@@ -70,23 +72,22 @@ import com.operationaldynamics.driver.ImproperDefsFileException;
  * <p>
  * The link between the two sides are the createThing() and createGenerator()
  * methods in each Block object; this is where we translate from the
- * characteristic key names in the .defs data to the names we use in the
+ * characteristic key names in the .gir data to the names we use in the
  * generator.
  * 
  * <p>
  * To generate the java-gnome bindings, we therefore do several things:
  * 
  * <ol>
- * <li>setup: demultiplex the massive monolithic stream of .defs information
- * into one .defs file per type. This has been done externally ahead of time
- * before the BindingsGenerator runs.
- * 
- * <li>register all the type information: We load each .defs file and create
+ * <li>register all the type information: We load each .gir file and create
  * arrays of Blocks. We then stash these Blocks in an a class called DefsFile.
  * Along the way we call each Block's createThing() and then Thing.register()
- * to store the the resultant in our lookup table [Obviously this only
- * concerns (define-...) blocks which declare type information (the TypeBlock
- * subclasses)].
+ * to store the the resultant in our lookup table.
+ * 
+ * <li>parse data to override known .gir data: We load each .defs file and
+ * create arrays of Blocks. The .defs file may contain a full description of
+ * an object but also a single function, method or signal to add to the
+ * original data taken from the Introspection XML.
  * 
  * <li>with a full database of type information in hand, we can then do an
  * iteration over the Block arrays to actually generate the code that goes
@@ -96,14 +97,8 @@ import com.operationaldynamics.driver.ImproperDefsFileException;
  * (Java) and jni layer (C) code.
  * </ol>
  * 
- * <p>
- * Since the .defs data has already been demuxed into one .defs file per type,
- * we use the TypeBlock heading each file to identify it and to name the
- * appropriate output files. That setup, and the driving the passes over the
- * list of DefsFiles holding the Block arrays, is the task of this class,
- * which is the [only] public entry point into the code generator.
- * 
  * @author Andrew Cowie
+ * @author Guillaume Mazoyer
  * @since 4.0.3
  */
 /*
@@ -114,129 +109,8 @@ import com.operationaldynamics.driver.ImproperDefsFileException;
  */
 public class BindingsGenerator
 {
-    private static final boolean USE_INTROSPECTION = true;
-
     public static void main(String[] args) throws IOException {
-        if (USE_INTROSPECTION && (args.length >= 1)) {
-            runGeneratorOutputIntrospectionToFiles(args, new File("generated/bindings/"));
-        } else {
-            runGeneratorOutputToFiles(new File("src/defs/"), new File("generated/bindings/"));
-        }
-    }
-
-    /**
-     * This is building towards the main loop that will drive the .defs file
-     * parser and subsequent runs of the bindings code generators, but it is
-     * still an intermediate form.
-     */
-    private static void runGeneratorOutputToFiles(final File sourceDir, final File outputDir) {
-        Block[] blocks;
-        DefsParser parser;
-        File[] files;
-        DefsLineNumberReader in;
-        DefsFile data;
-        List<DefsFile> all;
-        Iterator<DefsFile> iter;
-        PrintWriter typeMapping;
-
-        files = sourceDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                if (name.endsWith(".defs")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
-        all = new ArrayList<DefsFile>(files.length);
-
-        /*
-         * Load the all the .defs files into DefsFile objects, one per type.
-         * Along the way, this registers the type information.
-         */
-
-        for (int i = 0; i < files.length; i++) {
-            try {
-                in = new DefsLineNumberReader(new FileReader(files[i]), files[i].getName());
-
-                parser = new DefsParser(in);
-                blocks = parser.parseData();
-
-                data = new DefsFile(blocks);
-                all.add(data);
-
-                in.close();
-            } catch (IOException ioe) {
-                System.out.println("I/O problem when trying to parse " + files[i]);
-                System.out.println(ioe.getMessage());
-                System.out.println("[continuing next file]\n");
-                continue;
-            } catch (ImproperDefsFileException idfe) {
-                System.out.println("Couldn't get sufficient information from " + files[i] + ":");
-                System.out.println(idfe.getMessage());
-                System.out.println("[continuing next file]\n");
-                continue;
-            } finally {
-                System.out.flush();
-            }
-        }
-
-        /*
-         * Now, with the meta data completely loaded, we can generate the
-         * bindings code.
-         */
-        try {
-            typeMapping = new PrintWriter(new BufferedWriter(new FileWriter(
-                    "generated/bindings/typeMapping.properties")));
-        } catch (IOException ie) {
-            System.err.println("Can't open typeMapping file for writing!\n" + ie);
-            return;
-        }
-
-        for (iter = all.iterator(); iter.hasNext();) {
-            String packageAndClassName;
-            File transTarget, jniTarget;
-            PrintWriter trans, jni;
-
-            data = iter.next();
-
-            packageAndClassName = data.getType().fullyQualifiedTranslationClassName().replace('.', '/');
-            transTarget = new File(outputDir, packageAndClassName + ".java");
-            jniTarget = new File(outputDir, packageAndClassName + ".c");
-
-            if (!transTarget.getParentFile().isDirectory()) {
-                transTarget.getParentFile().mkdirs();
-            }
-
-            try {
-                trans = new PrintWriter(new BufferedWriter(new FileWriter(transTarget)));
-                jni = new PrintWriter(new BufferedWriter(new FileWriter(jniTarget)));
-            } catch (IOException ioe) {
-                System.err.println("How come we can't open a file for writing?\n" + ioe);
-                return;
-            }
-
-            try {
-                data.generateTranslationLayer(trans);
-            } catch (UnsupportedOperationException uoe) {
-                // act to remove that file? Or close it off, or...
-            }
-
-            try {
-                data.generateJniLayer(jni);
-            } catch (UnsupportedOperationException uoe) {
-                // act to remove the file in the event there was nothing
-                // printed?
-            }
-
-            typeMapping.println(data.getType().bareTranslationClassName() + "="
-                    + data.getType().fullyQualifiedJavaClassName());
-
-            trans.close();
-            jni.close();
-        }
-        typeMapping.close();
+        runGeneratorOutputIntrospectionToFiles(args, new File("generated/bindings/"));
     }
 
     /**
@@ -246,19 +120,23 @@ public class BindingsGenerator
      */
     private static void runGeneratorOutputIntrospectionToFiles(final String[] introspectionFiles,
             final File outputDir) {
-        final File[] files;
-        final Map<String, DefsFile> all;
+        final File[] files, overriders;
+        final Map<String, DefsFile> introspected;
+        final List<DefsFile> all;
         IntrospectionParser parser;
+        DefsParser secondParser;
         Map<String, DefsFile> parsed;
-        DefsFile data;
+        Block[] blocks;
         PrintWriter typeMapping;
+        DefsLineNumberReader in;
 
         files = new File[introspectionFiles.length];
         for (int i = 0; i < files.length; i++) {
             files[i] = new File(introspectionFiles[i]);
         }
 
-        all = new HashMap<String, DefsFile>();
+        all = new ArrayList<DefsFile>();
+        introspected = new HashMap<String, DefsFile>();
 
         /*
          * Load the all the .gir files into DefsFile objects, one per type.
@@ -271,7 +149,7 @@ public class BindingsGenerator
             try {
                 parsed = parser.parseData();
 
-                all.putAll(parsed);
+                introspected.putAll(parsed);
             } catch (ValidityException e) {
                 System.out.println("Couldn't get sufficient information from " + file + ":");
                 System.out.println(e.getMessage());
@@ -291,9 +169,97 @@ public class BindingsGenerator
         }
 
         /*
+         * Parse .defs files which are used to override Introspection data.
+         */
+
+        overriders = new File("src/overriders").listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                if (name.endsWith(".defs")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        /*
+         * Load the all the .defs files into DefsFile objects, one per type.
+         * Along the way, this registers the type information.
+         */
+
+        for (int i = 0; i < overriders.length; i++) {
+            try {
+                in = new DefsLineNumberReader(new FileReader(overriders[i]), overriders[i].getName());
+
+                secondParser = new DefsParser(in);
+                blocks = secondParser.parseData();
+
+                /*
+                 * The definition is made to add more things or change what we
+                 * know from the introspection data.
+                 */
+
+                if (!(blocks[0] instanceof FunctionBlock) && !(blocks[0] instanceof MethodBlock)
+                        && !(blocks[0] instanceof VirtualBlock)) {
+                    all.add(new DefsFile(blocks));
+                } else {
+                    for (Block block : blocks) {
+                        final DefsFile toChange;
+                        String object;
+
+                        /*
+                         * We are only interested in the isConstructorOf and
+                         * ofObject fields to find the object that we will
+                         * need to change.
+                         */
+
+                        object = block.getOfObject();
+                        if (object == null) {
+                            object = block.getIsConstructorOf();
+                        }
+
+                        /*
+                         * Look for the object and add the new Block.
+                         */
+
+                        if (object != null) {
+                            toChange = introspected.get(object);
+
+                            if (toChange != null) {
+                                toChange.addBlock(block);
+                            }
+                        }
+                    }
+                }
+
+                in.close();
+            } catch (IOException ioe) {
+                System.out.println("I/O problem when trying to parse " + overriders[i]);
+                System.out.println(ioe.getMessage());
+                System.out.println("[continuing next file]\n");
+                continue;
+            } catch (ImproperDefsFileException idfe) {
+                System.out.println("Couldn't get sufficient information from " + overriders[i] + ":");
+                System.out.println(idfe.getMessage());
+                System.out.println("[continuing next file]\n");
+                continue;
+            } finally {
+                System.out.flush();
+            }
+        }
+
+        /*
+         * Add all data from introspection to the list of data to process by
+         * the code generator.
+         */
+
+        all.addAll(introspected.values());
+
+        /*
          * Now, with the meta data completely loaded, we can generate the
          * bindings code.
          */
+
         try {
             typeMapping = new PrintWriter(new BufferedWriter(new FileWriter(
                     "generated/bindings/typeMapping.properties")));
@@ -302,12 +268,10 @@ public class BindingsGenerator
             return;
         }
 
-        for (Map.Entry<String, DefsFile> element : all.entrySet()) {
+        for (DefsFile data : all) {
             String packageAndClassName;
             File transTarget, jniTarget;
             PrintWriter trans, jni;
-
-            data = element.getValue();
 
             packageAndClassName = data.getType().fullyQualifiedTranslationClassName().replace('.', '/');
             transTarget = new File(outputDir, packageAndClassName + ".java");

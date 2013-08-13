@@ -262,6 +262,13 @@ public abstract class Thing
         register(new BlacklistedThing("GtkFileSystemGetFolderCallback"));
 
         /*
+         * Why the hell they do not specify the type in the .gir files and
+         * just the name?
+         */
+        register(new StringThing("utf8"));
+        register(new StringThing("filename"));
+
+        /*
          * Dealing with out-parameters is now handled by lookup() and
          * createOutVariant() in this class, so the manual declarations we had
          * been accumulating are no longer included. As we were pushing

@@ -19,6 +19,7 @@
 package com.operationaldynamics.driver;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +51,7 @@ public final class DefsFile
     /**
      * The source array of parsed .defs Blocks
      */
-    private final Block[] blocks;
+    private Block[] blocks;
 
     /**
      * The types being used in this file that are safe to import
@@ -97,6 +98,47 @@ public final class DefsFile
 
     public final Thing getType() {
         return forObject;
+    }
+
+    /**
+     * Add a new Block to the array of Blocks defined this DefsFile.
+     * 
+     * <p>
+     * This method is not meant to be called a lot. It should only be used
+     * when parsing .defs files to override Introspection data.
+     * 
+     * @param block
+     *            the new Block to add.
+     */
+    public final void addBlock(Block block) {
+        final Block[] extended;
+
+        /*
+         * The Block that we are trying to add override another existing Block
+         * so we need to replace the old one by the new one.
+         */
+
+        for (int i = 0; i < blocks.length; i++) {
+            final String cNameCurrent, cNameNew;
+
+            cNameCurrent = blocks[i].getCName();
+            cNameNew = block.getCName();
+
+            if ((cNameCurrent != null) && (cNameNew != null) && (cNameCurrent.equals(cNameNew))) {
+                blocks[i] = block;
+                return;
+            }
+        }
+
+        /*
+         * FIXME: this is not the most beautiful thing to do but it avoid to
+         * change more code.
+         */
+
+        extended = Arrays.copyOf(blocks, blocks.length + 1);
+        extended[blocks.length] = block;
+
+        blocks = extended;
     }
 
     /**
