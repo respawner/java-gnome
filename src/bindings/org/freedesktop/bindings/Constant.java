@@ -56,8 +56,10 @@ public abstract class Constant
     /*
      * This is package visible so that Plumbing can see it, and final so that
      * only the constructor here can set it.
+     * 
+     * FIXME: is it correct to let it exposed publicly?
      */
-    final int ordinal;
+    public final int ordinal;
 
     /**
      * A text version of the name of the constant representing this enum. This

@@ -834,7 +834,7 @@ public abstract class Widget extends org.gnome.glib.Object
      * VISIBILITY_NOTIFY is automatically set to receive this event.
      */
     public void connect(Widget.VisibilityNotifyEvent handler) {
-        GtkWidget.addEvents(this, EventMask.VISIBILITY_NOTIFY);
+        GtkWidget.addEvents(this, EventMask.VISIBILITY_NOTIFY.ordinal);
         GtkWidget.connect(this, handler, false);
     }
 
@@ -1513,7 +1513,7 @@ public abstract class Widget extends org.gnome.glib.Object
      * @since 4.0.15
      */
     public void addEvents(EventMask events) {
-        GtkWidget.addEvents(this, events);
+        GtkWidget.addEvents(this, events.ordinal);
     }
 
     /**
@@ -1525,7 +1525,7 @@ public abstract class Widget extends org.gnome.glib.Object
      * @since 4.0.15
      */
     public void setEvents(EventMask events) {
-        GtkWidget.setEvents(this, events);
+        GtkWidget.setEvents(this, events.ordinal);
     }
 
     /**

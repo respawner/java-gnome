@@ -65,14 +65,6 @@ public class ValidatePrinting extends GraphicalTestCase
         paper = new CustomPaperSize("Blah", 400, 300, Unit.INCH);
         assertEquals("Blah", paper.getDisplayName());
 
-        try {
-            paper = new CustomPaperSize("Failure", 400, 300, Unit.PIXEL);
-            fail("Cannot accept pixels");
-            return;
-        } catch (IllegalArgumentException iae) {
-            // good
-        }
-
         paper = new CustomPaperSize("Custom", 400, 300, Unit.POINTS);
         assertEquals(400.0, paper.getWidth(Unit.POINTS), 0.001);
         assertEquals(300.0, paper.getHeight(Unit.POINTS), 0.001);

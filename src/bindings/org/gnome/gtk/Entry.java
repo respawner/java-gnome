@@ -34,7 +34,7 @@ package org.gnome.gtk;
 
 import org.freedesktop.icons.Helper;
 import org.freedesktop.icons.Icon;
-import org.gnome.gdk.Event;
+import org.gnome.gdk.EventButton;
 import org.gnome.gdk.Pixbuf;
 
 /**
@@ -657,7 +657,7 @@ public class Entry extends Widget implements Editable, CellEditable
      */
     public interface IconPress extends GtkEntry.IconPressSignal
     {
-        public void onIconPress(Entry source, EntryIconPosition position, Event event);
+        public void onIconPress(Entry source, EntryIconPosition position, EventButton event);
     }
 
     /**
@@ -677,7 +677,7 @@ public class Entry extends Widget implements Editable, CellEditable
      */
     public interface IconRelease extends GtkEntry.IconReleaseSignal
     {
-        public void onIconRelease(Entry source, EntryIconPosition position, Event event);
+        public void onIconRelease(Entry source, EntryIconPosition position, EventButton event);
     }
 
     /**

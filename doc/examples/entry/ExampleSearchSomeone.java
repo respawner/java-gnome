@@ -19,6 +19,7 @@
 package entry;
 
 import org.gnome.gdk.Event;
+import org.gnome.gdk.EventButton;
 import org.gnome.gtk.CellRendererText;
 import org.gnome.gtk.DataColumn;
 import org.gnome.gtk.DataColumnString;
@@ -187,7 +188,7 @@ public class ExampleSearchSomeone
          */
 
         entry.connect(new Entry.IconPress() {
-            public void onIconPress(Entry source, EntryIconPosition position, Event event) {
+            public void onIconPress(Entry source, EntryIconPosition position, EventButton event) {
                 source.setText("");
             }
         });

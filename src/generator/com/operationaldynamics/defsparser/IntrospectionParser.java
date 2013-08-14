@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
 import com.operationaldynamics.driver.DefsFile;
+import com.operationaldynamics.driver.IgnoreIntrospectionException;
 import com.operationaldynamics.driver.ImproperDefsFileException;
 
 /**
@@ -71,6 +73,8 @@ public class IntrospectionParser
     private static final Properties nameOverrides;
 
     private static final List<String> blacklist;
+
+    private static final TypesList typesList;
 
     private File introspectionFile;
 
@@ -104,6 +108,7 @@ public class IntrospectionParser
         }
 
         blacklist = new ArrayList<String>();
+        typesList = new TypesList("src/generator/types.list");
     }
 
     /**
@@ -118,32 +123,6 @@ public class IntrospectionParser
     }
 
     /**
-     * Load the whitelist of objects/enumerations/flags/boxeds/interfaces that
-     * we want to use.
-     */
-    private static final List<String> loadWhitelist() {
-        final List<String> whitelist;
-        final BufferedReader reader;
-        String line;
-
-        whitelist = new ArrayList<String>();
-
-        try {
-            reader = new BufferedReader(new FileReader("src/generator/whitelist.txt"));
-
-            while ((line = reader.readLine()) != null) {
-                whitelist.add(line);
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            System.err.println("How come we can't open a file for reading?\n" + e);
-        }
-
-        return whitelist;
-    }
-
-    /**
      * Browse all the Introspection data to find gtypes to blacklist (because
      * we don't handle them yet).
      * 
@@ -151,10 +130,6 @@ public class IntrospectionParser
      *            the Introspection namespaces to browse.
      */
     private static final void loadBlacklist(Elements namespaces) {
-        final List<String> whitelist;
-
-        whitelist = loadWhitelist();
-
         for (int namespaceIndex = 0; namespaceIndex < namespaces.size(); namespaceIndex++) {
             final Element namespace;
             final Elements objects, interfaces, enumerations, flags, boxeds, unions;
@@ -175,7 +150,7 @@ public class IntrospectionParser
                 cName = (object.getAttributeValue("type", C_NAMESPACE) != null) ? object.getAttributeValue(
                         "type", C_NAMESPACE) : object.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -189,7 +164,7 @@ public class IntrospectionParser
                 cName = (interfaze.getAttributeValue("type", C_NAMESPACE) != null) ? interfaze.getAttributeValue(
                         "type", C_NAMESPACE) : interfaze.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -205,7 +180,7 @@ public class IntrospectionParser
                         "type", C_NAMESPACE)
                         : enumeration.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -219,7 +194,7 @@ public class IntrospectionParser
                 cName = (flag.getAttributeValue("type", C_NAMESPACE) != null) ? flag.getAttributeValue(
                         "type", C_NAMESPACE) : flag.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -233,7 +208,7 @@ public class IntrospectionParser
                 cName = (boxed.getAttributeValue("type", C_NAMESPACE) != null) ? boxed.getAttributeValue(
                         "type", C_NAMESPACE) : boxed.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -247,7 +222,7 @@ public class IntrospectionParser
                 cName = (union.getAttributeValue("type", C_NAMESPACE) != null) ? union.getAttributeValue(
                         "type", C_NAMESPACE) : union.getAttributeValue("type-name", GLIB_NAMESPACE);
 
-                if (!whitelist.contains(cName)) {
+                if (!typesList.isTypeWhitelisted(cName)) {
                     blacklist.add(cName);
                     continue;
                 }
@@ -356,11 +331,11 @@ public class IntrospectionParser
      *            the namespace currently inspected.
      * @return a usable type.
      */
-    private static final String guessUsableType(String type, String module) {
+    private static final String guessUsableType(String type, String module, boolean fromName) {
         String usable;
 
         if (type.startsWith("GList-") || type.startsWith("GSList-")) {
-            return type.split("-")[0] + "-" + guessUsableType(type.split("-")[1], module) + "*";
+            return type.split("-")[0] + "-" + guessUsableType(type.split("-")[1], module, false) + "*";
         }
 
         if ((type.length() > 0) && !Character.isUpperCase(type.charAt(0))) {
@@ -397,24 +372,14 @@ public class IntrospectionParser
 
         for (String m : modules) {
             if (type.startsWith(m)) {
+                if (fromName) {
+                    type += "*";
+                }
                 return type;
             }
         }
 
         usable = new String(type);
-
-        if (usable.contains(".")) {
-            /*
-             * The type is in another module (but there are exceptions to
-             * handle).
-             */
-
-            if (usable.startsWith("Gio.")) {
-                return type.replace("Gio.", "G");
-            } else {
-                return type.replace(".", "");
-            }
-        }
 
         if (!usable.contains(".")) {
             /*
@@ -445,6 +410,7 @@ public class IntrospectionParser
     private static final String[] getReturnType(Element function, String module) {
         Element type;
         String typeString;
+        boolean fromName;
 
         /*
          * Get the type of the return value.
@@ -452,6 +418,7 @@ public class IntrospectionParser
 
         type = function.getFirstChildElement("return-value", CORE_NAMESPACE).getFirstChildElement(
                 "type", CORE_NAMESPACE);
+        fromName = false;
 
         if (type == null) {
             /*
@@ -468,11 +435,13 @@ public class IntrospectionParser
         typeString = type.getAttributeValue("type", C_NAMESPACE);
 
         /*
-         * Handle the case where the function does not return anything.
+         * Handle the case where the function does not return anything or when
+         * the C type is not given.
          */
 
         if (typeString == null) {
             typeString = type.getAttributeValue("name");
+            fromName = true;
         } else if (typeString.equals("void")) {
             typeString = "none";
         }
@@ -487,7 +456,7 @@ public class IntrospectionParser
             typeString.replace("*", "");
         }
 
-        typeString = guessUsableType(typeString, module);
+        typeString = guessUsableType(typeString, module, fromName);
 
         return new String[] {
             "return-type",
@@ -559,9 +528,11 @@ public class IntrospectionParser
             final Element parameter;
             Element type;
             String name, typeString;
+            boolean fromName;
 
             parameter = list.get(parameterIndex);
             name = parameter.getAttributeValue("name");
+            fromName = false;
 
             if (name != null) {
                 type = parameter.getFirstChildElement("type", CORE_NAMESPACE);
@@ -584,6 +555,7 @@ public class IntrospectionParser
 
                 if (type.getAttributeValue("type", C_NAMESPACE) == null) {
                     typeString = type.getAttributeValue("name").replace(".", "");
+                    fromName = true;
                 } else {
                     typeString = type.getAttributeValue("type", C_NAMESPACE).replace(" ", "-");
                 }
@@ -598,7 +570,7 @@ public class IntrospectionParser
                     typeString.replace("*", "");
                 }
 
-                typeString = guessUsableType(typeString, module);
+                typeString = guessUsableType(typeString, module, fromName);
 
                 /*
                  * Strange case where gconstpointer is given as parameter
@@ -606,8 +578,8 @@ public class IntrospectionParser
                  */
 
                 if (typeString.equals("gconstpointer")) {
-                    typeString = guessUsableType(type.getAttributeValue("name").replace(".", ""), module)
-                            + "*";
+                    typeString = guessUsableType(type.getAttributeValue("name").replace(".", ""),
+                            module, fromName) + "*";
                 }
 
                 /*
@@ -651,13 +623,24 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final FunctionBlock parseConstructor(Element object, Element constructor,
-            String namespace) {
+            String namespace) throws IgnoreIntrospectionException {
+        final String isConstructorOf, cName;
         final List<String[]> constructorCharacteristics;
         final String[] callerOwnsReturn;
         final List<String[]> parameters;
         final boolean throwsGError;
 
+        isConstructorOf = object.getAttributeValue("type", C_NAMESPACE);
+        cName = constructor.getAttributeValue("identifier", C_NAMESPACE);
         constructorCharacteristics = new ArrayList<String[]>();
+
+        /*
+         * This constructor is to ignore.
+         */
+
+        if (typesList.isThingBlacklisted(isConstructorOf, cName)) {
+            throw new IgnoreIntrospectionException("Ignoring constructor " + cName);
+        }
 
         /*
          * Get the class that this constructor belongs to and the C name of
@@ -666,11 +649,11 @@ public class IntrospectionParser
 
         constructorCharacteristics.add(new String[] {
             "is-constructor-of",
-            object.getAttributeValue("type", C_NAMESPACE)
+            isConstructorOf
         });
         constructorCharacteristics.add(new String[] {
             "c-name",
-            constructor.getAttributeValue("identifier", C_NAMESPACE)
+            cName
         });
 
         /*
@@ -727,13 +710,25 @@ public class IntrospectionParser
      *            the namespace that we are inspecting.
      * @return a block usable by the code generator.
      */
-    private static final FunctionBlock parseFunction(Element object, Element function, String namespace) {
+    private static final FunctionBlock parseFunction(Element object, Element function, String namespace)
+            throws IgnoreIntrospectionException {
+        final String ofObject, cName;
         final List<String[]> functionCharacteristics;
         final String[] callerOwnsReturn;
         final List<String[]> parameters;
         final boolean throwsGError;
 
+        ofObject = object.getAttributeValue("type", C_NAMESPACE);
+        cName = function.getAttributeValue("identifier", C_NAMESPACE);
         functionCharacteristics = new ArrayList<String[]>();
+
+        /*
+         * This function is to ignore.
+         */
+
+        if (typesList.isThingBlacklisted(ofObject, cName)) {
+            throw new IgnoreIntrospectionException("Ignoring function " + cName);
+        }
 
         /*
          * Get the class that this method belongs to and the C name of this
@@ -742,11 +737,11 @@ public class IntrospectionParser
 
         functionCharacteristics.add(new String[] {
             "of-object",
-            object.getAttributeValue("type", C_NAMESPACE)
+            ofObject
         });
         functionCharacteristics.add(new String[] {
             "c-name",
-            function.getAttributeValue("identifier", C_NAMESPACE)
+            cName
         });
 
         /*
@@ -804,7 +799,8 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final MethodBlock parseMethod(Element object, Element method,
-            List<String[]> objectCharacteristics, String namespace) throws IllegalStateException {
+            List<String[]> objectCharacteristics, String namespace) throws IgnoreIntrospectionException {
+        final String cName;
         final List<String[]> methodCharacteristics;
         final String[] callerOwnsReturn;
         final List<String[]> parameters;
@@ -812,7 +808,7 @@ public class IntrospectionParser
         String ofObject;
 
         if (method.getAttributeValue("name").startsWith("_")) {
-            throw new IllegalStateException(
+            throw new IgnoreIntrospectionException(
                     "The method name starts with an _ which is an illegal character.");
         }
 
@@ -824,9 +820,18 @@ public class IntrospectionParser
          */
 
         ofObject = object.getAttributeValue("type", C_NAMESPACE);
+        cName = method.getAttributeValue("identifier", C_NAMESPACE);
 
         if (ofObject == null) {
             ofObject = object.getAttributeValue("type-name", GLIB_NAMESPACE);
+        }
+
+        /*
+         * This method is to ignore.
+         */
+
+        if (typesList.isThingBlacklisted(ofObject, cName)) {
+            throw new IgnoreIntrospectionException("Ignoring method " + cName);
         }
 
         methodCharacteristics.add(new String[] {
@@ -835,7 +840,7 @@ public class IntrospectionParser
         });
         methodCharacteristics.add(new String[] {
             "c-name",
-            method.getAttributeValue("identifier", C_NAMESPACE)
+            cName
         });
 
         /*
@@ -912,14 +917,23 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final VirtualBlock parseVirtual(Element object, Element virtual, String namespace,
-            List<String> signalNames) {
+            List<String> signalNames) throws IgnoreIntrospectionException {
+        final String ofObject, virtualName;
         final List<String[]> virtualCharacteristics;
-        final String virtualName;
         final List<String[]> parameters;
         final boolean throwsGError;
 
+        ofObject = object.getAttributeValue("type", C_NAMESPACE);
         virtualName = virtual.getAttributeValue("name").replace("-", "_");
         virtualCharacteristics = new ArrayList<String[]>();
+
+        /*
+         * This virtual is to ignore.
+         */
+
+        if (typesList.isThingBlacklisted(ofObject, virtualName)) {
+            throw new IgnoreIntrospectionException("Ignoring virtual " + virtualName);
+        }
 
         /*
          * We need a list of signals names to avoid duplicates between signals
@@ -934,7 +948,7 @@ public class IntrospectionParser
 
         virtualCharacteristics.add(new String[] {
             "of-object",
-            object.getAttributeValue("type", C_NAMESPACE)
+            ofObject
         });
 
         /*
@@ -980,21 +994,30 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final VirtualBlock parseSignal(Element object, Element signal, String namespace,
-            List<String> signalNames) throws IllegalStateException {
+            List<String> signalNames) throws IgnoreIntrospectionException {
+        final String ofObject, signalName;
         final List<String[]> signalCharacteristics;
-        final String signalName;
         final List<String[]> parameters;
         final boolean throwsGError;
 
+        ofObject = object.getAttributeValue("type", C_NAMESPACE);
         signalName = signal.getAttributeValue("name").replace("-", "_");
         signalCharacteristics = new ArrayList<String[]>();
+
+        /*
+         * This virtual is to ignore.
+         */
+
+        if (typesList.isThingBlacklisted(ofObject, signalName)) {
+            throw new IgnoreIntrospectionException("Ignoring virtual " + signalName);
+        }
 
         /*
          * Signal already handled with a virtual method.
          */
 
         if (signalNames.contains(signalName)) {
-            throw new IllegalStateException("The signal has already been handled.");
+            throw new IgnoreIntrospectionException("The signal has already been handled.");
         }
 
         /*
@@ -1003,7 +1026,7 @@ public class IntrospectionParser
 
         signalCharacteristics.add(new String[] {
             "of-object",
-            object.getAttributeValue("type", C_NAMESPACE)
+            ofObject
         });
 
         /*
@@ -1015,7 +1038,6 @@ public class IntrospectionParser
         /*
          * Handle parameters.
          */
-
         parameters = getParameters(signal, namespace);
         throwsGError = signal.getAttribute("throws") != null;
 
@@ -1049,13 +1071,13 @@ public class IntrospectionParser
     public Map<String, DefsFile> parseData() throws ValidityException, ParsingException, IOException {
         final Map<String, DefsFile> defs;
         final Builder builder;
-        Document document;
-        Element repository;
-        Elements namespaces;
+        final Document document;
+        final Element repository;
+        final Elements includes, namespaces;
+        final String[] includesHeaders;
 
         defs = new HashMap<String, DefsFile>();
         builder = new Builder();
-        document = null;
 
         /*
          * Start the parsing of the XML data.
@@ -1064,11 +1086,22 @@ public class IntrospectionParser
         document = builder.build(this.introspectionFile);
 
         /*
-         * Get the first elements that are available (namespaces).
+         * Get the first elements that are available (includes and
+         * namespaces).
          */
 
         repository = document.getRootElement();
+        includes = repository.getChildElements("include", C_NAMESPACE);
         namespaces = repository.getChildElements("namespace", CORE_NAMESPACE);
+
+        /*
+         * Process headers to include in the code.
+         */
+
+        includesHeaders = new String[includes.size()];
+        for (int i = 0; i < includesHeaders.length; i++) {
+            includesHeaders[i] = includes.get(i).getAttributeValue("name");
+        }
 
         /*
          * For each namespace go deep.
@@ -1153,10 +1186,21 @@ public class IntrospectionParser
                 });
 
                 /*
-                 * System.out.println(object.getAttributeValue("type",
-                 * C_NAMESPACE) + " <-- " + guessParent(object, namespaceName)
-                 * + " | " + object.getAttributeValue("parent"));
+                 * Add headers to include if needed.
                  */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+                // FIXME
+                if (cName.equals("NotifyNotification"))
+                    characteristics.add(new String[] {
+                        "import-header",
+                        "libnotify/notification.h"
+                    });
 
                 /*
                  * Build the object blocks based on the info we have.
@@ -1170,8 +1214,12 @@ public class IntrospectionParser
                  */
 
                 for (int constructorIndex = 0; constructorIndex < constructors.size(); constructorIndex++) {
-                    blocks.add(parseConstructor(object, constructors.get(constructorIndex),
-                            namespaceName));
+                    try {
+                        blocks.add(parseConstructor(object, constructors.get(constructorIndex),
+                                namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1179,8 +1227,12 @@ public class IntrospectionParser
                  */
 
                 for (int methodIndex = 0; methodIndex < methods.size(); methodIndex++) {
-                    blocks.add(parseMethod(object, methods.get(methodIndex), characteristics,
-                            namespaceName));
+                    try {
+                        blocks.add(parseMethod(object, methods.get(methodIndex), characteristics,
+                                namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1188,7 +1240,11 @@ public class IntrospectionParser
                  */
 
                 for (int functionIndex = 0; functionIndex < functions.size(); functionIndex++) {
-                    blocks.add(parseFunction(object, functions.get(functionIndex), namespaceName));
+                    try {
+                        blocks.add(parseFunction(object, functions.get(functionIndex), namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1196,8 +1252,12 @@ public class IntrospectionParser
                  */
 
                 for (int virtualIndex = 0; virtualIndex < virtuals.size(); virtualIndex++) {
-                    blocks.add(parseVirtual(object, virtuals.get(virtualIndex), namespaceName,
-                            signalNames));
+                    try {
+                        blocks.add(parseVirtual(object, virtuals.get(virtualIndex), namespaceName,
+                                signalNames));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1208,7 +1268,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseSignal(object, signals.get(signalIndex), namespaceName,
                                 signalNames));
-                    } catch (IllegalStateException e) {
+                    } catch (IgnoreIntrospectionException e) {
                         continue;
                     }
                 }
@@ -1273,6 +1333,17 @@ public class IntrospectionParser
                 });
 
                 /*
+                 * Add headers to include if needed.
+                 */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+
+                /*
                  * Build the object blocks based on the info we have.
                  */
 
@@ -1284,8 +1355,12 @@ public class IntrospectionParser
                  */
 
                 for (int methodIndex = 0; methodIndex < methods.size(); methodIndex++) {
-                    blocks.add(parseMethod(interfaze, methods.get(methodIndex), characteristics,
-                            namespaceName));
+                    try {
+                        blocks.add(parseMethod(interfaze, methods.get(methodIndex), characteristics,
+                                namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1293,7 +1368,11 @@ public class IntrospectionParser
                  */
 
                 for (int functionIndex = 0; functionIndex < functions.size(); functionIndex++) {
-                    blocks.add(parseFunction(interfaze, functions.get(functionIndex), namespaceName));
+                    try {
+                        blocks.add(parseFunction(interfaze, functions.get(functionIndex), namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1301,8 +1380,12 @@ public class IntrospectionParser
                  */
 
                 for (int virtualIndex = 0; virtualIndex < virtuals.size(); virtualIndex++) {
-                    blocks.add(parseVirtual(interfaze, virtuals.get(virtualIndex), namespaceName,
-                            signalNames));
+                    try {
+                        blocks.add(parseVirtual(interfaze, virtuals.get(virtualIndex), namespaceName,
+                                signalNames));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1313,7 +1396,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseSignal(interfaze, signals.get(signalIndex), namespaceName,
                                 signalNames));
-                    } catch (IllegalStateException e) {
+                    } catch (IgnoreIntrospectionException e) {
                         continue;
                     }
                 }
@@ -1369,6 +1452,17 @@ public class IntrospectionParser
                     cName
                 });
 
+                /*
+                 * Add headers to include if needed.
+                 */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
                     String nick, identifier;
@@ -1382,12 +1476,10 @@ public class IntrospectionParser
                     }
 
                     /*
-                     * FIXME: Exception for GdkEventType cases (but there are
-                     * valid aliases which are available.
+                     * Value to ignore.
                      */
 
-                    if (identifier.startsWith(namespaceName.toUpperCase() + "_2")
-                            || identifier.startsWith(namespaceName.toUpperCase() + "_3")) {
+                    if (typesList.isThingBlacklisted(cName, identifier)) {
                         continue;
                     }
 
@@ -1451,24 +1543,40 @@ public class IntrospectionParser
                     cName
                 });
 
+                /*
+                 * Add headers to include if needed.
+                 */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
-                    String valueName;
+                    String valueName, identifier;
 
                     value = valuesList.get(valueIndex);
                     valueName = value.getAttributeValue("nick", GLIB_NAMESPACE);
+                    identifier = value.getAttributeValue("identifier", C_NAMESPACE);
 
                     if (valueName == null) {
                         valueName = value.getAttributeValue("name");
                     }
 
-                    if (valueName == null) {
+                    /*
+                     * Value to ignore.
+                     */
+
+                    if ((valueName == null) || typesList.isThingBlacklisted(cName, identifier)) {
                         continue;
                     }
 
                     values.add(new String[] {
                         valueName,
-                        value.getAttributeValue("identifier", C_NAMESPACE)
+                        identifier
                     });
                 }
 
@@ -1538,6 +1646,17 @@ public class IntrospectionParser
                     cName
                 });
 
+                /*
+                 * Add headers to include if needed.
+                 */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+
                 boxedBlock = new BoxedBlock(getActualJavaName(cName, boxedName), characteristics);
                 blocks.add(boxedBlock);
 
@@ -1587,7 +1706,12 @@ public class IntrospectionParser
                  */
 
                 for (int constructorIndex = 0; constructorIndex < constructors.size(); constructorIndex++) {
-                    blocks.add(parseConstructor(boxed, constructors.get(constructorIndex), namespaceName));
+                    try {
+                        blocks.add(parseConstructor(boxed, constructors.get(constructorIndex),
+                                namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1598,7 +1722,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(boxed, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IllegalStateException e) {
+                    } catch (IgnoreIntrospectionException e) {
                         continue;
                     }
                 }
@@ -1663,6 +1787,17 @@ public class IntrospectionParser
                     cName
                 });
 
+                /*
+                 * Add headers to include if needed.
+                 */
+
+                for (String header : includesHeaders) {
+                    characteristics.add(new String[] {
+                        "import-header",
+                        header
+                    });
+                }
+
                 unionBlock = new BoxedBlock(getActualJavaName(cName, unionName), characteristics);
                 blocks.add(unionBlock);
 
@@ -1712,7 +1847,12 @@ public class IntrospectionParser
                  */
 
                 for (int constructorIndex = 0; constructorIndex < constructors.size(); constructorIndex++) {
-                    blocks.add(parseConstructor(union, constructors.get(constructorIndex), namespaceName));
+                    try {
+                        blocks.add(parseConstructor(union, constructors.get(constructorIndex),
+                                namespaceName));
+                    } catch (IgnoreIntrospectionException e) {
+                        continue;
+                    }
                 }
 
                 /*
@@ -1723,7 +1863,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(union, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IllegalStateException e) {
+                    } catch (IgnoreIntrospectionException e) {
                         continue;
                     }
                 }
@@ -1741,5 +1881,89 @@ public class IntrospectionParser
         }
 
         return defs;
+    }
+
+    private static final class TypesList
+    {
+        private Map<String, String[]> list;
+
+        private TypesList(String filename) {
+            list = new HashMap<String, String[]>();
+
+            load(filename);
+        }
+
+        private final void load(String filename) {
+            final BufferedReader reader;
+            String line, block;
+            boolean inBlock;
+
+            inBlock = false;
+            block = "";
+
+            try {
+                reader = new BufferedReader(new FileReader(filename));
+
+                while ((line = reader.readLine()) != null) {
+                    /*
+                     * This is a comment.
+                     */
+
+                    if (line.startsWith("#") || line.startsWith(";;") || line.startsWith("//")) {
+                        continue;
+                    }
+
+                    if (inBlock) {
+                        block += new String(line);
+                    } else {
+                        block = new String(line);
+                        inBlock = true;
+                    }
+
+                    /*
+                     * We have reached the end of the block.
+                     */
+
+                    if (block.contains("}")) {
+                        final String type;
+                        final String[] split, blacklisted;
+
+                        /*
+                         * Separate C type name from list of ignored things.
+                         */
+
+                        inBlock = false;
+                        split = block.split("\\{");
+                        type = split[0].trim();
+                        blacklisted = split[1].split("\\}")[0].split(",");
+
+                        /*
+                         * Remove extra spaces.
+                         */
+
+                        for (int i = 0; i < blacklisted.length; i++) {
+                            blacklisted[i] = blacklisted[i].trim();
+                        }
+
+                        list.put(
+                                type,
+                                ((blacklisted.length == 1) && blacklisted[0].isEmpty()) ? new String[] {}
+                                        : blacklisted);
+                    }
+                }
+
+                reader.close();
+            } catch (IOException e) {
+                System.err.println("How come we can't open a file for reading?\n" + e);
+            }
+        }
+
+        public final boolean isTypeWhitelisted(String type) {
+            return list.keySet().contains(type);
+        }
+
+        public final boolean isThingBlacklisted(String type, String thing) {
+            return Arrays.asList(list.get(type)).contains(thing);
+        }
     }
 }
