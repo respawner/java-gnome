@@ -74,8 +74,6 @@ public class IntrospectionParser
 
     private static final TypesList typesList;
 
-    private static final List<String> blacklist;
-
     private File introspectionFile;
 
     static {
@@ -108,11 +106,10 @@ public class IntrospectionParser
         }
 
         typesList = new TypesList("src/generator/types.list");
-        blacklist = new ArrayList<String>();
     }
 
     /**
-     * Initialize the parser for a given file containg Introspection data.
+     * Initialize the parser for a given file containing Introspection data.
      * 
      * @param introspectionFile
      *            a file object that is a reference to a .gir file to be
@@ -120,125 +117,6 @@ public class IntrospectionParser
      */
     public IntrospectionParser(final File introspectionFile) {
         this.introspectionFile = introspectionFile;
-    }
-
-    /**
-     * Browse all the Introspection data to find gtypes to blacklist (because
-     * we don't handle them yet).
-     * 
-     * @param namespaces
-     *            the Introspection namespaces to browse.
-     */
-    private static final void loadBlacklist(Elements namespaces) {
-        for (int namespaceIndex = 0; namespaceIndex < namespaces.size(); namespaceIndex++) {
-            final Element namespace;
-            final Elements objects, interfaces, enumerations, flags, boxeds, unions;
-
-            namespace = namespaces.get(namespaceIndex);
-            objects = namespace.getChildElements("class", CORE_NAMESPACE);
-            interfaces = namespace.getChildElements("interface", CORE_NAMESPACE);
-            enumerations = namespace.getChildElements("enumeration", CORE_NAMESPACE);
-            flags = namespace.getChildElements("bitfield", CORE_NAMESPACE);
-            boxeds = namespace.getChildElements("record", CORE_NAMESPACE);
-            unions = namespace.getChildElements("union", CORE_NAMESPACE);
-
-            for (int objectIndex = 0; objectIndex < objects.size(); objectIndex++) {
-                final Element object;
-                final String cName;
-
-                object = objects.get(objectIndex);
-                cName = (object.getAttributeValue("type", C_NAMESPACE) != null) ? object.getAttributeValue(
-                        "type", C_NAMESPACE) : object.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-            }
-
-            for (int interfaceIndex = 0; interfaceIndex < interfaces.size(); interfaceIndex++) {
-                final Element interfaze;
-                final String cName;
-
-                interfaze = interfaces.get(interfaceIndex);
-                cName = (interfaze.getAttributeValue("type", C_NAMESPACE) != null) ? interfaze.getAttributeValue(
-                        "type", C_NAMESPACE) : interfaze.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-
-            }
-
-            for (int enumerationIndex = 0; enumerationIndex < enumerations.size(); enumerationIndex++) {
-                final Element enumeration;
-                final String cName;
-
-                enumeration = enumerations.get(enumerationIndex);
-                cName = (enumeration.getAttributeValue("type", C_NAMESPACE) != null) ? enumeration.getAttributeValue(
-                        "type", C_NAMESPACE)
-                        : enumeration.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-            }
-
-            for (int flagIndex = 0; flagIndex < flags.size(); flagIndex++) {
-                final Element flag;
-                final String cName;
-
-                flag = flags.get(flagIndex);
-                cName = (flag.getAttributeValue("type", C_NAMESPACE) != null) ? flag.getAttributeValue(
-                        "type", C_NAMESPACE) : flag.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-            }
-
-            for (int boxedIndex = 0; boxedIndex < boxeds.size(); boxedIndex++) {
-                final Element boxed;
-                final String cName;
-
-                boxed = boxeds.get(boxedIndex);
-                cName = (boxed.getAttributeValue("type", C_NAMESPACE) != null) ? boxed.getAttributeValue(
-                        "type", C_NAMESPACE) : boxed.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-            }
-
-            for (int unionIndex = 0; unionIndex < unions.size(); unionIndex++) {
-                final Element union;
-                final String cName;
-
-                union = unions.get(unionIndex);
-                cName = (union.getAttributeValue("type", C_NAMESPACE) != null) ? union.getAttributeValue(
-                        "type", C_NAMESPACE) : union.getAttributeValue("type-name", GLIB_NAMESPACE);
-
-                if (!typesList.isTypeWhitelisted(cName)) {
-                    blacklist.add(cName);
-                    continue;
-                }
-            }
-        }
-    }
-
-    /**
-     * Return whether the given C type is blacklisted.
-     * 
-     * @param gtype
-     *            the C type of the object.
-     * @return true if the C type is blacklisted.
-     */
-    private static final boolean isBlacklisted(String gtype) {
-        return blacklist.contains(gtype);
     }
 
     /**
@@ -1127,12 +1005,6 @@ public class IntrospectionParser
             unions = namespace.getChildElements("union", CORE_NAMESPACE);
 
             /*
-             * First pass, blacklist what need to be blacklisted.
-             */
-
-            loadBlacklist(namespaces);
-
-            /*
              * Examine each class.
              */
 
@@ -1153,7 +1025,7 @@ public class IntrospectionParser
                         "type", C_NAMESPACE) : object.getAttributeValue("type-name", GLIB_NAMESPACE);
                 introspectable = (object.getAttribute("foreign") == null);
 
-                if (isBlacklisted(cName) || !introspectable) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1305,7 +1177,7 @@ public class IntrospectionParser
                         "type", C_NAMESPACE) : interfaze.getAttributeValue("type-name", GLIB_NAMESPACE);
                 introspectable = (interfaze.getAttribute("foreign") == null);
 
-                if (isBlacklisted(cName) || !introspectable) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1434,7 +1306,7 @@ public class IntrospectionParser
                         : enumeration.getAttributeValue("type-name", GLIB_NAMESPACE);
                 introspectable = (enumeration.getAttribute("foreign") == null);
 
-                if (isBlacklisted(cName) || !introspectable) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1525,7 +1397,7 @@ public class IntrospectionParser
                         "type", C_NAMESPACE) : flag.getAttributeValue("type-name", GLIB_NAMESPACE);
                 introspectable = (flag.getAttribute("foreign") == null);
 
-                if (isBlacklisted(cName) || !introspectable) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1621,7 +1493,7 @@ public class IntrospectionParser
                  * ignore it.
                  */
 
-                if (isBlacklisted(cName) || !introspectable || boxedName.startsWith("_")
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable || boxedName.startsWith("_")
                         || boxedName.endsWith("Class") || boxedName.endsWith("Private")) {
                     continue;
                 }
@@ -1762,7 +1634,7 @@ public class IntrospectionParser
                  * ignore it.
                  */
 
-                if (isBlacklisted(cName) || !introspectable || unionName.startsWith("_")
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable || unionName.startsWith("_")
                         || unionName.endsWith("Class") || unionName.endsWith("Private")) {
                     continue;
                 }
@@ -1909,7 +1781,8 @@ public class IntrospectionParser
                      * This is a comment.
                      */
 
-                    if (line.startsWith("#") || line.startsWith(";;") || line.startsWith("//")) {
+                    if (line.isEmpty() || line.startsWith("#") || line.startsWith(";;")
+                            || line.startsWith("//")) {
                         continue;
                     }
 
