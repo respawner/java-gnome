@@ -54,7 +54,8 @@ public class ApplicationFlags extends Flag
      * 
      * @since 4.1.2
      */
-    public static final ApplicationFlags NONE = new ApplicationFlags(GlibApplicationFlags.FLAGS_NONE, "NONE");
+    public static final ApplicationFlags NONE = new ApplicationFlags(GlibApplicationFlags.FLAGS_NONE,
+            "NONE");
 
     /**
      * The application run as a service. If the service is already running the

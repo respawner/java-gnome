@@ -104,8 +104,8 @@ public class Switch extends Widget
     }
 
     /**
-     * Hookup the <code>Switch.Activate</code> signal that will be
-     * emitted when the Switch will be activated.
+     * Hookup the <code>Switch.Activate</code> signal that will be emitted
+     * when the Switch will be activated.
      * 
      * @since 4.1.2
      */

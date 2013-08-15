@@ -22,7 +22,7 @@ package com.operationaldynamics.defsparser;
  * This code started life as prototype written during the Google Summer of Code
  * 2013. It is based on the code made by Serkan Kaba from an old branch about
  * GObject Introspection. This parser aims to replace the old but well working
- * .defs parser being used by java-gnome for several years. 
+ * DefsParser being used by java-gnome for several years. 
  */
 
 import java.io.BufferedReader;
@@ -72,9 +72,9 @@ public class IntrospectionParser
 
     private static final Properties nameOverrides;
 
-    private static final List<String> blacklist;
-
     private static final TypesList typesList;
+
+    private static final List<String> blacklist;
 
     private File introspectionFile;
 
@@ -82,6 +82,10 @@ public class IntrospectionParser
         CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
         C_NAMESPACE = "http://www.gtk.org/introspection/c/1.0";
         GLIB_NAMESPACE = "http://www.gtk.org/introspection/glib/1.0";
+
+        /*
+         * FIXME: This is hardcoded so this is ugly!
+         */
 
         modules = new String[] {
             "Atk",
@@ -94,21 +98,17 @@ public class IntrospectionParser
         };
 
         packageOverrides = new Properties();
+        nameOverrides = new Properties();
+
         try {
             packageOverrides.load(new FileInputStream("src/generator/packages-override.properties"));
-        } catch (IOException e) {
-            System.err.println("How come we can't open a file for reading?\n" + e);
-        }
-
-        nameOverrides = new Properties();
-        try {
             nameOverrides.load(new FileInputStream("src/generator/names-override.properties"));
         } catch (IOException e) {
             System.err.println("How come we can't open a file for reading?\n" + e);
         }
 
-        blacklist = new ArrayList<String>();
         typesList = new TypesList("src/generator/types.list");
+        blacklist = new ArrayList<String>();
     }
 
     /**

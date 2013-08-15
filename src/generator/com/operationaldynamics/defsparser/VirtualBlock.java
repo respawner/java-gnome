@@ -37,7 +37,8 @@ import com.operationaldynamics.driver.DefsFile;
  */
 public class VirtualBlock extends FunctionBlock
 {
-    public VirtualBlock(String blockName, final List<String[]> characteristics, final List<String[]> parameters) {
+    public VirtualBlock(String blockName, final List<String[]> characteristics,
+            final List<String[]> parameters) {
         super(blockName, characteristics, parameters);
     }
 
