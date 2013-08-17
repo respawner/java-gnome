@@ -73,7 +73,7 @@ public class ValidateUnicode extends GraphicalTestCase
         buffer.setText("");
 
         pointer = buffer.getIterStart();
-        buffer.insert(pointer, "This character '𝑛' is an italic lower case n symbol", (TextTag) null);
+        buffer.insert(pointer, "This character '𝑛' is an italic lower case n symbol");
         assertEquals("This character '\ud835\udc5b' is an italic lower case n symbol", buffer.getText());
         buffer.setText("");
 
