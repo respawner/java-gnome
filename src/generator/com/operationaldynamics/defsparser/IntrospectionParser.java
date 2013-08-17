@@ -406,10 +406,13 @@ public class IntrospectionParser
             final Element parameter;
             Element type;
             String name, typeString;
-            boolean fromName;
+            boolean allowNone, fromName;
 
             parameter = list.get(parameterIndex);
             name = parameter.getAttributeValue("name");
+            allowNone = (parameter.getAttributeValue("allow-none") != null)
+                    || ((parameter.getAttribute("direction") != null) && parameter.getAttributeValue(
+                            "direction").equals("out"));
             fromName = false;
 
             if (name != null) {
@@ -479,7 +482,7 @@ public class IntrospectionParser
                 parameters.add(new String[] {
                     typeString,
                     name,
-                    (parameter.getAttributeValue("allow-none") != null) ? "yes" : "no"
+                    allowNone ? "yes" : "no"
                 });
             }
         }
@@ -504,7 +507,6 @@ public class IntrospectionParser
             String namespace) throws IgnoreIntrospectionException {
         final String isConstructorOf, cName;
         final List<String[]> constructorCharacteristics;
-        final String[] callerOwnsReturn;
         final List<String[]> parameters;
         final boolean throwsGError;
 
@@ -535,15 +537,18 @@ public class IntrospectionParser
         });
 
         /*
-         * Handle return value and its owner.
+         * FIXME: should we let constructor always own the return value?
+         */
+        constructorCharacteristics.add(new String[] {
+            "caller-owns-return",
+            "#t"
+        });
+
+        /*
+         * Handle return value.
          */
 
         constructorCharacteristics.add(getReturnType(constructor, namespace));
-        callerOwnsReturn = getCallerOwnsReturn(constructor);
-
-        if (callerOwnsReturn != null) {
-            constructorCharacteristics.add(callerOwnsReturn);
-        }
 
         if (hasVarArgs(constructor)) {
             constructorCharacteristics.add(new String[] {
@@ -1337,11 +1342,12 @@ public class IntrospectionParser
 
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
-                    String nick, identifier;
+                    String nick, identifier, real;
 
                     value = valuesList.get(valueIndex);
                     nick = value.getAttributeValue("nick", GLIB_NAMESPACE);
                     identifier = value.getAttributeValue("identifier", C_NAMESPACE);
+                    real = value.getAttributeValue("value");
 
                     if (nick == null) {
                         nick = value.getAttributeValue("name");
@@ -1357,7 +1363,8 @@ public class IntrospectionParser
 
                     values.add(new String[] {
                         nick,
-                        identifier
+                        identifier,
+                        real
                     });
                 }
 

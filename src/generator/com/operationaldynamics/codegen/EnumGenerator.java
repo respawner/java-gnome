@@ -1,7 +1,7 @@
 /*
  * java-gnome, a UI library for writing GTK and GNOME programs from Java!
  *
- * Copyright © 2007-2010 Operational Dynamics Consulting, Pty Ltd
+ * Copyright © 2007-2013 Operational Dynamics Consulting, Pty Ltd and Others
  * Copyright © 2007 Vreixo Formoso
  *
  * The code in this file, and the program it is a part of, is made available
@@ -31,10 +31,11 @@ import com.operationaldynamics.driver.DefsFile;
  * 
  * @author Andrew Cowie
  * @author Vreixo Formoso
+ * @author Guillaume Mazoyer
  */
 public class EnumGenerator extends TypeGenerator
 {
-    private String[] values;
+    private String[][] values;
 
     /**
      * 
@@ -48,7 +49,7 @@ public class EnumGenerator extends TypeGenerator
     public EnumGenerator(DefsFile data, String[][] values) {
         super(data);
 
-        this.values = new String[values.length];
+        this.values = new String[values.length][2];
         for (int i = 0; i < values.length; ++i) {
 
             String value = values[i][0];
@@ -57,7 +58,13 @@ public class EnumGenerator extends TypeGenerator
              * We need to convert values in the form: create-folder to
              * CREATE_FOLDER, etc.
              */
-            this.values[i] = toAllCaps(value);
+            this.values[i][0] = toAllCaps(value);
+
+            /*
+             * If a specified value for the enumeration field is given use it,
+             * if not use default numbers starting from 0.
+             */
+            this.values[i][1] = (values[i].length == 3) ? values[i][2] : Integer.toString(i);
         }
     }
 
@@ -69,13 +76,12 @@ public class EnumGenerator extends TypeGenerator
     // This is overridden by FlagsGenerator...
     protected void writeTranslationValues(final PrintWriter out) {
         for (int i = 0; i < values.length; ++i) {
-
             out.print("\n");
             out.print("    ");
             out.print("static final int ");
-            out.print(values[i]);
+            out.print(values[i][0]);
             out.print(" = ");
-            out.print(i);
+            out.print(values[i][1]);
             out.print(";\n");
         }
     }
