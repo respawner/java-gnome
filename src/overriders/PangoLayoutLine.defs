@@ -1,0 +1,6 @@
+;; manually hacked to return void avoid creating lookup loops
+(define-method ref
+  (of-object "PangoLayoutLine")
+  (c-name "pango_layout_line_ref")
+  (return-type "none")
+)

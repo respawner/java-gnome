@@ -1,0 +1,43 @@
+;; We need to redefine constructors to handle group by hand.
+
+(define-function gtk_radio_tool_button_new
+  (is-constructor-of "GtkRadioToolButton")
+  (c-name "gtk_radio_tool_button_new")
+  (caller-owns-return #t)
+  (return-type "GtkToolItem*")
+  (parameters
+    '("GSList-GtkRadioToolButton*" "group" (null-ok))
+  )
+)
+
+(define-function radio_tool_button_new_from_stock
+  (is-constructor-of "GtkRadioToolButton")
+  (c-name "gtk_radio_tool_button_new_from_stock")
+  (caller-owns-return #t)
+  (return-type "GtkToolItem*")
+  (parameters
+    '("GSList-GtkRadioToolButton*" "group" (null-ok))
+    '("const-gchar*" "stock_id")
+  )
+)
+
+(define-function radio_tool_button_new_from_widget
+  (is-constructor-of "GtkRadioToolButton")
+  (c-name "gtk_radio_tool_button_new_from_widget")
+  (caller-owns-return #t)
+  (return-type "GtkToolItem*")
+  (parameters
+    '("GtkRadioToolButton*" "group" (null-ok))
+  )
+)
+
+(define-function radio_tool_button_new_with_stock_from_widget
+  (is-constructor-of "GtkRadioToolButton")
+  (c-name "gtk_radio_tool_button_new_with_stock_from_widget")
+  (caller-owns-return #t)
+  (return-type "GtkToolItem*")
+  (parameters
+    '("GtkRadioToolButton*" "group" (null-ok))
+    '("const-gchar*" "stock_id")
+  )
+)

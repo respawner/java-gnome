@@ -1,0 +1,66 @@
+;; We need to redefine constructors for Radio things because we handle group
+;; by hand using GtkRadio*Override.[c|java]
+
+(define-function gtk_radio_menu_item_new
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GSList-GtkRadioMenuItem*" "group" (null-ok))
+  )
+)
+
+(define-function gtk_radio_menu_item_new_with_label
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new_with_label")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GSList-GtkRadioMenuItem*" "group" (null-ok))
+    '("const-gchar*" "label")
+  )
+)
+
+(define-function gtk_radio_menu_item_new_with_mnemonic
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new_with_mnemonic")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GSList-GtkRadioMenuItem*" "group" (null-ok))
+    '("const-gchar*" "label")
+  )
+)
+
+(define-function gtk_radio_menu_item_new_from_widget
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new_from_widget")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkRadioMenuItem*" "radio_group_member" (null-ok))
+  )
+)
+
+(define-function gtk_radio_menu_item_new_with_mnemonic_from_widget
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new_with_mnemonic_from_widget")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkRadioMenuItem*" "radio_group_member" (null-ok))
+    '("const-gchar*" "label")
+  )
+)
+
+(define-function gtk_radio_menu_item_new_with_label_from_widget
+  (is-constructor-of "GtkRadioMenuItem")
+  (c-name "gtk_radio_menu_item_new_with_label_from_widget")
+  (caller-owns-return #t)
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkRadioMenuItem*" "radio_group_member" (null-ok))
+    '("const-gchar*" "label")
+  )
+)
