@@ -73,6 +73,10 @@ public class FunctionBlock extends Block
         this.ofObject = ofObject;
     }
 
+    public final String getOfObject() {
+        return ofObject;
+    }
+
     private void processParameters(final List<String[]> parameters) {
         this.parameters = parameters.toArray(new String[parameters.size()][]);
     }
@@ -93,8 +97,16 @@ public class FunctionBlock extends Block
         this.isConstructorOf = isConstructorOf;
     }
 
+    public final String getIsConstructorOf() {
+        return isConstructorOf;
+    }
+
     protected final void setCName(final String name) {
         this.cName = name;
+    }
+
+    public final String getCName() {
+        return cName;
     }
 
     protected final void setReturnType(final String returnType) {

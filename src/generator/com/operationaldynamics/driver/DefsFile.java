@@ -29,6 +29,7 @@ import com.operationaldynamics.codegen.FundamentalThing;
 import com.operationaldynamics.codegen.Generator;
 import com.operationaldynamics.codegen.Thing;
 import com.operationaldynamics.defsparser.Block;
+import com.operationaldynamics.defsparser.FunctionBlock;
 import com.operationaldynamics.defsparser.TypeBlock;
 
 /**
@@ -101,16 +102,16 @@ public final class DefsFile
     }
 
     /**
-     * Add a new Block to the array of Blocks defined this DefsFile.
+     * Add a new FunctionBlock to the array of Blocks defined this DefsFile.
      * 
      * <p>
      * This method is not meant to be called a lot. It should only be used
      * when parsing .defs files to override Introspection data.
      * 
      * @param block
-     *            the new Block to add.
+     *            the new FunctionBlock to add.
      */
-    public final void addBlock(Block block) {
+    public final void addFunctionBlock(FunctionBlock block) {
         final Block[] extended;
 
         /*
@@ -121,12 +122,14 @@ public final class DefsFile
         for (int i = 0; i < blocks.length; i++) {
             final String cNameCurrent, cNameNew;
 
-            cNameCurrent = blocks[i].getCName();
-            cNameNew = block.getCName();
+            if (blocks[i] instanceof FunctionBlock) {
+                cNameCurrent = ((FunctionBlock) blocks[i]).getCName();
+                cNameNew = block.getCName();
 
-            if ((cNameCurrent != null) && (cNameNew != null) && (cNameCurrent.equals(cNameNew))) {
-                blocks[i] = block;
-                return;
+                if ((cNameCurrent != null) && (cNameNew != null) && (cNameCurrent.equals(cNameNew))) {
+                    blocks[i] = block;
+                    return;
+                }
             }
         }
 

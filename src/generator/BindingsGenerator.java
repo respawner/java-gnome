@@ -199,13 +199,15 @@ public class BindingsGenerator
                  * know from the introspection data.
                  */
 
-                if (!(blocks[0] instanceof FunctionBlock) && !(blocks[0] instanceof MethodBlock)
-                        && !(blocks[0] instanceof VirtualBlock)) {
+                if (!(blocks[0] instanceof FunctionBlock)) {
                     all.add(new DefsFile(blocks));
                 } else {
                     for (Block block : blocks) {
                         final DefsFile toChange;
+                        final FunctionBlock function;
                         String object;
+
+                        function = (FunctionBlock) block;
 
                         /*
                          * We are only interested in the isConstructorOf and
@@ -213,9 +215,9 @@ public class BindingsGenerator
                          * need to change.
                          */
 
-                        object = block.getOfObject();
+                        object = function.getOfObject();
                         if (object == null) {
-                            object = block.getIsConstructorOf();
+                            object = function.getIsConstructorOf();
                         }
 
                         /*
@@ -226,7 +228,7 @@ public class BindingsGenerator
                             toChange = introspected.get(object);
 
                             if (toChange != null) {
-                                toChange.addBlock(block);
+                                toChange.addFunctionBlock(function);
                             }
                         }
                     }
