@@ -2,7 +2,6 @@
   (in-module "Cairo")
   (c-name "cairo_t")
   (import-header "librsvg/rsvg.h")
-  (import-header "librsvg/rsvg-cairo.h")
 )
 
 ;; the block name is contrived to match the pattern used in GTK so that

@@ -951,7 +951,7 @@ public class IntrospectionParser
      * @throws IOException
      *             if the XML file cannot be read.
      */
-    public Map<String, DefsFile> parseData() throws ValidityException, ParsingException, IOException {
+    public Map<String, DefsFile> parseData() throws ParsingException, IOException {
         final Map<String, DefsFile> defs;
         final Builder builder;
         final Document document;

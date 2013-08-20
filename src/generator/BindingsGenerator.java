@@ -30,15 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 import nu.xom.ParsingException;
-import nu.xom.ValidityException;
 
 import com.operationaldynamics.defsparser.Block;
 import com.operationaldynamics.defsparser.DefsLineNumberReader;
 import com.operationaldynamics.defsparser.DefsParser;
 import com.operationaldynamics.defsparser.FunctionBlock;
 import com.operationaldynamics.defsparser.IntrospectionParser;
-import com.operationaldynamics.defsparser.MethodBlock;
-import com.operationaldynamics.defsparser.VirtualBlock;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
 
@@ -125,7 +122,6 @@ public class BindingsGenerator
         final List<DefsFile> all;
         IntrospectionParser parser;
         DefsParser secondParser;
-        Map<String, DefsFile> parsed;
         Block[] blocks;
         PrintWriter typeMapping;
         DefsLineNumberReader in;
@@ -147,15 +143,9 @@ public class BindingsGenerator
             parser = new IntrospectionParser(file);
 
             try {
-                parsed = parser.parseData();
-
-                introspected.putAll(parsed);
-            } catch (ValidityException e) {
-                System.out.println("Couldn't get sufficient information from " + file + ":");
-                System.out.println(e.getMessage());
-                System.out.println("[continuing next file]\n");
+                introspected.putAll(parser.parseData());
             } catch (ParsingException e) {
-                System.out.println("Couldn't get sufficient information from " + file + ":");
+                System.out.println("Malformed XML data in " + file + ":");
                 System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
             } catch (IOException e) {
