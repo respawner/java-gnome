@@ -115,9 +115,8 @@ public class BindingsGenerator
      * parser and subsequent runs of the bindings code generators, but it is
      * still an intermediate form.
      */
-    private static void runGeneratorOutputIntrospectionToFiles(final String[] introspectionFiles,
-            final File outputDir) {
-        final File[] files, overriders;
+    private static void runGeneratorOutputIntrospectionToFiles(final String[] files, final File outputDir) {
+        final File[] overriders;
         final Map<String, DefsFile> introspected;
         final List<DefsFile> all;
         IntrospectionParser parser;
@@ -125,11 +124,6 @@ public class BindingsGenerator
         Block[] blocks;
         PrintWriter typeMapping;
         DefsLineNumberReader in;
-
-        files = new File[introspectionFiles.length];
-        for (int i = 0; i < files.length; i++) {
-            files[i] = new File(introspectionFiles[i]);
-        }
 
         all = new ArrayList<DefsFile>();
         introspected = new HashMap<String, DefsFile>();
@@ -139,8 +133,8 @@ public class BindingsGenerator
          * Along the way, this registers the type information.
          */
 
-        for (File file : files) {
-            parser = new IntrospectionParser(file);
+        for (String file : files) {
+            parser = new IntrospectionParser(new File(file));
 
             try {
                 introspected.putAll(parser.parseData());
@@ -164,11 +158,7 @@ public class BindingsGenerator
 
         overriders = new File("src/overriders").listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                if (name.endsWith(".defs")) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return name.endsWith(".defs");
             }
         });
 

@@ -1762,6 +1762,13 @@ public class IntrospectionParser
         return defs;
     }
 
+    /**
+     * A class that give a way to know what types the
+     * {@link IntrospectionParser} can parse and what things do not need
+     * parsing inside each type.
+     * 
+     * @author Guillaume Mazoyer
+     */
     private static final class TypesList
     {
         private Map<String, String[]> list;
@@ -1838,10 +1845,26 @@ public class IntrospectionParser
             }
         }
 
+        /**
+         * Tell if the given type can be parsed or not.
+         * 
+         * @param type
+         *            the C type to check.
+         * @return true if the type should be parsed, false otherwise.
+         */
         public final boolean isTypeWhitelisted(String type) {
             return list.keySet().contains(type);
         }
 
+        /**
+         * Tell if the given thing for the given type can be parsed or not.
+         * 
+         * @param type
+         *            the C type to whch the thing belongs to.
+         * @param thing
+         *            a constructor, a method, a function or a signal C name.
+         * @return true if the thing should be parsed, false otherwise.
+         */
         public final boolean isThingBlacklisted(String type, String thing) {
             return Arrays.asList(list.get(type)).contains(thing);
         }
