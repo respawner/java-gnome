@@ -80,6 +80,7 @@ import com.operationaldynamics.codegen.ValidateThingUsage;
 import com.operationaldynamics.codegen.ValidateUtilityMethods;
 import com.operationaldynamics.defsparser.ValidateBlockUsage;
 import com.operationaldynamics.defsparser.ValidateDefsParsing;
+import com.operationaldynamics.defsparser.ValidateIntrospectionParsing;
 import com.operationaldynamics.junit.VerboseTestRunner;
 
 /**
@@ -142,6 +143,7 @@ public class UnitTests
 
         suite.addTestSuite(ValidateUtilityMethods.class);
         suite.addTestSuite(ValidateBlockUsage.class);
+        suite.addTestSuite(ValidateIntrospectionParsing.class);
         suite.addTestSuite(ValidateDefsParsing.class);
         suite.addTestSuite(ValidateThingUsage.class);
         suite.addTestSuite(ValidateEnvironment.class);

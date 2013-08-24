@@ -101,6 +101,10 @@ public final class DefsFile
         return forObject;
     }
 
+    public final Block[] getBlocks() {
+        return blocks;
+    }
+
     /**
      * Add a new FunctionBlock to the array of Blocks defined this DefsFile.
      * 

@@ -134,10 +134,14 @@ public class BindingsGenerator
          */
 
         for (String file : files) {
-            parser = new IntrospectionParser(new File(file));
+            final FileReader reader;
 
             try {
+                reader = new FileReader(file);
+                parser = new IntrospectionParser(reader);
+
                 introspected.putAll(parser.parseData());
+                reader.close();
             } catch (ParsingException e) {
                 System.out.println("Malformed XML data in " + file + ":");
                 System.out.println(e.getMessage());
@@ -215,14 +219,14 @@ public class BindingsGenerator
                 }
 
                 in.close();
-            } catch (IOException ioe) {
+            } catch (IOException e) {
                 System.out.println("I/O problem when trying to parse " + overriders[i]);
-                System.out.println(ioe.getMessage());
+                System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
                 continue;
-            } catch (ImproperDefsFileException idfe) {
+            } catch (ImproperDefsFileException e) {
                 System.out.println("Couldn't get sufficient information from " + overriders[i] + ":");
-                System.out.println(idfe.getMessage());
+                System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
                 continue;
             } finally {

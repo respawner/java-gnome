@@ -26,10 +26,10 @@ package com.operationaldynamics.defsparser;
  */
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public class IntrospectionParser
 
     private static final TypesList typesList;
 
-    private File introspectionFile;
+    private Reader introspectionData;
 
     static {
         CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
@@ -110,14 +110,14 @@ public class IntrospectionParser
     }
 
     /**
-     * Initialize the parser for a given file containing Introspection data.
+     * Initialize the parser for a given Reader reading Introspection data.
      * 
-     * @param introspectionFile
-     *            a file object that is a reference to a .gir file to be
-     *            parsed.
+     * @param introspectionData
+     *            a Reader object that is a reference to a .gir file or GIR
+     *            data to be parsed.
      */
-    public IntrospectionParser(final File introspectionFile) {
-        this.introspectionFile = introspectionFile;
+    public IntrospectionParser(final Reader introspectionData) {
+        this.introspectionData = introspectionData;
     }
 
     /**
@@ -1068,7 +1068,7 @@ public class IntrospectionParser
          * Start the parsing of the XML data.
          */
 
-        document = builder.build(this.introspectionFile);
+        document = builder.build(this.introspectionData);
 
         /*
          * Get the first elements that are available (includes and
