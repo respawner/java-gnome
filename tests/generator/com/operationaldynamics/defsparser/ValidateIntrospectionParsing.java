@@ -1,7 +1,7 @@
 /*
  * java-gnome, a UI library for writing GTK and GNOME programs from Java!
  *
- * Copyright © 2007-2010 Operational Dynamics Consulting, Pty Ltd
+ * Copyright © 2013 Operational Dynamics Consulting, Pty Ltd and Others
  *
  * The code in this file, and the program it is a part of, is made available
  * to you by its authors as open source software: you can redistribute it
@@ -20,19 +20,18 @@ package com.operationaldynamics.defsparser;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
 import java.util.Map;
 
-import nu.xom.ParsingException;
 import junit.framework.TestCase;
+import nu.xom.ParsingException;
 
 import com.operationaldynamics.codegen.Thing;
 import com.operationaldynamics.driver.DefsFile;
 
 /**
- * Evaluate the internal methods in the DefsParser class.
+ * Evaluate the internal methods in the IntrospectionParser class.
  * 
- * @author Andrew Cowie
+ * @author Guillaume Mazoyer
  */
 public class ValidateIntrospectionParsing extends TestCase
 {
