@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -152,6 +153,37 @@ public class IntrospectionParser
     }
 
     /**
+     * Tell if a given name of a type is starting with the name of a module.
+     * This must be the case so we can use it.
+     * 
+     * @param type
+     *            the name of the type.
+     * @return true if the type's name starts with a module's name, false
+     *         otherwise.
+     */
+    private static final boolean startsWithModuleName(String type) {
+        final String[] dissected;
+
+        /*
+         * Separate each word starting with a capital letter.
+         */
+
+        dissected = type.split("(?<!^)(?=[A-Z])");
+
+        /*
+         * Search if the first word is contained in the module names.
+         */
+
+        for (String module : modules) {
+            if (module.equals(dissected[0])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Return a String representation of the parent of the given object.
      * 
      * @param object
@@ -200,80 +232,220 @@ public class IntrospectionParser
     }
 
     /**
-     * Try to guess the real type for a given type with a name that is not
-     * enough for us.
+     * Return the usable C type based on a String and a module name.
      * 
-     * @param type
-     *            the type to inspect.
+     * @param string
+     *            a String containing a type and sometimes some keywords.
      * @param module
-     *            the namespace currently inspected.
-     * @return a usable type.
+     *            the name of the module in which the type is used.
+     * @return a usable C type.
      */
-    private static final String guessUsableType(String type, String module, boolean fromName) {
-        String usable;
+    private static final String guessTypeFromString(String string, String module) {
+        final String[] dissected;
+        final boolean isConst, isGList, isGSList;
+        String type;
 
-        if (type.startsWith("GList-") || type.startsWith("GSList-")) {
-            return type.split("-")[0] + "-" + guessUsableType(type.split("-")[1], module, false) + "*";
+        /*
+         * Sometimes types are composed of several words so we need to
+         * investigate if it is the case here.
+         */
+
+        dissected = string.split(" ");
+        isConst = (dissected.length > 1);
+        type = isConst ? dissected[1] : dissected[0];
+        isGList = type.startsWith("GList");
+        isGSList = type.startsWith("GSList");
+
+        /*
+         * We are working with a List based type.
+         */
+
+        if (isGList || isGSList) {
+            type = type.split("-")[1];
         }
 
-        if ((type.length() > 0) && !Character.isUpperCase(type.charAt(0))) {
+        /*
+         * The type is composed of several dot separated parts.
+         */
+
+        if (type.contains(".")) {
             /*
-             * Not a GObject thing.
+             * Special cases that we need to address "manually".
              */
 
-            return type;
-        }
+            if (type.equals("GObject.Object") || type.equals("GObject.InitiallyUnowned")) {
+                type = "GObject";
+            } else if (type.equals("GdkPixbuf.Pixbuf")) {
+                type = "GdkPixbuf";
+            } else if (type.startsWith("GObject.")) {
+                type = type.replace("GObject.", "G");
+            } else if (type.startsWith("Gio.")) {
+                type = type.replace("Gio.", "G");
+            } else {
+                /*
+                 * Remove all the dots.
+                 */
 
-        if (type.equals("GObject.Object") || type.equals("GObject.InitiallyUnowned")) {
-            /*
-             * This is a basic GObject.
-             */
-
-            return "GObject";
-        }
-
-        if (type.equals("GdkPixbuf.Pixbuf")) {
-            /*
-             * This is a basic GdkPixbuf object.
-             */
-
-            return "GdkPixbuf";
-        }
-
-        if (type.startsWith("GObject.")) {
-            return type.replace("GObject.", "G");
-        }
-
-        if (type.startsWith("Gio.")) {
-            return type.replace("Gio.", "G");
-        }
-
-        for (String m : modules) {
-            if (type.startsWith(m)) {
-                if (fromName) {
-                    type += "*";
-                }
-                return type;
+                type = type.replaceAll("\\.", "");
             }
         }
 
-        usable = new String(type);
+        /*
+         * We handle GdkPixbuf module as part of the Gdk module.
+         */
 
-        if (!usable.contains(".")) {
+        if (module.equals("GdkPixbuf")) {
+            module = "Gdk";
+        }
+
+        /*
+         * Not a primitive types (gint, gchar, etc...) nor usable gtypes.
+         */
+
+        if (Character.isUpperCase(type.charAt(0)) && !startsWithModuleName(type)) {
+            type = module + type;
+        }
+
+        /*
+         * The type was contained in a GList.
+         */
+
+        if (isGList) {
+            type = "GList-" + type;
+        }
+
+        /*
+         * The type was contained in a GList.
+         */
+
+        if (isGSList) {
+            type = "GSList-" + type;
+        }
+
+        /*
+         * The 'const' keyword was used so it needs to be prepend.
+         */
+
+        if (isConst) {
+            type = "const-" + type;
+        }
+
+        return type;
+    }
+
+    /**
+     * Return a usable C type based on an XMl element and the module
+     * (namespace) it belongs to.
+     * 
+     * @param element
+     *            an XML element usually a 'return-value' or a 'parameter'
+     *            element.
+     * @param module
+     *            the module the function containing the element belongs to.
+     * @return a String corresponding to the usable C type found.
+     * @throws IgnoreIntrospectionException
+     *             if the C type and therefore the element are to be ignored.
+     */
+    private static final String investigateType(Element element, String module)
+            throws IgnoreIntrospectionException {
+        Element array, type;
+        Attribute value;
+        String typeString;
+
+        type = element.getFirstChildElement("type", CORE_NAMESPACE);
+        typeString = "";
+
+        /*
+         * First thing we need to find a type to use.
+         */
+
+        if (type == null) {
             /*
-             * The type is in the same module so we append the module name.
+             * This is the case of array.
              */
 
-            if (module.equals("GdkPixbuf")) {
-                usable = "Gdk" + type;
+            array = element.getFirstChildElement("array", CORE_NAMESPACE);
+
+            if (array == null) {
+
+                /*
+                 * We are not in the case of an array but probably for a
+                 * varargs related thing that we can ignore.
+                 */
+
+                throw new IgnoreIntrospectionException("Useless parameter or return value.");
+            }
+
+            value = array.getAttribute("type", C_NAMESPACE);
+
+            if (value != null) {
+                /*
+                 * The array provides its type.
+                 */
+
+                typeString = value.getValue();
             } else {
-                usable = module + type;
+                type = array.getFirstChildElement("type", CORE_NAMESPACE);
+                value = type.getAttribute("type", C_NAMESPACE);
+
+                /*
+                 * The type for a array element is not even given. We need to
+                 * figure it out with the name.
+                 */
+
+                if (value == null) {
+                    value = type.getAttribute("name");
+                    typeString = "*";
+                }
+
+                /*
+                 * We have the type of one element in the array to we append a
+                 * '*' to find the type of the array.
+                 */
+
+                typeString = value.getValue() + typeString + "*";
             }
         } else {
-            usable = type;
+            type = element.getFirstChildElement("type", CORE_NAMESPACE);
+            value = type.getAttribute("type", C_NAMESPACE);
+
+            /*
+             * The type is not (really) even given. We need to figure it out
+             * with the name.
+             * 
+             * TODO: Find a proper way to know when a '*' is needed or not.
+             */
+
+            if ((value == null) || value.getValue().equals("gconstpointer")) {
+                if (value != null) {
+                    typeString = "*";
+                }
+
+                value = type.getAttribute("name");
+
+                if (value.getValue().contains(".")) {
+                    typeString = "*";
+                }
+            }
+
+            typeString = value.getValue() + typeString;
+
+            /*
+             * We have a particular case when we handle GList and GSList. We
+             * need to go deeper in the XML to figure out what the list
+             * actually contains.
+             */
+
+            if (typeString.contains("GList") || typeString.contains("GSList")) {
+                type = type.getFirstChildElement("type", CORE_NAMESPACE);
+                value = type.getAttribute("name");
+
+                typeString = typeString.substring(0, typeString.indexOf('*')) + "-" + value.getValue()
+                        + typeString.substring(typeString.indexOf('*'));
+            }
         }
 
-        return usable;
+        return guessTypeFromString(typeString, module);
     }
 
     /**
@@ -284,61 +456,30 @@ public class IntrospectionParser
      * @param module
      *            the namespace the function belongs to.
      * @return an array containing the return type of the given function.
+     * @throws IgnoreIntrospectionException
+     *             if the return type cannot be found.
      */
-    private static final String[] getReturnType(Element function, String module) {
-        Element type;
-        String typeString;
-        boolean fromName;
+    private static final String[] getReturnType(Element function, String module)
+            throws IgnoreIntrospectionException {
+        String type;
 
         /*
          * Get the type of the return value.
          */
 
-        type = function.getFirstChildElement("return-value", CORE_NAMESPACE).getFirstChildElement(
-                "type", CORE_NAMESPACE);
-        fromName = false;
-
-        if (type == null) {
-            /*
-             * The return type is an array.
-             */
-
-            type = function.getFirstChildElement("return-value", CORE_NAMESPACE);
-
-            if (type.getAttributeValue("type", C_NAMESPACE) == null) {
-                type = type.getFirstChildElement("array", CORE_NAMESPACE);
-            }
-        }
-
-        typeString = type.getAttributeValue("type", C_NAMESPACE);
+        type = investigateType(function.getFirstChildElement("return-value", CORE_NAMESPACE), module);
 
         /*
-         * Handle the case where the function does not return anything or when
-         * the C type is not given.
+         * Handle the case where the function does not return anything.
          */
 
-        if (typeString == null) {
-            typeString = type.getAttributeValue("name");
-            fromName = true;
-        } else if (typeString.equals("void")) {
-            typeString = "none";
+        if (type.equals("void")) {
+            type = "none";
         }
-
-        /*
-         * FIXME: this is ugly.
-         */
-
-        if (typeString.startsWith("GList") || typeString.startsWith("GSList")) {
-            typeString = typeString.replaceFirst("\\*", "-")
-                    + type.getChildElements().get(0).getAttributeValue("name");
-            typeString.replace("*", "");
-        }
-
-        typeString = guessUsableType(typeString, module, fromName);
 
         return new String[] {
             "return-type",
-            typeString.replace(" ", "-")
+            type
         };
     }
 
@@ -404,63 +545,24 @@ public class IntrospectionParser
 
         for (int parameterIndex = 0; parameterIndex < list.size(); parameterIndex++) {
             final Element parameter;
-            Element type;
-            String name, typeString;
-            boolean allowNone, fromName;
+            String name, type;
+            boolean allowNone;
 
             parameter = list.get(parameterIndex);
             name = parameter.getAttributeValue("name");
             allowNone = (parameter.getAttributeValue("allow-none") != null)
                     || ((parameter.getAttribute("direction") != null) && parameter.getAttributeValue(
                             "direction").equals("out"));
-            fromName = false;
 
             if (name != null) {
-                type = parameter.getFirstChildElement("type", CORE_NAMESPACE);
+                try {
+                    type = investigateType(parameter, module);
+                } catch (IgnoreIntrospectionException e) {
+                    /*
+                     * The parameter is to be ignored.
+                     */
 
-                /*
-                 * If the parameter is an array go deeper.
-                 */
-
-                if (type == null) {
-                    type = parameter.getFirstChildElement("array", CORE_NAMESPACE);
-                }
-
-                /*
-                 * This is not a useful parameter for us.
-                 */
-
-                if (type == null) {
                     continue;
-                }
-
-                if (type.getAttributeValue("type", C_NAMESPACE) == null) {
-                    typeString = type.getAttributeValue("name").replace(".", "");
-                    fromName = true;
-                } else {
-                    typeString = type.getAttributeValue("type", C_NAMESPACE).replace(" ", "-");
-                }
-
-                /*
-                 * FIXME: this is ugly.
-                 */
-
-                if (typeString.startsWith("GList") || typeString.startsWith("GSList")) {
-                    typeString = typeString.replaceFirst("\\*", "-")
-                            + type.getChildElements().get(0).getAttributeValue("name");
-                    typeString.replace("*", "");
-                }
-
-                typeString = guessUsableType(typeString, module, fromName);
-
-                /*
-                 * Strange case where gconstpointer is given as parameter
-                 * which is a pointer to an object that cannot be modified.
-                 */
-
-                if (typeString.equals("gconstpointer")) {
-                    typeString = guessUsableType(type.getAttributeValue("name").replace(".", ""),
-                            module, fromName) + "*";
                 }
 
                 /*
@@ -480,7 +582,7 @@ public class IntrospectionParser
                  */
 
                 parameters.add(new String[] {
-                    typeString,
+                    type,
                     name,
                     allowNone ? "yes" : "no"
                 });
