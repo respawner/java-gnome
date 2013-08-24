@@ -153,15 +153,15 @@ public class IntrospectionParser
     }
 
     /**
-     * Tell if a given name of a type is starting with the name of a module.
+     * Tell if a given name of a type is starting with the prefix of a module.
      * This must be the case so we can use it.
      * 
      * @param type
      *            the name of the type.
-     * @return true if the type's name starts with a module's name, false
+     * @return true if the type's name starts with a module's prefix, false
      *         otherwise.
      */
-    private static final boolean startsWithModuleName(String type) {
+    private static final boolean startsWithModulePrefix(String type) {
         final String[] dissected;
 
         /*
@@ -302,7 +302,7 @@ public class IntrospectionParser
          * Not a primitive types (gint, gchar, etc...) nor usable gtypes.
          */
 
-        if (Character.isUpperCase(type.charAt(0)) && !startsWithModuleName(type)) {
+        if (Character.isUpperCase(type.charAt(0)) && !startsWithModulePrefix(type)) {
             type = module + type;
         }
 
