@@ -25,6 +25,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class BindingsGenerator
      */
     private static void runGeneratorOutputIntrospectionToFiles(final String[] files, final File outputDir) {
         final File[] overriders;
-        final Map<String, DefsFile> introspected;
+        final Map<String, Block[]> introspected;
         final List<DefsFile> all;
         IntrospectionParser parser;
         DefsParser secondParser;
@@ -126,7 +127,7 @@ public class BindingsGenerator
         DefsLineNumberReader in;
 
         all = new ArrayList<DefsFile>();
-        introspected = new HashMap<String, DefsFile>();
+        introspected = new HashMap<String, Block[]>();
 
         /*
          * Load the all the .gir files into DefsFile objects, one per type.
@@ -171,9 +172,9 @@ public class BindingsGenerator
          * Along the way, this registers the type information.
          */
 
-        for (int i = 0; i < overriders.length; i++) {
+        for (File overrider : overriders) {
             try {
-                in = new DefsLineNumberReader(new FileReader(overriders[i]), overriders[i].getName());
+                in = new DefsLineNumberReader(new FileReader(overrider), overrider.getName());
 
                 secondParser = new DefsParser(in);
                 blocks = secondParser.parseData();
@@ -187,11 +188,13 @@ public class BindingsGenerator
                     all.add(new DefsFile(blocks));
                 } else {
                     for (Block block : blocks) {
-                        final DefsFile toChange;
                         final FunctionBlock function;
+                        Block[] toChange, changed;
                         String object;
+                        boolean toAdd;
 
                         function = (FunctionBlock) block;
+                        toAdd = true;
 
                         /*
                          * We are only interested in the isConstructorOf and
@@ -205,27 +208,81 @@ public class BindingsGenerator
                         }
 
                         /*
+                         * We are unable to determine to which object this
+                         * FunctionBlock should be associated. The .defs file
+                         * is probably incorrect.
+                         */
+
+                        if (object == null) {
+                            System.out.println("Cannot find the object name that FunctionBlock "
+                                    + function.getCName() + " belongs to.");
+                            System.out.println("Please check the data in " + overrider + ".");
+                            continue;
+                        }
+
+                        /*
                          * Look for the object and add the new Block.
                          */
 
-                        if (object != null) {
-                            toChange = introspected.get(object);
+                        toChange = introspected.get(object);
 
-                            if (toChange != null) {
-                                toChange.addFunctionBlock(function);
+                        /*
+                         * We are unable to find the object this FunctionBlock
+                         * should be associated. This means that we did not
+                         * parse any data from this object before.
+                         */
+
+                        if (toChange == null) {
+                            System.out.println("Cannot the object " + object
+                                    + " that the FunctionBlock " + function.getCName() + " belongs to.");
+                            System.out.println("Do we have enough data about it?");
+                            continue;
+                        }
+
+                        /*
+                         * The Block that we are trying to add override
+                         * another existing Block so we need to replace the
+                         * old one by the new one.
+                         */
+
+                        for (int i = 0; i < toChange.length; i++) {
+                            final String cNameCurrent, cNameNew;
+
+                            if (toChange[i] instanceof FunctionBlock) {
+                                cNameCurrent = ((FunctionBlock) toChange[i]).getCName();
+                                cNameNew = function.getCName();
+
+                                if ((cNameCurrent != null) && (cNameNew != null)
+                                        && (cNameCurrent.equals(cNameNew))) {
+                                    toAdd = false;
+                                    toChange[i] = block;
+                                    break;
+                                }
                             }
+                        }
+
+                        /*
+                         * The Block that we are trying to add does not
+                         * replace another one so we just add it to the array.
+                         */
+
+                        if (toAdd) {
+                            changed = Arrays.copyOf(toChange, toChange.length + 1);
+                            changed[toChange.length] = block;
+
+                            introspected.put(object, changed);
                         }
                     }
                 }
 
                 in.close();
             } catch (IOException e) {
-                System.out.println("I/O problem when trying to parse " + overriders[i]);
+                System.out.println("I/O problem when trying to parse " + overrider);
                 System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
                 continue;
             } catch (ImproperDefsFileException e) {
-                System.out.println("Couldn't get sufficient information from " + overriders[i] + ":");
+                System.out.println("Couldn't get sufficient information from " + overrider + ":");
                 System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
                 continue;
@@ -235,11 +292,19 @@ public class BindingsGenerator
         }
 
         /*
-         * Add all data from introspection to the list of data to process by
-         * the code generator.
+         * Add all data from introspection to the list of data to be processed
+         * by the code generator.
          */
 
-        all.addAll(introspected.values());
+        for (Map.Entry<String, Block[]> data : introspected.entrySet()) {
+            try {
+                all.add(new DefsFile(data.getValue()));
+            } catch (ImproperDefsFileException e) {
+                System.out.println("Couldn't get sufficient information for " + data.getKey() + ":");
+                System.out.println(e.getMessage());
+                System.out.println("[continuing next file]\n");
+            }
+        }
 
         /*
          * Now, with the meta data completely loaded, we can generate the

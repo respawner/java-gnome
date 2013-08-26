@@ -19,7 +19,6 @@
 package com.operationaldynamics.driver;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,6 @@ import com.operationaldynamics.codegen.FundamentalThing;
 import com.operationaldynamics.codegen.Generator;
 import com.operationaldynamics.codegen.Thing;
 import com.operationaldynamics.defsparser.Block;
-import com.operationaldynamics.defsparser.FunctionBlock;
 import com.operationaldynamics.defsparser.TypeBlock;
 
 /**
@@ -52,7 +50,7 @@ public final class DefsFile
     /**
      * The source array of parsed .defs Blocks
      */
-    private Block[] blocks;
+    private final Block[] blocks;
 
     /**
      * The types being used in this file that are safe to import
@@ -75,8 +73,8 @@ public final class DefsFile
      * import collisions.
      * 
      * @throws ImproperDefsFileException
-     *             if the supplised blocks array doesn't match our
-     *             expectations for ordering.
+     *             if the supplied blocks array doesn't match our expectations
+     *             for ordering.
      */
     public DefsFile(final Block[] blocks) throws ImproperDefsFileException {
         this.blocks = blocks;
@@ -103,49 +101,6 @@ public final class DefsFile
 
     public final Block[] getBlocks() {
         return blocks;
-    }
-
-    /**
-     * Add a new FunctionBlock to the array of Blocks defined this DefsFile.
-     * 
-     * <p>
-     * This method is not meant to be called a lot. It should only be used
-     * when parsing .defs files to override Introspection data.
-     * 
-     * @param block
-     *            the new FunctionBlock to add.
-     */
-    public final void addFunctionBlock(FunctionBlock block) {
-        final Block[] extended;
-
-        /*
-         * The Block that we are trying to add override another existing Block
-         * so we need to replace the old one by the new one.
-         */
-
-        for (int i = 0; i < blocks.length; i++) {
-            final String cNameCurrent, cNameNew;
-
-            if (blocks[i] instanceof FunctionBlock) {
-                cNameCurrent = ((FunctionBlock) blocks[i]).getCName();
-                cNameNew = block.getCName();
-
-                if ((cNameCurrent != null) && (cNameNew != null) && (cNameCurrent.equals(cNameNew))) {
-                    blocks[i] = block;
-                    return;
-                }
-            }
-        }
-
-        /*
-         * FIXME: this is not the most beautiful thing to do but it avoid to
-         * change more code.
-         */
-
-        extended = Arrays.copyOf(blocks, blocks.length + 1);
-        extended[blocks.length] = block;
-
-        blocks = extended;
     }
 
     /**

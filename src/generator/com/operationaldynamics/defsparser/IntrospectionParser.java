@@ -45,9 +45,7 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.IgnoreIntrospectionException;
-import com.operationaldynamics.driver.ImproperDefsFileException;
 
 /**
  * A .gir file parser: convert XML data into an array of Block objects
@@ -1042,10 +1040,10 @@ public class IntrospectionParser
     }
 
     /**
-     * Run the parser across the XML data and return a map of DefsFile objects
-     * representing the blocks found there.
+     * Run the parser across the XML data and return a map of Block arrays
+     * representing the information found there.
      * 
-     * @return a list of DefsFile objects.
+     * @return a map of Block arrays.
      * @throws ParsingException
      *             if an error occurs while parsing the XML file.
      * @throws ValidityException
@@ -1053,15 +1051,15 @@ public class IntrospectionParser
      * @throws IOException
      *             if the XML file cannot be read.
      */
-    public Map<String, DefsFile> parseData() throws ParsingException, IOException {
-        final Map<String, DefsFile> defs;
+    public Map<String, Block[]> parseData() throws ParsingException, IOException {
+        final Map<String, Block[]> result;
         final Builder builder;
         final Document document;
         final Element repository;
         final Elements includes, namespaces;
         final String[] includesHeaders;
 
-        defs = new HashMap<String, DefsFile>();
+        result = new HashMap<String, Block[]>();
         builder = new Builder();
 
         /*
@@ -1252,15 +1250,12 @@ public class IntrospectionParser
                     }
                 }
 
-                try {
-                    /*
-                     * Generate the defs file definition for the given object.
-                     */
+                /*
+                 * Add the Block array and identify it with the C name of the
+                 * current thing.
+                 */
 
-                    defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                } catch (ImproperDefsFileException e) {
-                    e.printStackTrace();
-                }
+                result.put(cName, blocks.toArray(new Block[blocks.size()]));
             }
 
             /*
@@ -1380,15 +1375,12 @@ public class IntrospectionParser
                     }
                 }
 
-                try {
-                    /*
-                     * Generate the defs file definition for the given object.
-                     */
+                /*
+                 * Add the Block array and identify it with the C name of the
+                 * current thing.
+                 */
 
-                    defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                } catch (ImproperDefsFileException e) {
-                    e.printStackTrace();
-                }
+                result.put(cName, blocks.toArray(new Block[blocks.size()]));
             }
 
             /*
@@ -1474,15 +1466,12 @@ public class IntrospectionParser
                         getActualJavaName(cName, enumeration.getAttributeValue("name")),
                         characteristics, values));
 
-                try {
-                    /*
-                     * Generate the defs file definition for the given object.
-                     */
+                /*
+                 * Add the Block array and identify it with the C name of the
+                 * current thing.
+                 */
 
-                    defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                } catch (ImproperDefsFileException e) {
-                    e.printStackTrace();
-                }
+                result.put(cName, blocks.toArray(new Block[blocks.size()]));
             }
 
             /*
@@ -1565,16 +1554,12 @@ public class IntrospectionParser
                     blocks.add(new FlagsBlock(getActualJavaName(cName, flag.getAttributeValue("name")),
                             characteristics, values));
 
-                    try {
-                        /*
-                         * Generate the defs file definition for the given
-                         * object.
-                         */
+                    /*
+                     * Add the Block array and identify it with the C name of
+                     * the current thing.
+                     */
 
-                        defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                    } catch (ImproperDefsFileException e) {
-                        e.printStackTrace();
-                    }
+                    result.put(cName, blocks.toArray(new Block[blocks.size()]));
                 }
             }
 
@@ -1708,15 +1693,12 @@ public class IntrospectionParser
                     }
                 }
 
-                try {
-                    /*
-                     * Generate the defs file definition for the given boxed.
-                     */
+                /*
+                 * Add the Block array and identify it with the C name of the
+                 * current thing.
+                 */
 
-                    defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                } catch (ImproperDefsFileException e) {
-                    e.printStackTrace();
-                }
+                result.put(cName, blocks.toArray(new Block[blocks.size()]));
             }
 
             /*
@@ -1849,19 +1831,16 @@ public class IntrospectionParser
                     }
                 }
 
-                try {
-                    /*
-                     * Generate the defs file definition for the given boxed.
-                     */
+                /*
+                 * Add the Block array and identify it with the C name of the
+                 * current thing.
+                 */
 
-                    defs.put(cName, new DefsFile(blocks.toArray(new Block[blocks.size()])));
-                } catch (ImproperDefsFileException e) {
-                    e.printStackTrace();
-                }
+                result.put(cName, blocks.toArray(new Block[blocks.size()]));
             }
         }
 
-        return defs;
+        return result;
     }
 
     /**

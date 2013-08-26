@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 import nu.xom.ParsingException;
 
 import com.operationaldynamics.codegen.Thing;
-import com.operationaldynamics.driver.DefsFile;
 
 /**
  * Evaluate the internal methods in the IntrospectionParser class.
@@ -110,7 +109,7 @@ public class ValidateIntrospectionParsing extends TestCase
     }
 
     public final void testObjectBlockCreated() throws ParsingException, IOException {
-        Map<String, DefsFile> results;
+        Map<String, Block[]> results;
         Block[] blocks;
         ObjectBlock o;
 
@@ -119,7 +118,7 @@ public class ValidateIntrospectionParsing extends TestCase
         assertEquals(1, results.size());
         assertNotNull(results.get("GtkButton"));
 
-        blocks = results.get("GtkButton").getBlocks();
+        blocks = results.get("GtkButton");
 
         assertTrue(blocks[0] instanceof ObjectBlock);
 
@@ -132,12 +131,10 @@ public class ValidateIntrospectionParsing extends TestCase
     }
 
     public final void testCantCreateThingFromNonTypeBlock() throws ParsingException, IOException {
-        Map<String, DefsFile> results;
         Block[] blocks;
         Thing t;
 
-        results = parser.parseData();
-        blocks = results.get("GtkButton").getBlocks();
+        blocks = parser.parseData().get("GtkButton");
         t = null;
 
         assertFalse(blocks[1] instanceof TypeBlock);
@@ -151,12 +148,10 @@ public class ValidateIntrospectionParsing extends TestCase
     }
 
     public final void testMethodReferenceToSelfInsertion() throws ParsingException, IOException {
-        Map<String, DefsFile> results;
         Block[] blocks;
         MethodBlock block;
 
-        results = parser.parseData();
-        blocks = results.get("GtkButton").getBlocks();
+        blocks = parser.parseData().get("GtkButton");
 
         assertTrue(blocks[2] instanceof MethodBlock);
 
