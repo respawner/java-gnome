@@ -1059,6 +1059,7 @@ public class IntrospectionParser
                 final List<String[]> characteristics;
                 final List<String> signalNames;
                 final String cName;
+                final String[] headers;
                 final boolean introspectable;
 
                 object = objects.get(objectIndex);
@@ -1082,6 +1083,7 @@ public class IntrospectionParser
                 functions = object.getChildElements("function", CORE_NAMESPACE);
                 virtuals = object.getChildElements("virtual-method", CORE_NAMESPACE);
                 signals = object.getChildElements("signal", GLIB_NAMESPACE);
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1111,12 +1113,15 @@ public class IntrospectionParser
                         header
                     });
                 }
-                // FIXME
-                if (cName.equals("NotifyNotification"))
-                    characteristics.add(new String[] {
-                        "import-header",
-                        "libnotify/notification.h"
-                    });
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
+                }
 
                 /*
                  * Build the object blocks based on the info we have.
@@ -1208,6 +1213,7 @@ public class IntrospectionParser
                 final List<String[]> characteristics;
                 final List<String> signalNames;
                 final String cName;
+                final String[] headers;
                 final boolean introspectable;
 
                 interfaze = interfaces.get(interfaceIndex);
@@ -1230,6 +1236,7 @@ public class IntrospectionParser
                 functions = interfaze.getChildElements("function", CORE_NAMESPACE);
                 virtuals = interfaze.getChildElements("virtual-method", CORE_NAMESPACE);
                 signals = interfaze.getChildElements("signal", GLIB_NAMESPACE);
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1254,6 +1261,15 @@ public class IntrospectionParser
                         "import-header",
                         header
                     });
+                }
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
                 }
 
                 /*
@@ -1332,6 +1348,7 @@ public class IntrospectionParser
                 final List<Block> blocks;
                 final List<String[]> characteristics, values;
                 final String cName;
+                final String[] headers;
                 final boolean introspectable;
 
                 enumeration = enumerations.get(enumerationIndex);
@@ -1347,6 +1364,8 @@ public class IntrospectionParser
                 if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
+
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1372,6 +1391,19 @@ public class IntrospectionParser
                         header
                     });
                 }
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
+                }
+
+                /*
+                 * Get all values.
+                 */
 
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
@@ -1423,6 +1455,7 @@ public class IntrospectionParser
                 final List<Block> blocks;
                 final List<String[]> characteristics, values;
                 final String cName;
+                final String[] headers;
                 final boolean introspectable;
 
                 flag = flags.get(flagIndex);
@@ -1437,6 +1470,8 @@ public class IntrospectionParser
                 if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
+
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1462,6 +1497,19 @@ public class IntrospectionParser
                         header
                     });
                 }
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
+                }
+
+                /*
+                 * Get all values.
+                 */
 
                 for (int valueIndex = 0; valueIndex < valuesList.size(); valueIndex++) {
                     final Element value;
@@ -1513,6 +1561,7 @@ public class IntrospectionParser
                 final List<String[]> characteristics;
                 final String boxedName, cName;
                 final BoxedBlock boxedBlock;
+                final String[] headers;
                 final boolean introspectable;
 
                 boxed = boxeds.get(boxedIndex);
@@ -1536,6 +1585,7 @@ public class IntrospectionParser
                 methods = boxed.getChildElements("method", CORE_NAMESPACE);
                 blocks = new ArrayList<Block>();
                 characteristics = new ArrayList<String[]>();
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1560,6 +1610,15 @@ public class IntrospectionParser
                         "import-header",
                         header
                     });
+                }
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
                 }
 
                 boxedBlock = new BoxedBlock(getActualJavaName(cName, boxedName), characteristics);
@@ -1651,6 +1710,7 @@ public class IntrospectionParser
                 final List<String[]> characteristics;
                 final String unionName, cName;
                 final BoxedBlock unionBlock;
+                final String[] headers;
                 final boolean introspectable;
 
                 union = unions.get(unionIndex);
@@ -1674,6 +1734,7 @@ public class IntrospectionParser
                 methods = union.getChildElements("method", CORE_NAMESPACE);
                 blocks = new ArrayList<Block>();
                 characteristics = new ArrayList<String[]>();
+                headers = typesList.getHeadersForType(cName);
 
                 /*
                  * Get object first characteristics: module it belongs to and
@@ -1698,6 +1759,15 @@ public class IntrospectionParser
                         "import-header",
                         header
                     });
+                }
+
+                if (headers != null) {
+                    for (String header : headers) {
+                        characteristics.add(new String[] {
+                            "import-header",
+                            header
+                        });
+                    }
                 }
 
                 unionBlock = new BoxedBlock(getActualJavaName(cName, unionName), characteristics);

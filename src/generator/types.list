@@ -1,535 +1,544 @@
-# This file is a combined blacklist and whitelist.
-# It is written in the following format:
-#
-# TypeNameInC {
-#   c_name_of_constructor,
-#   c_name_of_method,
-#   ...
-# }
-#
-# The 'TypeNameInC' will be whitelisted and in this way the Introspection
-# parser will know that it can use and parse this C type. All the constructors,
-# methods, functions, signals, virtuals, constants included between the
-# brackets and separated by comma will be ignored during the parsing.
-#
-# Why such a complex file?
-# The reason is: improving the stability of the Introspection parser.
-# Before moving to using Introspection data java-gnome used several .defs files
-# which contained objects definitions. So we selected the .defs files carefully
-# and we managed the content by hand. With GObject Introspection this is now
-# the libraries which give us their objects definitions and so we have no
-# control in them. This is why we needed a way to accept or ignore some data.
+<?xml version="1.0"?>
+<!--
+  This file is a combined blacklist and whitelist.
+  It is written in a simple XML format:
 
-AtkAction { }
-AtkAttributeSet { }
-AtkComponent { }
-AtkCoordType { }
-AtkDocument { }
-AtkEditableText { }
-AtkGObjectAccessible { }
-AtkHyperlink { }
-AtkHyperlinkImpl { }
-AtkHyperlinkStateFlags { }
-AtkHypertext { }
-AtkImage { }
-AtkImplementorIface { }
-AtkKeyEventType { }
-AtkLayer { }
-AtkNoOpObject { }
-AtkNoOpObjectFactory { }
-AtkObject { }
-AtkObjectFactory { }
-AtkRectangle { }
-AtkRegistry { }
-AtkRelation { }
-AtkRelationSet { }
-AtkRelationType { }
-AtkRole { }
-AtkSelection { }
-AtkStateSet { }
-AtkStateType { }
-AtkStreamableContent { }
-AtkTable { }
-AtkTextAttribute { }
-AtkTextBoundary { }
-AtkTextClipType { }
-AtkText { }
-AtkTextRange { }
-AtkTextRectangle { }
-AtkUtil { }
-AtkValue { }
-cairo_content_t { }
-CairoAntialias { }
-CairoContent { }
-CairoContext { }
-CairoExtend { }
-CairoFillRule { }
-CairoFilter { }
-CairoFontOption { }
-CairoFormat { }
-CairoHintMetrics { }
-CairoHintStyle { }
-CairoMatrix { }
-CairoOperator { }
-CairoPattern { }
-CairoStatus { }
-CairoSurface { }
-EnchantBroker { }
-EnchantDict { }
-GApplicationCommandLine { }
-GApplication { }
-GApplicationFlags { }
-GdkAxisUse { }
-GdkCapStyle { }
-GdkColorspace { }
-GdkCrossingMode { }
-GdkCursor { }
-GdkCursorType { }
-GdkDevice { }
-GdkDisplay { }
-GdkDisplayManager { }
-GdkDragAction { }
-GdkDragContext { }
-GdkDragProtocol { }
-GdkEventAny { }
-GdkEventButton { }
-GdkEventConfigure { }
-GdkEventCrossing { }
-GdkEvent { }
-GdkEventFocus { }
-GdkEventKey { }
-GdkEventMask { }
-GdkEventMotion { }
-GdkEventOwnerChange { }
-GdkEventScroll { }
-GdkEventType {
-  GDK_2BUTTON_PRESS,
-  GDK_3BUTTON_PRESS
-}
-GdkEventVisibility { }
-GdkExtensionMode { }
-GdkFill { }
-GdkFillRule { }
-GdkFilterReturn { }
-GdkFunction { }
-GdkGeometry { }
-GdkGrabStatus { }
-GdkGravity { }
-GdkInputMode { }
-GdkInputSource { }
-GdkInterpType { }
-GdkJoinStyle { }
-GdkKeymap { }
-GdkKeymapKey { }
-GdkKeyval { }
-GdkLineStyle { }
-GdkModifierType { }
-GdkNotifyType { }
-GdkOverlapType { }
-GdkOwnerChange { }
-GdkPangoAttrEmbossed { }
-GdkPangoAttrStipple { }
-GdkPixbufAlphaMode { }
-GdkPixbufAnimation { }
-GdkPixbufAnimationIter { }
-GdkPixbuf {
-  gdk_pixbuf_gettext
-}
-GdkPixbufError { }
-GdkPixbufLoader { }
-GdkPixbufRotation { }
-GdkPixbufSimpleAnim { }
-GdkPixbufSimpleAnimIter { }
-GdkPoint { }
-GdkPropertyState { }
-GdkPropMode { }
-GdkRectangle { }
-GdkRGBA { }
-GdkRgbDither { }
-GdkScreen { }
-GdkScrollDirection { }
-GdkSettingAction { }
-GdkStatus { }
-GdkSubwindowMode { }
-GdkVisibilityState { }
-GdkVisual { }
-GdkVisualType { }
-GdkWindowAttr { }
-GdkWindowAttributesType { }
-GdkWindowClass { }
-GdkWindow {
-  gdk_window_destroy_notify
-}
-GdkWindowEdge { }
-GdkWindowHints { }
-GdkWindowState { }
-GdkWindowType { }
-GdkWindowTypeHint { }
-GFile { }
-GFormatSizeFlags { }
-GlibMisc { }
-GtkAboutDialog { }
-GtkAccelFlags { }
-GtkAccelGroup { }
-GtkAccelKey { }
-GtkAccelLabel { }
-GtkAccelMap { }
-GtkAccessible { }
-GtkAction { }
-GtkActionGroup { }
-GtkActivatable { }
-GtkAdjustment { }
-GtkAlign { }
-GtkAlignment { }
-GtkAllocation { }
-GtkAnchorType { }
-GtkApplication { }
-GtkApplicationInhibitFlags { }
-GtkArrow { }
-GtkArrowType { }
-GtkAspectFrame { }
-GtkAssistant { }
-GtkAssistantPageType { }
-GtkAttachOptions { }
-GtkBin { }
-GtkBorder { }
-GtkBox { }
-GtkBuilder { }
-GtkButtonBox { }
-GtkButtonBoxStyle { }
-GtkButton { }
-GtkButtonsType { }
-GtkCalendar { }
-GtkCalendarDisplayOptions { }
-GtkCellEditable { }
-GtkCellLayout { }
-GtkCellRendererAccel { }
-GtkCellRendererAccelMode { }
-GtkCellRendererCombo { }
-GtkCellRenderer { }
-GtkCellRendererMode { }
-GtkCellRendererPixbuf { }
-GtkCellRendererProgress { }
-GtkCellRendererSpin { }
-GtkCellRendererSpinner { }
-GtkCellRendererState { }
-GtkCellRendererText { }
-GtkCellRendererToggle { }
-GtkCellType { }
-GtkCellView { }
-GtkCheckButton { }
-GtkCheckMenuItem { }
-GtkClipboard { }
-GtkColorButton { }
-GtkColorSelection { }
-GtkColorSelectionDialog { }
-GtkComboBox { }
-GtkComboBoxText { }
-GtkContainer { }
-GtkCornerType { }
-GtkDebugFlag { }
-GtkDeleteType { }
-GtkDestDefaults { }
-GtkDialog { }
-GtkDialogFlags { }
-GtkDirectionType { }
-GtkDrawingArea { }
-GtkEditable { }
-GtkEntryBuffer { }
-GtkEntryCompletion { }
-GtkEntry { }
-GtkEntryIconPosition { }
-GtkEventBox { }
-GtkExpander { }
-GtkExpanderStyle { }
-GtkFileChooserAction { }
-GtkFileChooserButton { }
-GtkFileChooserConfirmation { }
-GtkFileChooser { }
-GtkFileChooserDialog { }
-GtkFileChooserError { }
-GtkFileChooserWidget { }
-GtkFileFilter { }
-GtkFileFilterFlags { }
-GtkFilePath { }
-GtkFixed { }
-GtkFontButton { }
-GtkFontSelection { }
-GtkFontSelectionDialog { }
-GtkFrame { }
-GtkGrid { }
-GtkHandleBox { }
-GtkHBox { }
-GtkHButtonBox { }
-GtkHPaned { }
-GtkHScale { }
-GtkHScrollbar { }
-GtkHSeparator { }
-GtkIconFactory { }
-GtkIconInfo { }
-GtkIconLookupFlags { }
-GtkIconSet { }
-GtkIconSize { }
-GtkIconSource { }
-GtkIconTheme { }
-GtkIconThemeError { }
-GtkIconView { }
-GtkIconViewDropPosition { }
-GtkImage { }
-GtkImageMenuItem { }
-GtkImageType { }
-GtkIMContext { }
-GtkIMContextSimple { }
-GtkIMMulticontext { }
-GtkIMPreeditStyle { }
-GtkIMStatusStyle { }
-GtkInfoBar { }
-GtkInputDialog { }
-GtkJunctionSides { }
-GtkJustification { }
-GtkLabel { }
-GtkLayout { }
-GtkLicense { }
-GtkLinkButton { }
-GtkListStore {
-  gtk_list_store_insert_with_valuesv,
-  gtk_list_store_set_valuesv
-}
-GtkMenuBar { }
-GtkMenu { }
-GtkMenuDirectionType { }
-GtkMenuItem { }
-GtkMenuShell { }
-GtkMenuToolButton { }
-GtkMessageDialog { }
-GtkMessageType { }
-GtkMetricType { }
-GtkMisc { }
-GtkMovementStep { }
-GtkNotebook { }
-GtkNotebookTab { }
-GtkOffscreenWindow { }
-GtkOrientable { }
-GtkOrientation { }
-GtkPackDirection { }
-GtkPackType { }
-GtkPageOrientation { }
-GtkPageSet { }
-GtkPageSetup { }
-GtkPageSetupUnixDialog { }
-GtkPaned { }
-GtkPaperSize { }
-GtkPathPriorityType { }
-GtkPathType { }
-GtkPlug { }
-GtkPolicyType { }
-GtkPositionType { }
-GtkPrintCapabilities { }
-GtkPrintContext { }
-GtkPrintDuplex { }
-GtkPrinter { }
-GtkPrintError { }
-GtkPrintJob { }
-GtkPrintOperationAction { }
-GtkPrintOperation { }
-GtkPrintOperationPreview { }
-GtkPrintOperationResult { }
-GtkPrintPages { }
-GtkPrintQuality { }
-GtkPrintSettings { }
-GtkPrintStatus { }
-GtkPrintUnixDialog { }
-GtkProgressBar { }
-GtkProgressBarOrientation { }
-GtkRadioAction { }
-GtkRadioButton { }
-GtkRadioMenuItem { }
-GtkRadioToolButton { }
-GtkRange { }
-GtkRcFlags { }
-GtkRcScanner { }
-GtkRCStyle { }
-GtkRcTokenType { }
-GtkRecentAction { }
-GtkRecentChooser { }
-GtkRecentChooserDialog { }
-GtkRecentChooserError { }
-GtkRecentChooserMenu { }
-GtkRecentChooserWidget { }
-GtkRecentFilter { }
-GtkRecentFilterFlags { }
-GtkRecentInfo { }
-GtkRecentManager { }
-GtkRecentManagerError { }
-GtkRecentSortType { }
-GtkRegionFlags { }
-GtkReliefStyle { }
-GtkRequisition { }
-GtkResizeMode { }
-GtkResponseType { }
-GtkScaleButton { }
-GtkScale { }
-GtkScrollbar { }
-GtkScrolledWindow { }
-GtkScrollStep { }
-GtkScrollType { }
-GtkSelectionData { }
-GtkSelectionMode { }
-GtkSensitivityType { }
-GtkSeparator { }
-GtkSeparatorMenuItem { }
-GtkSeparatorToolItem { }
-GtkSettings { }
-GtkShadowType { }
-GtkSignalRunType { }
-GtkSizeGroup { }
-GtkSizeGroupMode { }
-GtkSizeRequestMode { }
-GtkSocket { }
-GtkSortType { }
-GtkSourceBuffer { }
-GtkSourceDrawSpacesFlags { }
-GtkSourceLanguage { }
-GtkSourceLanguageManager { }
-GtkSourceMark { }
-GtkSourcePrintCompositor { }
-GtkSourceSearchFlags { }
-GtkSourceSmartHomeEndType { }
-GtkSourceStyle { }
-GtkSourceStyleScheme { }
-GtkSourceStyleSchemeManager { }
-GtkSourceView { }
-GtkSpell { }
-GtkSpinButton { }
-GtkSpinButtonUpdatePolicy { }
-GtkSpinner { }
-GtkSpinType { }
-GtkStateFlags { }
-GtkStatusbar { }
-GtkStatusIcon { }
-GtkStyleContext { }
-GtkSwitch { }
-GtkTable { }
-GtkTargetFlags { }
-GtkTearoffMenuItem { }
-GtkTest { }
-GtkTextAppearance { }
-GtkTextAttributes { }
-GtkTextBuffer { }
-GtkTextBufferTargetInfo { }
-GtkTextChildAnchor { }
-GtkTextDirection { }
-GtkTextIter { }
-GtkTextMark { }
-GtkTextSearchFlags { }
-GtkTextTag { }
-GtkTextTagTable { }
-GtkTextView { }
-GtkTextWindowType { }
-GtkToggleAction { }
-GtkToggleButton { }
-GtkToggleToolButton { }
-GtkToolbar { }
-GtkToolbarSpaceStyle { }
-GtkToolbarStyle { }
-GtkToolButton { }
-GtkToolItem { }
-GtkToolItemGroup { }
-GtkToolPalette { }
-GtkToolPaletteDragTargets { }
-GtkTooltip { }
-GtkTreeDragDest { }
-GtkTreeDragSource { }
-GtkTreeIter { }
-GtkTreeModel { }
-GtkTreeModelFilter { }
-GtkTreeModelFlags { }
-GtkTreeModelSort { }
-GtkTreePath { }
-GtkTreeRowReference { }
-GtkTreeSelection { }
-GtkTreeSortable { }
-GtkTreeStore {
-  gtk_tree_store_insert_with_values,
-  gtk_tree_store_insert_with_valuesv,
-  gtk_tree_store_set_valuesv
-}
-GtkTreeViewColumn { }
-GtkTreeViewColumnSizing { }
-GtkTreeView { }
-GtkTreeViewDropPosition { }
-GtkTreeViewGridLines { }
-GtkTreeViewMode { }
-GtkUIManager { }
-GtkUIManagerItemType { }
-GtkUnit { }
-GtkVBox { }
-GtkVButtonBox { }
-GtkViewport { }
-GtkVPaned { }
-GtkVScale { }
-GtkVScrollbar { }
-GtkVSeparator { }
-GtkWidget { }
-GtkWidgetHelpType { }
-GtkWindow { }
-GtkWindowGroup { }
-GtkWindowPosition { }
-GtkWindowType { }
-GtkWrapMode { }
-GUserDirectory { }
-NotifyMain { }
-NotifyNotification { }
-NotifyUrgency { }
-PangoAlignment { }
-PangoAnalysis { }
-PangoAttribute { }
-PangoAttrIterator { }
-PangoAttrList { }
-PangoAttrType { }
-PangoCairoFcFont { }
-PangoColor { }
-PangoContext { }
-PangoCoverageLevel { }
-PangoDirection { }
-PangoEllipsizeMode { }
-PangoEngine { }
-PangoEngineLang { }
-PangoEngineShape { }
-PangoFcFont { }
-PangoFont { }
-PangoFontDescription { }
-PangoFontFace { }
-PangoFontFamily { }
-PangoFontMap { }
-PangoFontMask { }
-PangoFontMetrics { }
-PangoFontset { }
-PangoFontsetSimple { }
-PangoGlyphGeometry { }
-PangoGlyphInfo { }
-PangoGlyphString { }
-PangoGravity { }
-PangoGravityHint { }
-PangoItem { }
-PangoLanguage { }
-PangoLayout { }
-PangoLayoutIter { }
-PangoLayoutLine { }
-PangoMatrix { }
-PangoRectangle { }
-PangoRenderer { }
-PangoRenderPart { }
-PangoScript { }
-PangoStretch { }
-PangoStyle { }
-PangoTabAlign { }
-PangoTabArray { }
-PangoUnderline { }
-PangoVariant { }
-PangoWeight { }
-PangoWrapMode { }
-RsvgDimensionData { }
-RsvgHandle { }
-RsvgMain { }
-ScreenshotCapture { }
+  <type name="TypeNameInC">
+    <header name="include_like_string" />
+    <thing name="c_name_of_constructor" ignore="1" />
+    <thing name="c_name_of_method" ignore="1" />
+  </type>
+
+  The 'TypeNameInC' will be whitelisted and in this way the Introspection
+  parser will know that it can use and parse this C type. All the constructors,
+  methods, functions, signals, virtuals, constants listed with the "ignore"
+  attribute will be ignored during the parsing. You can also use the <header>
+  element to specify a header file to include in the generated C code.
+
+  Why such a file?
+  The reason is: improving the stability of the Introspection parser.
+  Before moving to using Introspection data java-gnome used several .defs files
+  which contained objects definitions. So we selected the .defs files carefully
+  and we managed the content by hand. With GObject Introspection this is now
+  the libraries which give us their objects definitions and so we have no
+  control in them. This is why we needed a way to accept or ignore some data.
+-->
+
+<list>
+  <type name="AtkAction" />
+  <type name="AtkAttributeSet" />
+  <type name="AtkComponent" />
+  <type name="AtkCoordType" />
+  <type name="AtkDocument" />
+  <type name="AtkEditableText" />
+  <type name="AtkGObjectAccessible" />
+  <type name="AtkHyperlink" />
+  <type name="AtkHyperlinkImpl" />
+  <type name="AtkHyperlinkStateFlags" />
+  <type name="AtkHypertext" />
+  <type name="AtkImage" />
+  <type name="AtkImplementorIface" />
+  <type name="AtkKeyEventType" />
+  <type name="AtkLayer" />
+  <type name="AtkNoOpObject" />
+  <type name="AtkNoOpObjectFactory" />
+  <type name="AtkObject" />
+  <type name="AtkObjectFactory" />
+  <type name="AtkRectangle" />
+  <type name="AtkRegistry" />
+  <type name="AtkRelation" />
+  <type name="AtkRelationSet" />
+  <type name="AtkRelationType" />
+  <type name="AtkRole" />
+  <type name="AtkSelection" />
+  <type name="AtkStateSet" />
+  <type name="AtkStateType" />
+  <type name="AtkStreamableContent" />
+  <type name="AtkTable" />
+  <type name="AtkTextAttribute" />
+  <type name="AtkTextBoundary" />
+  <type name="AtkTextClipType" />
+  <type name="AtkText" />
+  <type name="AtkTextRange" />
+  <type name="AtkTextRectangle" />
+  <type name="AtkUtil" />
+  <type name="AtkValue" />
+  <type name="cairo_content_t" />
+  <type name="CairoAntialias" />
+  <type name="CairoContent" />
+  <type name="CairoContext" />
+  <type name="CairoExtend" />
+  <type name="CairoFillRule" />
+  <type name="CairoFilter" />
+  <type name="CairoFontOption" />
+  <type name="CairoFormat" />
+  <type name="CairoHintMetrics" />
+  <type name="CairoHintStyle" />
+  <type name="CairoMatrix" />
+  <type name="CairoOperator" />
+  <type name="CairoPattern" />
+  <type name="CairoStatus" />
+  <type name="CairoSurface" />
+  <type name="EnchantBroker" />
+  <type name="EnchantDict" />
+  <type name="GApplicationCommandLine" />
+  <type name="GApplication" />
+  <type name="GApplicationFlags" />
+  <type name="GdkAxisUse" />
+  <type name="GdkCapStyle" />
+  <type name="GdkColorspace" />
+  <type name="GdkCrossingMode" />
+  <type name="GdkCursor" />
+  <type name="GdkCursorType" />
+  <type name="GdkDevice" />
+  <type name="GdkDisplay" />
+  <type name="GdkDisplayManager" />
+  <type name="GdkDragAction" />
+  <type name="GdkDragContext" />
+  <type name="GdkDragProtocol" />
+  <type name="GdkEventAny" />
+  <type name="GdkEventButton" />
+  <type name="GdkEventConfigure" />
+  <type name="GdkEventCrossing" />
+  <type name="GdkEvent" />
+  <type name="GdkEventFocus" />
+  <type name="GdkEventKey" />
+  <type name="GdkEventMask" />
+  <type name="GdkEventMotion" />
+  <type name="GdkEventOwnerChange" />
+  <type name="GdkEventScroll" />
+  <type name="GdkEventType">
+    <thing name="GDK_2BUTTON_PRESS" ignore="1" />
+    <thing name="GDK_3BUTTON_PRESS" ignore="1" />
+  </type>
+  <type name="GdkEventVisibility" />
+  <type name="GdkExtensionMode" />
+  <type name="GdkFill" />
+  <type name="GdkFillRule" />
+  <type name="GdkFilterReturn" />
+  <type name="GdkFunction" />
+  <type name="GdkGeometry" />
+  <type name="GdkGrabStatus" />
+  <type name="GdkGravity" />
+  <type name="GdkInputMode" />
+  <type name="GdkInputSource" />
+  <type name="GdkInterpType" />
+  <type name="GdkJoinStyle" />
+  <type name="GdkKeymap" />
+  <type name="GdkKeymapKey" />
+  <type name="GdkKeyval" />
+  <type name="GdkLineStyle" />
+  <type name="GdkModifierType" />
+  <type name="GdkNotifyType" />
+  <type name="GdkOverlapType" />
+  <type name="GdkOwnerChange" />
+  <type name="GdkPangoAttrEmbossed" />
+  <type name="GdkPangoAttrStipple" />
+  <type name="GdkPixbufAlphaMode" />
+  <type name="GdkPixbufAnimation" />
+  <type name="GdkPixbufAnimationIter" />
+  <type name="GdkPixbuf">
+    <thing name="gdk_pixbuf_gettext" ignore="1" />
+  </type>
+  <type name="GdkPixbufError" />
+  <type name="GdkPixbufLoader" />
+  <type name="GdkPixbufRotation" />
+  <type name="GdkPixbufSimpleAnim" />
+  <type name="GdkPixbufSimpleAnimIter" />
+  <type name="GdkPoint" />
+  <type name="GdkPropertyState" />
+  <type name="GdkPropMode" />
+  <type name="GdkRectangle" />
+  <type name="GdkRGBA" />
+  <type name="GdkRgbDither" />
+  <type name="GdkScreen" />
+  <type name="GdkScrollDirection" />
+  <type name="GdkSettingAction" />
+  <type name="GdkStatus" />
+  <type name="GdkSubwindowMode" />
+  <type name="GdkVisibilityState" />
+  <type name="GdkVisual" />
+  <type name="GdkVisualType" />
+  <type name="GdkWindowAttr" />
+  <type name="GdkWindowAttributesType" />
+  <type name="GdkWindowClass" />
+  <type name="GdkWindow">
+    <thing name="gdk_window_destroy_notify" ignore="1" />
+  </type>
+  <type name="GdkWindowEdge" />
+  <type name="GdkWindowHints" />
+  <type name="GdkWindowState" />
+  <type name="GdkWindowType" />
+  <type name="GdkWindowTypeHint" />
+  <type name="GFile" />
+  <type name="GFormatSizeFlags" />
+  <type name="GlibMisc" />
+  <type name="GtkAboutDialog" />
+  <type name="GtkAccelFlags" />
+  <type name="GtkAccelGroup" />
+  <type name="GtkAccelKey" />
+  <type name="GtkAccelLabel" />
+  <type name="GtkAccelMap" />
+  <type name="GtkAccessible" />
+  <type name="GtkAction" />
+  <type name="GtkActionGroup" />
+  <type name="GtkActivatable" />
+  <type name="GtkAdjustment" />
+  <type name="GtkAlign" />
+  <type name="GtkAlignment" />
+  <type name="GtkAllocation" />
+  <type name="GtkAnchorType" />
+  <type name="GtkApplication" />
+  <type name="GtkApplicationInhibitFlags" />
+  <type name="GtkArrow" />
+  <type name="GtkArrowType" />
+  <type name="GtkAspectFrame" />
+  <type name="GtkAssistant" />
+  <type name="GtkAssistantPageType" />
+  <type name="GtkAttachOptions" />
+  <type name="GtkBin" />
+  <type name="GtkBorder" />
+  <type name="GtkBox" />
+  <type name="GtkBuilder" />
+  <type name="GtkButtonBox" />
+  <type name="GtkButtonBoxStyle" />
+  <type name="GtkButton" />
+  <type name="GtkButtonsType" />
+  <type name="GtkCalendar" />
+  <type name="GtkCalendarDisplayOptions" />
+  <type name="GtkCellEditable" />
+  <type name="GtkCellLayout" />
+  <type name="GtkCellRendererAccel" />
+  <type name="GtkCellRendererAccelMode" />
+  <type name="GtkCellRendererCombo" />
+  <type name="GtkCellRenderer" />
+  <type name="GtkCellRendererMode" />
+  <type name="GtkCellRendererPixbuf" />
+  <type name="GtkCellRendererProgress" />
+  <type name="GtkCellRendererSpin" />
+  <type name="GtkCellRendererSpinner" />
+  <type name="GtkCellRendererState" />
+  <type name="GtkCellRendererText" />
+  <type name="GtkCellRendererToggle" />
+  <type name="GtkCellType" />
+  <type name="GtkCellView" />
+  <type name="GtkCheckButton" />
+  <type name="GtkCheckMenuItem" />
+  <type name="GtkClipboard" />
+  <type name="GtkColorButton" />
+  <type name="GtkColorSelection" />
+  <type name="GtkColorSelectionDialog" />
+  <type name="GtkComboBox" />
+  <type name="GtkComboBoxText" />
+  <type name="GtkContainer" />
+  <type name="GtkCornerType" />
+  <type name="GtkDebugFlag" />
+  <type name="GtkDeleteType" />
+  <type name="GtkDestDefaults" />
+  <type name="GtkDialog" />
+  <type name="GtkDialogFlags" />
+  <type name="GtkDirectionType" />
+  <type name="GtkDrawingArea" />
+  <type name="GtkEditable" />
+  <type name="GtkEntryBuffer" />
+  <type name="GtkEntryCompletion" />
+  <type name="GtkEntry" />
+  <type name="GtkEntryIconPosition" />
+  <type name="GtkEventBox" />
+  <type name="GtkExpander" />
+  <type name="GtkExpanderStyle" />
+  <type name="GtkFileChooserAction" />
+  <type name="GtkFileChooserButton" />
+  <type name="GtkFileChooserConfirmation" />
+  <type name="GtkFileChooser" />
+  <type name="GtkFileChooserDialog" />
+  <type name="GtkFileChooserError" />
+  <type name="GtkFileChooserWidget" />
+  <type name="GtkFileFilter" />
+  <type name="GtkFileFilterFlags" />
+  <type name="GtkFilePath" />
+  <type name="GtkFixed" />
+  <type name="GtkFontButton" />
+  <type name="GtkFontSelection" />
+  <type name="GtkFontSelectionDialog" />
+  <type name="GtkFrame" />
+  <type name="GtkGrid" />
+  <type name="GtkHandleBox" />
+  <type name="GtkHBox" />
+  <type name="GtkHButtonBox" />
+  <type name="GtkHPaned" />
+  <type name="GtkHScale" />
+  <type name="GtkHScrollbar" />
+  <type name="GtkHSeparator" />
+  <type name="GtkIconFactory" />
+  <type name="GtkIconInfo" />
+  <type name="GtkIconLookupFlags" />
+  <type name="GtkIconSet" />
+  <type name="GtkIconSize" />
+  <type name="GtkIconSource" />
+  <type name="GtkIconTheme" />
+  <type name="GtkIconThemeError" />
+  <type name="GtkIconView" />
+  <type name="GtkIconViewDropPosition" />
+  <type name="GtkImage" />
+  <type name="GtkImageMenuItem" />
+  <type name="GtkImageType" />
+  <type name="GtkIMContext" />
+  <type name="GtkIMContextSimple" />
+  <type name="GtkIMMulticontext" />
+  <type name="GtkIMPreeditStyle" />
+  <type name="GtkIMStatusStyle" />
+  <type name="GtkInfoBar" />
+  <type name="GtkInputDialog" />
+  <type name="GtkJunctionSides" />
+  <type name="GtkJustification" />
+  <type name="GtkLabel" />
+  <type name="GtkLayout" />
+  <type name="GtkLicense" />
+  <type name="GtkLinkButton" />
+  <type name="GtkListStore">
+    <thing name="gtk_list_store_insert_with_valuesv" ignore="1" />
+    <thing name="gtk_list_store_set_valuesv" ignore="1" />
+  </type>
+  <type name="GtkMenuBar" />
+  <type name="GtkMenu" />
+  <type name="GtkMenuDirectionType" />
+  <type name="GtkMenuItem" />
+  <type name="GtkMenuShell" />
+  <type name="GtkMenuToolButton" />
+  <type name="GtkMessageDialog" />
+  <type name="GtkMessageType" />
+  <type name="GtkMetricType" />
+  <type name="GtkMisc" />
+  <type name="GtkMovementStep" />
+  <type name="GtkNotebook" />
+  <type name="GtkNotebookTab" />
+  <type name="GtkOffscreenWindow" />
+  <type name="GtkOrientable" />
+  <type name="GtkOrientation" />
+  <type name="GtkPackDirection" />
+  <type name="GtkPackType" />
+  <type name="GtkPageOrientation" />
+  <type name="GtkPageSet" />
+  <type name="GtkPageSetup" />
+  <type name="GtkPageSetupUnixDialog" />
+  <type name="GtkPaned" />
+  <type name="GtkPaperSize" />
+  <type name="GtkPathPriorityType" />
+  <type name="GtkPathType" />
+  <type name="GtkPlug" />
+  <type name="GtkPolicyType" />
+  <type name="GtkPositionType" />
+  <type name="GtkPrintCapabilities" />
+  <type name="GtkPrintContext" />
+  <type name="GtkPrintDuplex" />
+  <type name="GtkPrinter" />
+  <type name="GtkPrintError" />
+  <type name="GtkPrintJob" />
+  <type name="GtkPrintOperationAction" />
+  <type name="GtkPrintOperation" />
+  <type name="GtkPrintOperationPreview" />
+  <type name="GtkPrintOperationResult" />
+  <type name="GtkPrintPages" />
+  <type name="GtkPrintQuality" />
+  <type name="GtkPrintSettings" />
+  <type name="GtkPrintStatus" />
+  <type name="GtkPrintUnixDialog" />
+  <type name="GtkProgressBar" />
+  <type name="GtkProgressBarOrientation" />
+  <type name="GtkRadioAction" />
+  <type name="GtkRadioButton" />
+  <type name="GtkRadioMenuItem" />
+  <type name="GtkRadioToolButton" />
+  <type name="GtkRange" />
+  <type name="GtkRcFlags" />
+  <type name="GtkRcScanner" />
+  <type name="GtkRCStyle" />
+  <type name="GtkRcTokenType" />
+  <type name="GtkRecentAction" />
+  <type name="GtkRecentChooser" />
+  <type name="GtkRecentChooserDialog" />
+  <type name="GtkRecentChooserError" />
+  <type name="GtkRecentChooserMenu" />
+  <type name="GtkRecentChooserWidget" />
+  <type name="GtkRecentFilter" />
+  <type name="GtkRecentFilterFlags" />
+  <type name="GtkRecentInfo" />
+  <type name="GtkRecentManager" />
+  <type name="GtkRecentManagerError" />
+  <type name="GtkRecentSortType" />
+  <type name="GtkRegionFlags" />
+  <type name="GtkReliefStyle" />
+  <type name="GtkRequisition" />
+  <type name="GtkResizeMode" />
+  <type name="GtkResponseType" />
+  <type name="GtkScaleButton" />
+  <type name="GtkScale" />
+  <type name="GtkScrollbar" />
+  <type name="GtkScrolledWindow" />
+  <type name="GtkScrollStep" />
+  <type name="GtkScrollType" />
+  <type name="GtkSelectionData" />
+  <type name="GtkSelectionMode" />
+  <type name="GtkSensitivityType" />
+  <type name="GtkSeparator" />
+  <type name="GtkSeparatorMenuItem" />
+  <type name="GtkSeparatorToolItem" />
+  <type name="GtkSettings" />
+  <type name="GtkShadowType" />
+  <type name="GtkSignalRunType" />
+  <type name="GtkSizeGroup" />
+  <type name="GtkSizeGroupMode" />
+  <type name="GtkSizeRequestMode" />
+  <type name="GtkSocket" />
+  <type name="GtkSortType" />
+  <type name="GtkSourceBuffer" />
+  <type name="GtkSourceDrawSpacesFlags" />
+  <type name="GtkSourceLanguage" />
+  <type name="GtkSourceLanguageManager" />
+  <type name="GtkSourceMark" />
+  <type name="GtkSourcePrintCompositor" />
+  <type name="GtkSourceSearchFlags" />
+  <type name="GtkSourceSmartHomeEndType" />
+  <type name="GtkSourceStyle" />
+  <type name="GtkSourceStyleScheme" />
+  <type name="GtkSourceStyleSchemeManager" />
+  <type name="GtkSourceView" />
+  <type name="GtkSpell" />
+  <type name="GtkSpinButton" />
+  <type name="GtkSpinButtonUpdatePolicy" />
+  <type name="GtkSpinner" />
+  <type name="GtkSpinType" />
+  <type name="GtkStateFlags" />
+  <type name="GtkStatusbar" />
+  <type name="GtkStatusIcon" />
+  <type name="GtkStyleContext" />
+  <type name="GtkSwitch" />
+  <type name="GtkTable" />
+  <type name="GtkTargetFlags" />
+  <type name="GtkTearoffMenuItem" />
+  <type name="GtkTest" />
+  <type name="GtkTextAppearance" />
+  <type name="GtkTextAttributes" />
+  <type name="GtkTextBuffer" />
+  <type name="GtkTextBufferTargetInfo" />
+  <type name="GtkTextChildAnchor" />
+  <type name="GtkTextDirection" />
+  <type name="GtkTextIter" />
+  <type name="GtkTextMark" />
+  <type name="GtkTextSearchFlags" />
+  <type name="GtkTextTag" />
+  <type name="GtkTextTagTable" />
+  <type name="GtkTextView" />
+  <type name="GtkTextWindowType" />
+  <type name="GtkToggleAction" />
+  <type name="GtkToggleButton" />
+  <type name="GtkToggleToolButton" />
+  <type name="GtkToolbar" />
+  <type name="GtkToolbarSpaceStyle" />
+  <type name="GtkToolbarStyle" />
+  <type name="GtkToolButton" />
+  <type name="GtkToolItem" />
+  <type name="GtkToolItemGroup" />
+  <type name="GtkToolPalette" />
+  <type name="GtkToolPaletteDragTargets" />
+  <type name="GtkTooltip" />
+  <type name="GtkTreeDragDest" />
+  <type name="GtkTreeDragSource" />
+  <type name="GtkTreeIter" />
+  <type name="GtkTreeModel" />
+  <type name="GtkTreeModelFilter" />
+  <type name="GtkTreeModelFlags" />
+  <type name="GtkTreeModelSort" />
+  <type name="GtkTreePath" />
+  <type name="GtkTreeRowReference" />
+  <type name="GtkTreeSelection" />
+  <type name="GtkTreeSortable" />
+  <type name="GtkTreeStore">
+    <thing name="gtk_tree_store_insert_with_values" ignore="1" />
+    <thing name="gtk_tree_store_insert_with_valuesv" ignore="1" />
+    <thing name="gtk_tree_store_set_valuesv" ignore="1" />
+  </type>
+  <type name="GtkTreeViewColumn" />
+  <type name="GtkTreeViewColumnSizing" />
+  <type name="GtkTreeView" />
+  <type name="GtkTreeViewDropPosition" />
+  <type name="GtkTreeViewGridLines" />
+  <type name="GtkTreeViewMode" />
+  <type name="GtkUIManager" />
+  <type name="GtkUIManagerItemType" />
+  <type name="GtkUnit" />
+  <type name="GtkVBox" />
+  <type name="GtkVButtonBox" />
+  <type name="GtkViewport" />
+  <type name="GtkVPaned" />
+  <type name="GtkVScale" />
+  <type name="GtkVScrollbar" />
+  <type name="GtkVSeparator" />
+  <type name="GtkWidget" />
+  <type name="GtkWidgetHelpType" />
+  <type name="GtkWindow" />
+  <type name="GtkWindowGroup" />
+  <type name="GtkWindowPosition" />
+  <type name="GtkWindowType" />
+  <type name="GtkWrapMode" />
+  <type name="GUserDirectory" />
+  <type name="NotifyMain" />
+  <type name="NotifyNotification">
+    <header name="libnotify/notification.h" />
+  </type>
+  <type name="NotifyUrgency" />
+  <type name="PangoAlignment" />
+  <type name="PangoAnalysis" />
+  <type name="PangoAttribute" />
+  <type name="PangoAttrIterator" />
+  <type name="PangoAttrList" />
+  <type name="PangoAttrType" />
+  <type name="PangoCairoFcFont" />
+  <type name="PangoColor" />
+  <type name="PangoContext" />
+  <type name="PangoCoverageLevel" />
+  <type name="PangoDirection" />
+  <type name="PangoEllipsizeMode" />
+  <type name="PangoEngine" />
+  <type name="PangoEngineLang" />
+  <type name="PangoEngineShape" />
+  <type name="PangoFcFont" />
+  <type name="PangoFont" />
+  <type name="PangoFontDescription" />
+  <type name="PangoFontFace" />
+  <type name="PangoFontFamily" />
+  <type name="PangoFontMap" />
+  <type name="PangoFontMask" />
+  <type name="PangoFontMetrics" />
+  <type name="PangoFontset" />
+  <type name="PangoFontsetSimple" />
+  <type name="PangoGlyphGeometry" />
+  <type name="PangoGlyphInfo" />
+  <type name="PangoGlyphString" />
+  <type name="PangoGravity" />
+  <type name="PangoGravityHint" />
+  <type name="PangoItem" />
+  <type name="PangoLanguage" />
+  <type name="PangoLayout" />
+  <type name="PangoLayoutIter" />
+  <type name="PangoLayoutLine" />
+  <type name="PangoMatrix" />
+  <type name="PangoRectangle" />
+  <type name="PangoRenderer" />
+  <type name="PangoRenderPart" />
+  <type name="PangoScript" />
+  <type name="PangoStretch" />
+  <type name="PangoStyle" />
+  <type name="PangoTabAlign" />
+  <type name="PangoTabArray" />
+  <type name="PangoUnderline" />
+  <type name="PangoVariant" />
+  <type name="PangoWeight" />
+  <type name="PangoWrapMode" />
+  <type name="RsvgDimensionData" />
+  <type name="RsvgHandle" />
+  <type name="RsvgMain" />
+  <type name="ScreenshotCapture" />
+</list>
+

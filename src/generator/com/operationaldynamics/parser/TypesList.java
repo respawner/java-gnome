@@ -18,12 +18,18 @@
  */
 package com.operationaldynamics.parser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.ParsingException;
 
 /**
  * A class that give a way to know what types the {@link IntrospectionParser}
@@ -33,7 +39,24 @@ import java.util.Map;
  */
 final class TypesList
 {
-    private Map<String, String[]> list;
+    /**
+     * Class that contains attributes for a whitelisted type.
+     * 
+     * @author Guillaume Mazoyer
+     */
+    private class TypeAttributes
+    {
+        private List<String> headers;
+
+        private List<String> ignores;
+
+        private TypeAttributes() {
+            headers = new ArrayList<String>();
+            ignores = new ArrayList<String>();
+        }
+    }
+
+    private Map<String, TypeAttributes> list;
 
     /**
      * Build and load a types list based on the given filename.
@@ -42,7 +65,7 @@ final class TypesList
      *            the path of the file to load.
      */
     TypesList(String filename) {
-        list = new HashMap<String, String[]>();
+        list = new HashMap<String, TypeAttributes>();
 
         load(filename);
     }
@@ -54,67 +77,69 @@ final class TypesList
      *            the path of the file to load.
      */
     private final void load(String filename) {
-        final BufferedReader reader;
-        String line, block;
-        boolean inBlock;
+        final Builder builder;
+        final Document document;
+        final Elements types;
 
-        inBlock = false;
-        block = "";
+        builder = new Builder();
+
+        /*
+         * Start the parsing of the XML data.
+         */
 
         try {
-            reader = new BufferedReader(new FileReader(filename));
+            document = builder.build(new File(filename));
+        } catch (ParsingException e) {
+            System.err.println("Malformed XML data in " + filename + ":");
+            System.err.println(e.getMessage());
+            return;
+        } catch (IOException e) {
+            System.err.println("I/O problem when trying to parse " + filename);
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        } finally {
+            System.err.flush();
+        }
 
-            while ((line = reader.readLine()) != null) {
-                /*
-                 * This is a comment.
-                 */
+        /*
+         * Get all types listed in the file.
+         */
 
-                if (line.isEmpty() || line.startsWith("#") || line.startsWith(";;")
-                        || line.startsWith("//")) {
-                    continue;
-                }
+        types = document.getRootElement().getChildElements("type");
 
-                if (inBlock) {
-                    block += new String(line);
-                } else {
-                    block = new String(line);
-                    inBlock = true;
-                }
+        for (int i = 0; i < types.size(); i++) {
+            final Element type;
+            final Elements headers;
+            final Elements things;
+            final String typeName;
+            final TypeAttributes attributes;
 
-                /*
-                 * We have reached the end of the block.
-                 */
+            type = types.get(i);
+            headers = type.getChildElements("header");
+            things = type.getChildElements("thing");
+            typeName = type.getAttributeValue("name");
+            attributes = new TypeAttributes();
 
-                if (block.contains("}")) {
-                    final String type;
-                    final String[] split, blacklisted;
+            for (int j = 0; j < headers.size(); j++) {
+                final Element header;
 
-                    /*
-                     * Separate C type name from list of ignored things.
-                     */
+                header = headers.get(j);
 
-                    inBlock = false;
-                    split = block.split("\\{");
-                    type = split[0].trim();
-                    blacklisted = split[1].split("\\}")[0].split(",");
+                attributes.headers.add(header.getAttributeValue("name"));
+            }
 
-                    /*
-                     * Remove extra spaces.
-                     */
+            for (int j = 0; j < things.size(); j++) {
+                final Element thing;
 
-                    for (int i = 0; i < blacklisted.length; i++) {
-                        blacklisted[i] = blacklisted[i].trim();
-                    }
+                thing = things.get(j);
 
-                    list.put(type,
-                            ((blacklisted.length == 1) && blacklisted[0].isEmpty()) ? new String[] {}
-                                    : blacklisted);
+                if (thing.getAttribute("ignore") != null) {
+                    attributes.ignores.add(thing.getAttributeValue("name"));
                 }
             }
 
-            reader.close();
-        } catch (IOException e) {
-            System.err.println("How come we can't open a file for reading?\n" + e);
+            list.put(typeName, attributes);
         }
     }
 
@@ -130,15 +155,36 @@ final class TypesList
     }
 
     /**
+     * Return an array containing all the headers that need to be imported in
+     * the generated C code.
+     * 
+     * @param type
+     *            the C type that we need the headers for.
+     * @return an array of String with each String being a header or null if
+     *         there is no headers to include.
+     */
+    final String[] getHeadersForType(String type) {
+        final List<String> headers;
+
+        headers = list.get(type).headers;
+
+        if (headers.size() < 1) {
+            return null;
+        } else {
+            return (String[]) headers.toArray(new String[headers.size()]);
+        }
+    }
+
+    /**
      * Tell if the given thing for the given type can be parsed or not.
      * 
      * @param type
-     *            the C type to whch the thing belongs to.
+     *            the C type to which the thing belongs to.
      * @param thing
      *            a constructor, a method, a function or a signal C name.
      * @return true if the thing should be parsed, false otherwise.
      */
     final boolean isThingBlacklisted(String type, String thing) {
-        return Arrays.asList(list.get(type)).contains(thing);
+        return list.get(type).ignores.contains(thing);
     }
 }
