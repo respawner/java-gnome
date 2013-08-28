@@ -27,7 +27,6 @@ package com.operationaldynamics.parser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +35,12 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 import nu.xom.Attribute;
-import nu.xom.Builder;
-import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ParsingException;
-import nu.xom.ValidityException;
+
+import static com.operationaldynamics.parser.IntrospectionRepository.CORE_NAMESPACE;
+import static com.operationaldynamics.parser.IntrospectionRepository.C_NAMESPACE;
+import static com.operationaldynamics.parser.IntrospectionRepository.GLIB_NAMESPACE;
 
 /**
  * A .gir file parser: convert XML data into an array of Block objects
@@ -55,14 +54,6 @@ import nu.xom.ValidityException;
  */
 public class IntrospectionParser
 {
-    public static final String CORE_NAMESPACE;
-
-    public static final String C_NAMESPACE;
-
-    public static final String GLIB_NAMESPACE;
-
-    private static final String[] modules;
-
     private static final Properties packageOverrides;
 
     private static final Properties nameOverrides;
@@ -71,27 +62,9 @@ public class IntrospectionParser
 
     private static final Pattern titleCaseRegex;
 
-    private Reader introspectionData;
+    private IntrospectionRepository repository;
 
     static {
-        CORE_NAMESPACE = "http://www.gtk.org/introspection/core/1.0";
-        C_NAMESPACE = "http://www.gtk.org/introspection/c/1.0";
-        GLIB_NAMESPACE = "http://www.gtk.org/introspection/glib/1.0";
-
-        /*
-         * FIXME: This is hardcoded so this is ugly!
-         */
-
-        modules = new String[] {
-            "Atk",
-            "Gdk",
-            "Gtk",
-            "G",
-            "Notify",
-            "Pango",
-            "Rsvg"
-        };
-
         packageOverrides = new Properties();
         nameOverrides = new Properties();
 
@@ -107,14 +80,14 @@ public class IntrospectionParser
     }
 
     /**
-     * Initialize the parser for a given Reader reading Introspection data.
+     * Initialize the parser for a given IntrospectionRepository.
      * 
-     * @param introspectionData
-     *            a Reader object that is a reference to a .gir file or GIR
-     *            data to be parsed.
+     * @param repository
+     *            an IntrospectionRepository that is a reference to a loaded
+     *            .gir file or loaded GIR data to be parsed.
      */
-    public IntrospectionParser(final Reader introspectionData) {
-        this.introspectionData = introspectionData;
+    public IntrospectionParser(final IntrospectionRepository repository) {
+        this.repository = repository;
     }
 
     /**
@@ -168,11 +141,11 @@ public class IntrospectionParser
         dissected = titleCaseRegex.split(type);
 
         /*
-         * Search if the first word is contained in the module names.
+         * Search if the first word is contained in the prefixes list.
          */
 
-        for (String module : modules) {
-            if (module.equals(dissected[0])) {
+        for (String prefix : IntrospectionRepository.getRegisteredPrefixes()) {
+            if (prefix.equals(dissected[0])) {
                 return true;
             }
         }
@@ -1043,47 +1016,19 @@ public class IntrospectionParser
      * representing the information found there.
      * 
      * @return a map of Block arrays.
-     * @throws ParsingException
-     *             if an error occurs while parsing the XML file.
-     * @throws ValidityException
-     *             if the XML file does not seem valid.
-     * @throws IOException
-     *             if the XML file cannot be read.
      */
-    public Map<String, Block[]> parseData() throws ParsingException, IOException {
+    public Map<String, Block[]> parseData() {
         final Map<String, Block[]> result;
-        final Builder builder;
-        final Document document;
-        final Element repository;
-        final Elements includes, namespaces;
-        final String[] includesHeaders;
+        final Elements namespaces;
 
         result = new HashMap<String, Block[]>();
-        builder = new Builder();
-
-        /*
-         * Start the parsing of the XML data.
-         */
-
-        document = builder.build(this.introspectionData);
 
         /*
          * Get the first elements that are available (includes and
          * namespaces).
          */
 
-        repository = document.getRootElement();
-        includes = repository.getChildElements("include", C_NAMESPACE);
-        namespaces = repository.getChildElements("namespace", CORE_NAMESPACE);
-
-        /*
-         * Process headers to include in the code.
-         */
-
-        includesHeaders = new String[includes.size()];
-        for (int i = 0; i < includesHeaders.length; i++) {
-            includesHeaders[i] = includes.get(i).getAttributeValue("name");
-        }
+        namespaces = repository.getAvailableNamespaces();
 
         /*
          * For each namespace go deep.
@@ -1165,7 +1110,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header
@@ -1309,7 +1254,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header
@@ -1426,7 +1371,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header
@@ -1516,7 +1461,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header
@@ -1615,7 +1560,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header
@@ -1753,7 +1698,7 @@ public class IntrospectionParser
                  * Add headers to include if needed.
                  */
 
-                for (String header : includesHeaders) {
+                for (String header : repository.getNeededHeaders()) {
                     characteristics.add(new String[] {
                         "import-header",
                         header

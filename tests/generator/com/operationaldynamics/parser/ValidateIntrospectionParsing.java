@@ -24,6 +24,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 
 import com.operationaldynamics.codegen.Thing;
 
@@ -98,17 +99,17 @@ public class ValidateIntrospectionParsing extends TestCase
 
     StringReader in;
 
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, ValidityException, ParsingException {
         in = new StringReader(inputGirData);
 
-        parser = new IntrospectionParser(in);
+        parser = new IntrospectionParser(new IntrospectionRepository(in));
     }
 
     public void tearDown() throws IOException {
         in.close();
     }
 
-    public final void testObjectBlockCreated() throws ParsingException, IOException {
+    public final void testObjectBlockCreated() {
         Map<String, Block[]> results;
         Block[] blocks;
         ObjectBlock o;
@@ -130,7 +131,7 @@ public class ValidateIntrospectionParsing extends TestCase
         assertEquals("Button", o.blockName);
     }
 
-    public final void testCantCreateThingFromNonTypeBlock() throws ParsingException, IOException {
+    public final void testCantCreateThingFromNonTypeBlock() {
         Block[] blocks;
         Thing t;
 
@@ -147,7 +148,7 @@ public class ValidateIntrospectionParsing extends TestCase
         assertNull(t);
     }
 
-    public final void testMethodReferenceToSelfInsertion() throws ParsingException, IOException {
+    public final void testMethodReferenceToSelfInsertion() {
         Block[] blocks;
         MethodBlock block;
 

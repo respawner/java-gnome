@@ -39,6 +39,7 @@ import com.operationaldynamics.parser.DefsLineNumberReader;
 import com.operationaldynamics.parser.DefsParser;
 import com.operationaldynamics.parser.FunctionBlock;
 import com.operationaldynamics.parser.IntrospectionParser;
+import com.operationaldynamics.parser.IntrospectionRepository;
 
 /**
  * The java-gnome code generator.
@@ -117,6 +118,7 @@ public class BindingsGenerator
      * still an intermediate form.
      */
     private static void runGeneratorOutputIntrospectionToFiles(final String[] files, final File outputDir) {
+        final IntrospectionRepository[] repositories;
         final File[] overriders;
         final Map<String, Block[]> introspected;
         final List<DefsFile> all;
@@ -126,35 +128,47 @@ public class BindingsGenerator
         PrintWriter typeMapping;
         DefsLineNumberReader in;
 
+        repositories = new IntrospectionRepository[files.length];
         all = new ArrayList<DefsFile>();
         introspected = new HashMap<String, Block[]>();
 
         /*
-         * Load the all the .gir files into DefsFile objects, one per type.
-         * Along the way, this registers the type information.
+         * Load the all the .gir files into memory and extract repository
+         * objects from them.
          */
 
-        for (String file : files) {
+        for (int i = 0; i < files.length; i++) {
             final FileReader reader;
 
             try {
-                reader = new FileReader(file);
-                parser = new IntrospectionParser(reader);
+                reader = new FileReader(files[i]);
 
-                introspected.putAll(parser.parseData());
+                repositories[i] = new IntrospectionRepository(reader);
+
                 reader.close();
             } catch (ParsingException e) {
-                System.out.println("Malformed XML data in " + file + ":");
+                System.out.println("Malformed XML data in " + files[i] + ":");
                 System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
             } catch (IOException e) {
-                System.out.println("I/O problem when trying to parse " + file);
+                System.out.println("I/O problem when trying to parse " + files[i]);
                 System.out.println(e.getMessage());
                 System.out.println("[continuing next file]\n");
                 continue;
             } finally {
                 System.out.flush();
             }
+        }
+
+        /*
+         * Parse all loaded repositories and put them in the map of Block
+         * array.
+         */
+
+        for (IntrospectionRepository repository : repositories) {
+            parser = new IntrospectionParser(repository);
+
+            introspected.putAll(parser.parseData());
         }
 
         /*
