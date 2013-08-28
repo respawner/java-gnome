@@ -46,8 +46,6 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-import com.operationaldynamics.driver.IgnoreIntrospectionException;
-
 /**
  * A .gir file parser: convert XML data into an array of Block objects
  * suitable to be used to instantiate code generators.
@@ -345,11 +343,11 @@ public class IntrospectionParser
      * @param module
      *            the module the function containing the element belongs to.
      * @return a String corresponding to the usable C type found.
-     * @throws IgnoreIntrospectionException
+     * @throws UnnecessaryCodeException
      *             if the C type and therefore the element are to be ignored.
      */
     private static final String investigateType(Element element, String module)
-            throws IgnoreIntrospectionException {
+            throws UnnecessaryCodeException {
         Element array, type;
         Attribute value;
         String typeString;
@@ -375,7 +373,7 @@ public class IntrospectionParser
                  * varargs related thing that we can ignore.
                  */
 
-                throw new IgnoreIntrospectionException("Useless parameter or return value.");
+                throw new UnnecessaryCodeException("Useless parameter or return value.");
             }
 
             value = array.getAttribute("type", C_NAMESPACE);
@@ -458,11 +456,11 @@ public class IntrospectionParser
      * @param module
      *            the namespace the function belongs to.
      * @return an array containing the return type of the given function.
-     * @throws IgnoreIntrospectionException
+     * @throws UnnecessaryCodeException
      *             if the return type cannot be found.
      */
     private static final String[] getReturnType(Element function, String module)
-            throws IgnoreIntrospectionException {
+            throws UnnecessaryCodeException {
         String type;
 
         /*
@@ -559,7 +557,7 @@ public class IntrospectionParser
             if (name != null) {
                 try {
                     type = investigateType(parameter, module);
-                } catch (IgnoreIntrospectionException e) {
+                } catch (UnnecessaryCodeException e) {
                     /*
                      * The parameter is to be ignored.
                      */
@@ -608,7 +606,7 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final FunctionBlock parseConstructor(Element object, Element constructor,
-            String namespace) throws IgnoreIntrospectionException {
+            String namespace) throws UnnecessaryCodeException {
         final String isConstructorOf, cName;
         final List<String[]> constructorCharacteristics;
         final List<String[]> parameters;
@@ -623,7 +621,7 @@ public class IntrospectionParser
          */
 
         if (typesList.isThingBlacklisted(isConstructorOf, cName)) {
-            throw new IgnoreIntrospectionException("Ignoring constructor " + cName);
+            throw new UnnecessaryCodeException("Ignoring constructor " + cName);
         }
 
         /*
@@ -698,7 +696,7 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final FunctionBlock parseFunction(Element object, Element function, String namespace)
-            throws IgnoreIntrospectionException {
+            throws UnnecessaryCodeException {
         final String ofObject, cName;
         final List<String[]> functionCharacteristics;
         final String[] callerOwnsReturn;
@@ -714,7 +712,7 @@ public class IntrospectionParser
          */
 
         if (typesList.isThingBlacklisted(ofObject, cName)) {
-            throw new IgnoreIntrospectionException("Ignoring function " + cName);
+            throw new UnnecessaryCodeException("Ignoring function " + cName);
         }
 
         /*
@@ -786,7 +784,7 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final MethodBlock parseMethod(Element object, Element method,
-            List<String[]> objectCharacteristics, String namespace) throws IgnoreIntrospectionException {
+            List<String[]> objectCharacteristics, String namespace) throws UnnecessaryCodeException {
         final String cName;
         final List<String[]> methodCharacteristics;
         final String[] callerOwnsReturn;
@@ -795,7 +793,7 @@ public class IntrospectionParser
         String ofObject;
 
         if (method.getAttributeValue("name").startsWith("_")) {
-            throw new IgnoreIntrospectionException(
+            throw new UnnecessaryCodeException(
                     "The method name starts with an _ which is an illegal character.");
         }
 
@@ -818,7 +816,7 @@ public class IntrospectionParser
          */
 
         if (typesList.isThingBlacklisted(ofObject, cName)) {
-            throw new IgnoreIntrospectionException("Ignoring method " + cName);
+            throw new UnnecessaryCodeException("Ignoring method " + cName);
         }
 
         methodCharacteristics.add(new String[] {
@@ -904,7 +902,7 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final VirtualBlock parseVirtual(Element object, Element virtual, String namespace,
-            List<String> signalNames) throws IgnoreIntrospectionException {
+            List<String> signalNames) throws UnnecessaryCodeException {
         final String ofObject, virtualName;
         final List<String[]> virtualCharacteristics;
         final List<String[]> parameters;
@@ -919,7 +917,7 @@ public class IntrospectionParser
          */
 
         if (typesList.isThingBlacklisted(ofObject, virtualName)) {
-            throw new IgnoreIntrospectionException("Ignoring virtual " + virtualName);
+            throw new UnnecessaryCodeException("Ignoring virtual " + virtualName);
         }
 
         /*
@@ -981,7 +979,7 @@ public class IntrospectionParser
      * @return a block usable by the code generator.
      */
     private static final VirtualBlock parseSignal(Element object, Element signal, String namespace,
-            List<String> signalNames) throws IgnoreIntrospectionException {
+            List<String> signalNames) throws UnnecessaryCodeException {
         final String ofObject, signalName;
         final List<String[]> signalCharacteristics;
         final List<String[]> parameters;
@@ -996,7 +994,7 @@ public class IntrospectionParser
          */
 
         if (typesList.isThingBlacklisted(ofObject, signalName)) {
-            throw new IgnoreIntrospectionException("Ignoring virtual " + signalName);
+            throw new UnnecessaryCodeException("Ignoring virtual " + signalName);
         }
 
         /*
@@ -1004,7 +1002,7 @@ public class IntrospectionParser
          */
 
         if (signalNames.contains(signalName)) {
-            throw new IgnoreIntrospectionException("The signal has already been handled.");
+            throw new UnnecessaryCodeException("The signal has already been handled.");
         }
 
         /*
@@ -1198,7 +1196,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseConstructor(object, constructors.get(constructorIndex),
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1211,7 +1209,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(object, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1223,7 +1221,7 @@ public class IntrospectionParser
                 for (int functionIndex = 0; functionIndex < functions.size(); functionIndex++) {
                     try {
                         blocks.add(parseFunction(object, functions.get(functionIndex), namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1236,7 +1234,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseVirtual(object, virtuals.get(virtualIndex), namespaceName,
                                 signalNames));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1249,7 +1247,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseSignal(object, signals.get(signalIndex), namespaceName,
                                 signalNames));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1336,7 +1334,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(interfaze, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1348,7 +1346,7 @@ public class IntrospectionParser
                 for (int functionIndex = 0; functionIndex < functions.size(); functionIndex++) {
                     try {
                         blocks.add(parseFunction(interfaze, functions.get(functionIndex), namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1361,7 +1359,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseVirtual(interfaze, virtuals.get(virtualIndex), namespaceName,
                                 signalNames));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1374,7 +1372,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseSignal(interfaze, signals.get(signalIndex), namespaceName,
                                 signalNames));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1679,7 +1677,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseConstructor(boxed, constructors.get(constructorIndex),
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1692,7 +1690,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(boxed, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1817,7 +1815,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseConstructor(union, constructors.get(constructorIndex),
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
@@ -1830,7 +1828,7 @@ public class IntrospectionParser
                     try {
                         blocks.add(parseMethod(union, methods.get(methodIndex), characteristics,
                                 namespaceName));
-                    } catch (IgnoreIntrospectionException e) {
+                    } catch (UnnecessaryCodeException e) {
                         continue;
                     }
                 }
