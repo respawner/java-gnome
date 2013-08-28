@@ -1,7 +1,7 @@
 /*
  * java-gnome, a UI library for writing GTK and GNOME programs from Java!
  *
- * Copyright © 2007-2013 Operational Dynamics Consulting, Pty Ltd
+ * Copyright © 2007-2010 Operational Dynamics Consulting, Pty Ltd
  *
  * The code in this file, and the program it is a part of, is made available
  * to you by its authors as open source software: you can redistribute it
@@ -16,20 +16,34 @@
  * see http://www.gnu.org/licenses/. The authors of this program may be
  * contacted through http://java-gnome.sourceforge.net/.
  */
-package com.operationaldynamics.defsparser;
+package com.operationaldynamics.parser;
+
+import java.io.LineNumberReader;
+import java.io.Reader;
 
 /**
- * Used to cause the DefsParser to skip a block containing a (deprecated...)
- * or (unnecessary...) declaration and the IntrospectionParser to skip non
- * needed elements.
+ * A LineNumberReader that knows the name of the file its reading.
  * 
  * @author Andrew Cowie
  */
-class UnnecessaryCodeException extends RuntimeException
+public class DefsLineNumberReader extends LineNumberReader
 {
-    private static final long serialVersionUID = 1L;
+    private final String filename;
 
-    UnnecessaryCodeException(String msg) {
-        super(msg);
+    /**
+     * 
+     * @param in
+     *            It's pretty much assumed that this will be a FileReader, but
+     *            the type is left abstract to facilitate unit tests.
+     * @param filename
+     *            the name of the file being parsed.
+     */
+    public DefsLineNumberReader(final Reader in, final String filename) {
+        super(in);
+        this.filename = filename;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 }

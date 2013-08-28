@@ -78,10 +78,10 @@ import org.gnome.sourceview.ValidateSourceView;
 
 import com.operationaldynamics.codegen.ValidateThingUsage;
 import com.operationaldynamics.codegen.ValidateUtilityMethods;
-import com.operationaldynamics.defsparser.ValidateBlockUsage;
-import com.operationaldynamics.defsparser.ValidateDefsParsing;
-import com.operationaldynamics.defsparser.ValidateIntrospectionParsing;
 import com.operationaldynamics.junit.VerboseTestRunner;
+import com.operationaldynamics.parser.ValidateBlockUsage;
+import com.operationaldynamics.parser.ValidateDefsParsing;
+import com.operationaldynamics.parser.ValidateIntrospectionParsing;
 
 /**
  * Top level test harness to run all JUnit unit test cases that ship with

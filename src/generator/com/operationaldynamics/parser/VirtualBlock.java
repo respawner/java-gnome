@@ -16,35 +16,46 @@
  * see http://www.gnu.org/licenses/. The authors of this program may be
  * contacted through http://java-gnome.sourceforge.net/.
  */
-package com.operationaldynamics.defsparser;
+package com.operationaldynamics.parser;
 
-import java.util.Collections;
+import java.util.List;
 
 import com.operationaldynamics.codegen.Generator;
-import com.operationaldynamics.codegen.SetterGenerator;
+import com.operationaldynamics.codegen.Thing;
+import com.operationaldynamics.codegen.VirtualGenerator;
 import com.operationaldynamics.driver.DefsFile;
 
 /**
- * Pseudo Block which is to be created if a field in a (define-boxed ...)
- * block is writable. TODO describe what that looks like, exactly.
+ * The block type for virtual methods. In the java-gnome bindings, these are
+ * translated as signal handlers.
  * 
  * @author Andrew Cowie
- * @see GetterBlock
  */
-public class SetterBlock extends AccessorBlock
+/*
+ * There isn't a whole lot that this gains by being a subclass of
+ * FunctionBlock, but it seems as good a place as any to slot it in.
+ */
+public class VirtualBlock extends FunctionBlock
 {
-    SetterBlock(final BoxedBlock parent, final String gType, final String name) {
-        // TODO mmm, how can we know if a field can be null?
-        super(name, parent, Collections.singletonList(new String[] {
-            gType,
-            name,
-            "no"
-        }));
-
-        this.returnType = gType;
+    public VirtualBlock(String blockName, final List<String[]> characteristics,
+            final List<String[]> parameters) {
+        super(blockName, characteristics, parameters);
     }
 
     public Generator createGenerator(final DefsFile data) {
-        return new SetterGenerator(data, returnType, blockName, parameters);
+        return new VirtualGenerator(data, blockName, returnType, parameters);
+    }
+
+    /*
+     * Insert org.gnome.glib.Signal ("Signal" is a pseudo gType registered in
+     * Thing.<clinit>(). Yes, this is a bit kludgy.
+     */
+    public List<Thing> usesTypes() {
+        List<Thing> things;
+
+        things = super.usesTypes();
+        things.add(Thing.lookup("Signal"));
+
+        return things;
     }
 }

@@ -16,7 +16,7 @@
  * see http://www.gnu.org/licenses/. The authors of this program may be
  * contacted through http://java-gnome.sourceforge.net/.
  */
-package com.operationaldynamics.defsparser;
+package com.operationaldynamics.parser;
 
 /*
  * This code started life as prototype written in Perl by Andrew Cowie. The

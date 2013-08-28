@@ -16,30 +16,35 @@
  * see http://www.gnu.org/licenses/. The authors of this program may be
  * contacted through http://java-gnome.sourceforge.net/.
  */
-package com.operationaldynamics.defsparser;
+package com.operationaldynamics.parser;
 
-import java.text.ParseException;
+import java.util.Collections;
+
+import com.operationaldynamics.codegen.Generator;
+import com.operationaldynamics.codegen.SetterGenerator;
+import com.operationaldynamics.driver.DefsFile;
 
 /**
- * Failure to parse a line of a .defs file
+ * Pseudo Block which is to be created if a field in a (define-boxed ...)
+ * block is writable. TODO describe what that looks like, exactly.
  * 
  * @author Andrew Cowie
+ * @see GetterBlock
  */
-public class DefsParseException extends ParseException
+public class SetterBlock extends AccessorBlock
 {
-    private static final long serialVersionUID = 1L;
+    SetterBlock(final BoxedBlock parent, final String gType, final String name) {
+        // TODO mmm, how can we know if a field can be null?
+        super(name, parent, Collections.singletonList(new String[] {
+            gType,
+            name,
+            "no"
+        }));
 
-    /**
-     * The three parameters are aggregated to gether into one message.
-     * 
-     * @param problem
-     * @param defsLine
-     *            the raw line from the defs file that the parser choked on.
-     * @param lineNumber
-     *            the line of the defs file where the problem occured.
-     */
-    public DefsParseException(String problem, String defsLine, DefsLineNumberReader in) {
-        super("In " + in.getFilename() + ", line " + in.getLineNumber() + ":\n" + defsLine + "\n"
-                + problem, 0);
+        this.returnType = gType;
+    }
+
+    public Generator createGenerator(final DefsFile data) {
+        return new SetterGenerator(data, returnType, blockName, parameters);
     }
 }

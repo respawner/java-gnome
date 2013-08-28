@@ -18,9 +18,9 @@
  */
 package com.operationaldynamics.codegen;
 
-import com.operationaldynamics.defsparser.ValidateDefsParsing;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
+import com.operationaldynamics.parser.ValidateDefsParsing;
 
 /**
  * While much of the output from the code generator is subjective (ie

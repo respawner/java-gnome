@@ -16,7 +16,7 @@
  * see http://www.gnu.org/licenses/. The authors of this program may be
  * contacted through http://java-gnome.sourceforge.net/.
  */
-package com.operationaldynamics.defsparser;
+package com.operationaldynamics.parser;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -26,6 +26,11 @@ import junit.framework.TestCase;
 import nu.xom.ParsingException;
 
 import com.operationaldynamics.codegen.Thing;
+import com.operationaldynamics.parser.Block;
+import com.operationaldynamics.parser.IntrospectionParser;
+import com.operationaldynamics.parser.MethodBlock;
+import com.operationaldynamics.parser.ObjectBlock;
+import com.operationaldynamics.parser.TypeBlock;
 
 /**
  * Evaluate the internal methods in the IntrospectionParser class.

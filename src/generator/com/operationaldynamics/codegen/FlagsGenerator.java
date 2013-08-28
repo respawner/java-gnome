@@ -21,8 +21,8 @@ package com.operationaldynamics.codegen;
 
 import java.io.PrintWriter;
 
-import com.operationaldynamics.defsparser.FlagsBlock;
 import com.operationaldynamics.driver.DefsFile;
+import com.operationaldynamics.parser.FlagsBlock;
 
 /**
  * Output the file header necessary to declare the class containing the

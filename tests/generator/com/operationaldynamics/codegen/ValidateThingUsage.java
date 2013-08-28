@@ -21,9 +21,9 @@ package com.operationaldynamics.codegen;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.operationaldynamics.defsparser.Block;
-import com.operationaldynamics.defsparser.ObjectBlock;
-import com.operationaldynamics.defsparser.ValidateDefsParsing;
+import com.operationaldynamics.parser.Block;
+import com.operationaldynamics.parser.ObjectBlock;
+import com.operationaldynamics.parser.ValidateDefsParsing;
 
 /*
  * In the codegen package so we can see the Thing fields.
@@ -32,7 +32,7 @@ public final class ValidateThingUsage extends ValidateDefsParsing
 {
     /**
      * This is a somewhat contrived test; the same code is tested again
-     * {@link com.operationaldynamics.defsparser.ValidateDefsParsing#testObjectBlockCreatesObjectThing()}
+     * {@link com.operationaldynamics.parser.ValidateDefsParsing#testObjectBlockCreatesObjectThing()}
      * on "real" defs data, but this at least is an isolated an explicit
      * check.
      */

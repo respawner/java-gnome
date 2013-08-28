@@ -27,8 +27,8 @@ import java.util.Set;
 import com.operationaldynamics.codegen.FundamentalThing;
 import com.operationaldynamics.codegen.Generator;
 import com.operationaldynamics.codegen.Thing;
-import com.operationaldynamics.defsparser.Block;
-import com.operationaldynamics.defsparser.TypeBlock;
+import com.operationaldynamics.parser.Block;
+import com.operationaldynamics.parser.TypeBlock;
 
 /**
  * A wrapper class representing a parsed .defs file that contained a single

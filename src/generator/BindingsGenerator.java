@@ -32,13 +32,13 @@ import java.util.Map;
 
 import nu.xom.ParsingException;
 
-import com.operationaldynamics.defsparser.Block;
-import com.operationaldynamics.defsparser.DefsLineNumberReader;
-import com.operationaldynamics.defsparser.DefsParser;
-import com.operationaldynamics.defsparser.FunctionBlock;
-import com.operationaldynamics.defsparser.IntrospectionParser;
 import com.operationaldynamics.driver.DefsFile;
 import com.operationaldynamics.driver.ImproperDefsFileException;
+import com.operationaldynamics.parser.Block;
+import com.operationaldynamics.parser.DefsLineNumberReader;
+import com.operationaldynamics.parser.DefsParser;
+import com.operationaldynamics.parser.FunctionBlock;
+import com.operationaldynamics.parser.IntrospectionParser;
 
 /**
  * The java-gnome code generator.
