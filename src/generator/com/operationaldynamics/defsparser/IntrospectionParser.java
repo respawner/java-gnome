@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import nu.xom.Attribute;
 import nu.xom.Builder;
@@ -73,6 +74,8 @@ public class IntrospectionParser
 
     private static final TypesList typesList;
 
+    private static final Pattern titleCaseRegex;
+
     private Reader introspectionData;
 
     static {
@@ -105,6 +108,7 @@ public class IntrospectionParser
         }
 
         typesList = new TypesList("src/generator/types.list");
+        titleCaseRegex = Pattern.compile("(?<!^)(?=[A-Z])");
     }
 
     /**
@@ -166,7 +170,7 @@ public class IntrospectionParser
          * Separate each word starting with a capital letter.
          */
 
-        dissected = type.split("(?<!^)(?=[A-Z])");
+        dissected = titleCaseRegex.split(type);
 
         /*
          * Search if the first word is contained in the module names.
