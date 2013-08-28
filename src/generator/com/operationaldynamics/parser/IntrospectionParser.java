@@ -25,13 +25,10 @@ package com.operationaldynamics.parser;
  * DefsParser being used by java-gnome for several years. 
  */
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1843,113 +1840,5 @@ public class IntrospectionParser
         }
 
         return result;
-    }
-
-    /**
-     * A class that give a way to know what types the
-     * {@link IntrospectionParser} can parse and what things do not need
-     * parsing inside each type.
-     * 
-     * @author Guillaume Mazoyer
-     */
-    private static final class TypesList
-    {
-        private Map<String, String[]> list;
-
-        private TypesList(String filename) {
-            list = new HashMap<String, String[]>();
-
-            load(filename);
-        }
-
-        private final void load(String filename) {
-            final BufferedReader reader;
-            String line, block;
-            boolean inBlock;
-
-            inBlock = false;
-            block = "";
-
-            try {
-                reader = new BufferedReader(new FileReader(filename));
-
-                while ((line = reader.readLine()) != null) {
-                    /*
-                     * This is a comment.
-                     */
-
-                    if (line.isEmpty() || line.startsWith("#") || line.startsWith(";;")
-                            || line.startsWith("//")) {
-                        continue;
-                    }
-
-                    if (inBlock) {
-                        block += new String(line);
-                    } else {
-                        block = new String(line);
-                        inBlock = true;
-                    }
-
-                    /*
-                     * We have reached the end of the block.
-                     */
-
-                    if (block.contains("}")) {
-                        final String type;
-                        final String[] split, blacklisted;
-
-                        /*
-                         * Separate C type name from list of ignored things.
-                         */
-
-                        inBlock = false;
-                        split = block.split("\\{");
-                        type = split[0].trim();
-                        blacklisted = split[1].split("\\}")[0].split(",");
-
-                        /*
-                         * Remove extra spaces.
-                         */
-
-                        for (int i = 0; i < blacklisted.length; i++) {
-                            blacklisted[i] = blacklisted[i].trim();
-                        }
-
-                        list.put(
-                                type,
-                                ((blacklisted.length == 1) && blacklisted[0].isEmpty()) ? new String[] {}
-                                        : blacklisted);
-                    }
-                }
-
-                reader.close();
-            } catch (IOException e) {
-                System.err.println("How come we can't open a file for reading?\n" + e);
-            }
-        }
-
-        /**
-         * Tell if the given type can be parsed or not.
-         * 
-         * @param type
-         *            the C type to check.
-         * @return true if the type should be parsed, false otherwise.
-         */
-        public final boolean isTypeWhitelisted(String type) {
-            return list.keySet().contains(type);
-        }
-
-        /**
-         * Tell if the given thing for the given type can be parsed or not.
-         * 
-         * @param type
-         *            the C type to whch the thing belongs to.
-         * @param thing
-         *            a constructor, a method, a function or a signal C name.
-         * @return true if the thing should be parsed, false otherwise.
-         */
-        public final boolean isThingBlacklisted(String type, String thing) {
-            return Arrays.asList(list.get(type)).contains(thing);
-        }
     }
 }
