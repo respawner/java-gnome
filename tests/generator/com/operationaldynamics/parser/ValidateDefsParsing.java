@@ -25,10 +25,6 @@ import java.text.ParseException;
 import junit.framework.TestCase;
 
 import com.operationaldynamics.codegen.Thing;
-import com.operationaldynamics.parser.Block;
-import com.operationaldynamics.parser.MethodBlock;
-import com.operationaldynamics.parser.ObjectBlock;
-import com.operationaldynamics.parser.TypeBlock;
 
 /**
  * Evaluate the internal methods in the DefsParser class.

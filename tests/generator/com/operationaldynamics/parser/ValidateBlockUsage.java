@@ -21,10 +21,6 @@ package com.operationaldynamics.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.operationaldynamics.parser.Block;
-import com.operationaldynamics.parser.ObjectBlock;
-import com.operationaldynamics.parser.TypeBlock;
-
 import junit.framework.TestCase;
 
 public final class ValidateBlockUsage extends TestCase
