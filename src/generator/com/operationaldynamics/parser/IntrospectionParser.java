@@ -144,13 +144,7 @@ public class IntrospectionParser
          * Search if the first word is contained in the prefixes list.
          */
 
-        for (String prefix : IntrospectionRepository.getRegisteredPrefixes()) {
-            if (prefix.equals(dissected[0])) {
-                return true;
-            }
-        }
-
-        return false;
+        return IntrospectionRepository.getRegisteredPrefixes().contains(dissected[0]);
     }
 
     /**
