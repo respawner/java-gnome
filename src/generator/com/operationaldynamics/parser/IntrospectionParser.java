@@ -530,7 +530,7 @@ public class IntrospectionParser
                 }
 
                 /*
-                 * FIXME: In signal we already use the "handler" and "result"
+                 * In signal we already use the "handler" and "result"
                  * variables so we need to generate another name (basically we
                  * just append the parameter number).
                  */
@@ -603,7 +603,8 @@ public class IntrospectionParser
         });
 
         /*
-         * FIXME: should we let constructor always own the return value?
+         * The constructor should always owns the return unless it is told
+         * otherwise.
          */
         constructorCharacteristics.add(new String[] {
             "caller-owns-return",
