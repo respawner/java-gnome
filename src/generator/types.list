@@ -3,17 +3,19 @@
   This file is a combined blacklist and whitelist.
   It is written in a simple XML format:
 
-  <type name="TypeNameInC">
+  <type name="TypeNameInC" java-name="NameInJava">
     <header name="include_like_string" />
     <thing name="c_name_of_constructor" ignore="1" />
     <thing name="c_name_of_method" ignore="1" />
   </type>
 
-  The 'TypeNameInC' will be whitelisted and in this way the Introspection
-  parser will know that it can use and parse this C type. All the constructors,
-  methods, functions, signals, virtuals, constants listed with the "ignore"
-  attribute will be ignored during the parsing. You can also use the <header>
-  element to specify a header file to include in the generated C code.
+  The "TypeNameInC" will be whitelisted and in this way the Introspection
+  parser will know that it can use and parse this C type. It is also possible
+  to define the Java name for the public API with the "java-name" attribute.
+  All the constructors, methods, functions, signals, virtuals, constants listed
+  with the "ignore" attribute will be ignored during the parsing. You can also
+  use the <header> element to specify a header file to include in the generated
+  C code.
 
   Why such a file?
   The reason is: improving the stability of the Introspection parser.
@@ -175,7 +177,7 @@
   <type name="GlibMisc" />
   <type name="GtkAboutDialog" />
   <type name="GtkAccelFlags" />
-  <type name="GtkAccelGroup" />
+  <type name="GtkAccelGroup" java-name="AcceleratorGroup" />
   <type name="GtkAccelKey" />
   <type name="GtkAccelLabel" />
   <type name="GtkAccelMap" />
@@ -283,9 +285,9 @@
   <type name="GtkImage" />
   <type name="GtkImageMenuItem" />
   <type name="GtkImageType" />
-  <type name="GtkIMContext" />
-  <type name="GtkIMContextSimple" />
-  <type name="GtkIMMulticontext" />
+  <type name="GtkIMContext" java-name="InputMethod" />
+  <type name="GtkIMContextSimple" java-name="SimpleInputMethod" />
+  <type name="GtkIMMulticontext" java-name="MulticontextInputMethod" />
   <type name="GtkIMPreeditStyle" />
   <type name="GtkIMStatusStyle" />
   <type name="GtkInfoBar" />
@@ -392,7 +394,7 @@
   <type name="GtkSizeRequestMode" />
   <type name="GtkSocket" />
   <type name="GtkSortType" />
-  <type name="GtkSourceBuffer" />
+  <type name="GtkSourceBuffer" java-name="SourceBuffer" />
   <type name="GtkSourceDrawSpacesFlags" />
   <type name="GtkSourceLanguage" />
   <type name="GtkSourceLanguageManager" />
@@ -403,7 +405,7 @@
   <type name="GtkSourceStyle" />
   <type name="GtkSourceStyleScheme" />
   <type name="GtkSourceStyleSchemeManager" />
-  <type name="GtkSourceView" />
+  <type name="GtkSourceView" java-name="SourceView" />
   <type name="GtkSpell" />
   <type name="GtkSpinButton" />
   <type name="GtkSpinButtonUpdatePolicy" />
@@ -492,7 +494,7 @@
   <type name="PangoAnalysis" />
   <type name="PangoAttribute" />
   <type name="PangoAttrIterator" />
-  <type name="PangoAttrList" />
+  <type name="PangoAttrList" java-name="AttributeList" />
   <type name="PangoAttrType" />
   <type name="PangoCairoFcFont" />
   <type name="PangoColor" />
@@ -541,4 +543,3 @@
   <type name="RsvgMain" />
   <type name="ScreenshotCapture" />
 </list>
-

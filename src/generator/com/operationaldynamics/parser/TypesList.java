@@ -46,6 +46,8 @@ final class TypesList
      */
     private class TypeAttributes
     {
+        private String javaName;
+
         private List<String> headers;
 
         private List<String> ignores;
@@ -121,6 +123,8 @@ final class TypesList
             typeName = type.getAttributeValue("name");
             attributes = new TypeAttributes();
 
+            attributes.javaName = type.getAttributeValue("java-name");
+
             for (int j = 0; j < headers.size(); j++) {
                 final Element header;
 
@@ -152,6 +156,23 @@ final class TypesList
      */
     final boolean isTypeWhitelisted(String type) {
         return list.keySet().contains(type);
+    }
+
+    /**
+     * Return the Java name to use for the given object name.
+     * 
+     * @param type
+     *            the C type for which we need the Java name.
+     * @param name
+     *            the name to use if not overridden.
+     * @return the Java name to use.
+     */
+    final String getActualJavaName(String type, String name) {
+        final String javaName;
+
+        javaName = list.get(type).javaName;
+
+        return (javaName == null) ? name : javaName;
     }
 
     /**

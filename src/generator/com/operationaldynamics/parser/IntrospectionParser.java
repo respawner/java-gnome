@@ -56,8 +56,6 @@ public class IntrospectionParser
 {
     private static final Properties packageOverrides;
 
-    private static final Properties nameOverrides;
-
     private static final TypesList typesList;
 
     private static final Pattern titleCaseRegex;
@@ -66,11 +64,9 @@ public class IntrospectionParser
 
     static {
         packageOverrides = new Properties();
-        nameOverrides = new Properties();
 
         try {
             packageOverrides.load(new FileInputStream("src/generator/packages-override.properties"));
-            nameOverrides.load(new FileInputStream("src/generator/names-override.properties"));
         } catch (IOException e) {
             System.err.println("How come we can't open a file for reading?\n" + e);
         }
@@ -103,23 +99,6 @@ public class IntrospectionParser
         javaPackage = packageOverrides.getProperty(introspectionNamespace);
 
         return ((javaPackage == null) ? introspectionNamespace : javaPackage);
-    }
-
-    /**
-     * Return the Java name to use for the given object name.
-     * 
-     * @param cType
-     *            the C type.
-     * @param name
-     *            the GObject name.
-     * @return the Java name to use.
-     */
-    private static final String getActualJavaName(String cType, String name) {
-        final String javaName;
-
-        javaName = nameOverrides.getProperty(cType);
-
-        return ((javaName == null) ? name : javaName);
     }
 
     /**
@@ -1127,8 +1106,8 @@ public class IntrospectionParser
                  * Build the object blocks based on the info we have.
                  */
 
-                blocks.add(new ObjectBlock(getActualJavaName(cName, object.getAttributeValue("name")),
-                        characteristics, null));
+                blocks.add(new ObjectBlock(typesList.getActualJavaName(cName,
+                        object.getAttributeValue("name")), characteristics, null));
 
                 /*
                  * Parse all constructors data.
@@ -1276,7 +1255,7 @@ public class IntrospectionParser
                  * Build the object blocks based on the info we have.
                  */
 
-                blocks.add(new InterfaceBlock(getActualJavaName(cName,
+                blocks.add(new InterfaceBlock(typesList.getActualJavaName(cName,
                         interfaze.getAttributeValue("name")), characteristics));
 
                 /*
@@ -1433,9 +1412,8 @@ public class IntrospectionParser
                     });
                 }
 
-                blocks.add(new EnumBlock(
-                        getActualJavaName(cName, enumeration.getAttributeValue("name")),
-                        characteristics, values));
+                blocks.add(new EnumBlock(typesList.getActualJavaName(cName,
+                        enumeration.getAttributeValue("name")), characteristics, values));
 
                 /*
                  * Add the Block array and identify it with the C name of the
@@ -1538,8 +1516,8 @@ public class IntrospectionParser
                 }
 
                 if (values.size() > 0) {
-                    blocks.add(new FlagsBlock(getActualJavaName(cName, flag.getAttributeValue("name")),
-                            characteristics, values));
+                    blocks.add(new FlagsBlock(typesList.getActualJavaName(cName,
+                            flag.getAttributeValue("name")), characteristics, values));
 
                     /*
                      * Add the Block array and identify it with the C name of
@@ -1621,7 +1599,8 @@ public class IntrospectionParser
                     }
                 }
 
-                boxedBlock = new BoxedBlock(getActualJavaName(cName, boxedName), characteristics);
+                boxedBlock = new BoxedBlock(typesList.getActualJavaName(cName, boxedName),
+                        characteristics);
                 blocks.add(boxedBlock);
 
                 /*
@@ -1770,7 +1749,8 @@ public class IntrospectionParser
                     }
                 }
 
-                unionBlock = new BoxedBlock(getActualJavaName(cName, unionName), characteristics);
+                unionBlock = new BoxedBlock(typesList.getActualJavaName(cName, unionName),
+                        characteristics);
                 blocks.add(unionBlock);
 
                 /*
