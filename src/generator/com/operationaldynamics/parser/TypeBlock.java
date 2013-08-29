@@ -80,7 +80,6 @@ public abstract class TypeBlock extends Block
      */
     protected static String moduleToJavaPackage(String module) {
         StringBuffer buf;
-        char ch;
 
         if (module.equals("Cairo")) {
             return "org.freedesktop.cairo";
@@ -90,11 +89,11 @@ public abstract class TypeBlock extends Block
             return "org.gnome.sourceview";
         }
 
-        buf = new StringBuffer(module);
+        /*
+         * A Java package should always be lower case with dot so...
+         */
 
-        ch = buf.charAt(0);
-        ch = Character.toLowerCase(ch);
-        buf.setCharAt(0, ch);
+        buf = new StringBuffer(module.toLowerCase());
 
         buf.insert(0, "org.gnome.");
 
@@ -102,7 +101,7 @@ public abstract class TypeBlock extends Block
     }
 
     /*
-     * Default bahavior, as most TypeBlock's don't import anything. This will
+     * Default behavior, as most TypeBlock's don't import anything. This will
      * have to change if we start using the values subcharacteristics in
      * ObjectBlocks.
      */

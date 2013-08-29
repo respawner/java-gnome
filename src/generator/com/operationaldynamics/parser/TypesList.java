@@ -60,6 +60,8 @@ final class TypesList
 
     private Map<String, TypeAttributes> list;
 
+    private Map<String, String> packages;
+
     /**
      * Build and load a types list based on the given filename.
      * 
@@ -68,6 +70,7 @@ final class TypesList
      */
     TypesList(String filename) {
         list = new HashMap<String, TypeAttributes>();
+        packages = new HashMap<String, String>();
 
         load(filename);
     }
@@ -81,7 +84,7 @@ final class TypesList
     private final void load(String filename) {
         final Builder builder;
         final Document document;
-        final Elements types;
+        final Elements modules, types;
 
         builder = new Builder();
 
@@ -105,10 +108,27 @@ final class TypesList
         }
 
         /*
-         * Get all types listed in the file.
+         * Get all modules and types listed in the file.
          */
 
+        modules = document.getRootElement().getChildElements("module");
         types = document.getRootElement().getChildElements("type");
+
+        /*
+         * Load modules exceptions.
+         */
+
+        for (int i = 0; i < modules.size(); i++) {
+            final Element module;
+
+            module = modules.get(i);
+
+            packages.put(module.getAttributeValue("name"), module.getAttributeValue("java-package"));
+        }
+
+        /*
+         * Load types list.
+         */
 
         for (int i = 0; i < types.size(); i++) {
             final Element type;
@@ -123,7 +143,15 @@ final class TypesList
             typeName = type.getAttributeValue("name");
             attributes = new TypeAttributes();
 
+            /*
+             * Get the Java name if specified.
+             */
+
             attributes.javaName = type.getAttributeValue("java-name");
+
+            /*
+             * Load the needed headers.
+             */
 
             for (int j = 0; j < headers.size(); j++) {
                 final Element header;
@@ -132,6 +160,10 @@ final class TypesList
 
                 attributes.headers.add(header.getAttributeValue("name"));
             }
+
+            /*
+             * Load the things to ignore.
+             */
 
             for (int j = 0; j < things.size(); j++) {
                 final Element thing;
@@ -145,6 +177,21 @@ final class TypesList
 
             list.put(typeName, attributes);
         }
+    }
+
+    /**
+     * Return the Java package name to use for the given module.
+     * 
+     * @param module
+     *            the GObject Introspection namespace.
+     * @return the Java package name to use.
+     */
+    final String getActualJavaPackage(String module) {
+        final String javaPackage;
+
+        javaPackage = packages.get(module);
+
+        return ((javaPackage == null) ? module : javaPackage);
     }
 
     /**

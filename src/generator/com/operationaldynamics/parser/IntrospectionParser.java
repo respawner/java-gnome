@@ -25,13 +25,10 @@ package com.operationaldynamics.parser;
  * DefsParser being used by java-gnome for several years. 
  */
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import nu.xom.Attribute;
@@ -54,8 +51,6 @@ import static com.operationaldynamics.parser.IntrospectionRepository.GLIB_NAMESP
  */
 public class IntrospectionParser
 {
-    private static final Properties packageOverrides;
-
     private static final TypesList typesList;
 
     private static final Pattern titleCaseRegex;
@@ -63,14 +58,6 @@ public class IntrospectionParser
     private IntrospectionRepository repository;
 
     static {
-        packageOverrides = new Properties();
-
-        try {
-            packageOverrides.load(new FileInputStream("src/generator/packages-override.properties"));
-        } catch (IOException e) {
-            System.err.println("How come we can't open a file for reading?\n" + e);
-        }
-
         typesList = new TypesList("src/generator/types.list");
         titleCaseRegex = Pattern.compile("(?<!^)(?=[A-Z])");
     }
@@ -84,21 +71,6 @@ public class IntrospectionParser
      */
     public IntrospectionParser(final IntrospectionRepository repository) {
         this.repository = repository;
-    }
-
-    /**
-     * Return the Java package name to use for the given namespace.
-     * 
-     * @param introspectionNamespace
-     *            the GObject Introspection namespace.
-     * @return the Java package name to use.
-     */
-    private static final String getActualJavaPackage(String introspectionNamespace) {
-        final String javaPackage;
-
-        javaPackage = packageOverrides.getProperty(introspectionNamespace);
-
-        return ((javaPackage == null) ? introspectionNamespace : javaPackage);
     }
 
     /**
@@ -1071,7 +1043,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "parent",
@@ -1224,7 +1196,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -1353,7 +1325,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -1458,7 +1430,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -1572,7 +1544,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -1624,7 +1596,7 @@ public class IntrospectionParser
                      */
 
                     if (type == null) {
-                        type = getActualJavaPackage(namespaceName)
+                        type = typesList.getActualJavaPackage(namespaceName)
                                 + field.getChildElements().get(0).getAttributeValue("name");
                     }
 
@@ -1722,7 +1694,7 @@ public class IntrospectionParser
 
                 characteristics.add(new String[] {
                     "in-module",
-                    getActualJavaPackage(namespaceName)
+                    typesList.getActualJavaPackage(namespaceName)
                 });
                 characteristics.add(new String[] {
                     "c-name",
@@ -1774,7 +1746,7 @@ public class IntrospectionParser
                      */
 
                     if (type == null) {
-                        type = getActualJavaPackage(namespaceName)
+                        type = typesList.getActualJavaPackage(namespaceName)
                                 + field.getChildElements().get(0).getAttributeValue("name");
                     }
 

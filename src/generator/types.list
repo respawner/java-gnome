@@ -17,16 +17,33 @@
   use the <header> element to specify a header file to include in the generated
   C code.
 
+  It is also possible to redefine the Java package corresponding to the name of
+  a module. For example the "GtkSource" module must be mapped to the
+  "sourceview" Java package. To do this we use the <module> element with the
+  "name" and "java-package" attributes. A Java package is always lower cases
+  with dot as separator but in this file the Java package *must* start with an
+  upper case letter because it is also used as a Java prefix for the classes
+  names.
+
+  <module name="GtkSource" java-package="Soureview" />
+
   Why such a file?
   The reason is: improving the stability of the Introspection parser.
   Before moving to using Introspection data java-gnome used several .defs files
   which contained objects definitions. So we selected the .defs files carefully
   and we managed the content by hand. With GObject Introspection this is now
   the libraries which give us their objects definitions and so we have no
-  control in them. This is why we needed a way to accept or ignore some data.
+  control on them. This is why we needed a way to accept, modify or ignore some
+  data.
 -->
 
 <list>
+  <module name="cairo" java-package="Cairo" />
+  <module name="GdkPixbuf" java-package="Gdk" />
+  <module name="Gio" java-package="Glib" />
+  <module name="GLib" java-package="Glib" />
+  <module name="GtkSource" java-package="Sourceview" />
+
   <type name="AtkAction" />
   <type name="AtkAttributeSet" />
   <type name="AtkComponent" />
