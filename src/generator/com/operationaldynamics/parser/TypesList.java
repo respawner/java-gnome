@@ -239,7 +239,7 @@ final class TypesList
         if (headers.size() < 1) {
             return null;
         } else {
-            return (String[]) headers.toArray(new String[headers.size()]);
+            return headers.toArray(new String[headers.size()]);
         }
     }
 

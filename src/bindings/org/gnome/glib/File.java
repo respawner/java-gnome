@@ -38,10 +38,7 @@ package org.gnome.glib;
  * @author Guillaume Mazoyer
  * @since 4.1.2
  */
-/*
- * FIXME: this should not be public.
- */
-public final class File extends Object
+final class File extends Object
 {
     private File(long pointer) {
         super(pointer);

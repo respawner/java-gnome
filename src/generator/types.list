@@ -269,7 +269,17 @@
   <type name="GtkFileChooserAction" />
   <type name="GtkFileChooserButton" />
   <type name="GtkFileChooserConfirmation" />
-  <type name="GtkFileChooser" />
+  <type name="GtkFileChooser">
+    <!-- Blacklisted methods because of their uses of GFile -->
+    <thing name="gtk_file_chooser_get_current_folder_file" ignore="1" />
+    <thing name="gtk_file_chooser_get_file" ignore="1" />
+    <thing name="gtk_file_chooser_get_files" ignore="1" />
+    <thing name="gtk_file_chooser_get_preview_file" ignore="1" />
+    <thing name="gtk_file_chooser_select_file" ignore="1" />
+    <thing name="gtk_file_chooser_set_current_folder_file" ignore="1" />
+    <thing name="gtk_file_chooser_set_file" ignore="1" />
+    <thing name="gtk_file_chooser_unselect_file" ignore="1" />
+  </type>
   <type name="GtkFileChooserDialog" />
   <type name="GtkFileChooserError" />
   <type name="GtkFileChooserWidget" />
@@ -556,7 +566,12 @@
   <type name="PangoWeight" />
   <type name="PangoWrapMode" />
   <type name="RsvgDimensionData" />
-  <type name="RsvgHandle" />
+  <type name="RsvgHandle">
+    <!-- Blacklisted constructors and method due to their uses of GFile -->
+    <thing name="rsvg_handle_new_from_gfile_sync" ignore="1" />
+    <thing name="rsvg_handle_new_from_stream_sync" ignore="1" />
+    <thing name="rsvg_handle_set_base_gfile" ignore="1" />
+  </type>
   <type name="RsvgMain" />
   <type name="ScreenshotCapture" />
 </list>
