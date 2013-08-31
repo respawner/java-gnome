@@ -1525,8 +1525,7 @@ public class IntrospectionParser
                  * ignore it.
                  */
 
-                if (!typesList.isTypeWhitelisted(cName) || !introspectable || boxedName.startsWith("_")
-                        || boxedName.endsWith("Class") || boxedName.endsWith("Private")) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1588,8 +1587,7 @@ public class IntrospectionParser
                     field = fields.get(fieldIndex);
                     type = field.getChildElements().get(0).getAttributeValue("type", C_NAMESPACE);
                     name = field.getAttributeValue("name");
-                    writable = (field.getAttributeValue("writable") != null)
-                            && field.getAttributeValue("writable").equals("1");
+                    writable = (field.getAttributeValue("writable") != null);
 
                     /*
                      * No C type just a name.
@@ -1675,8 +1673,7 @@ public class IntrospectionParser
                  * ignore it.
                  */
 
-                if (!typesList.isTypeWhitelisted(cName) || !introspectable || unionName.startsWith("_")
-                        || unionName.endsWith("Class") || unionName.endsWith("Private")) {
+                if (!typesList.isTypeWhitelisted(cName) || !introspectable) {
                     continue;
                 }
 
@@ -1738,8 +1735,7 @@ public class IntrospectionParser
                     field = fields.get(fieldIndex);
                     type = field.getChildElements().get(0).getAttributeValue("type", C_NAMESPACE);
                     name = field.getAttributeValue("name");
-                    writable = (field.getAttributeValue("writable") != null)
-                            && field.getAttributeValue("writable").equals("1");
+                    writable = (field.getAttributeValue("writable") != null);
 
                     /*
                      * No C type just a name.
