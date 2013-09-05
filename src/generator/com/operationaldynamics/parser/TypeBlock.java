@@ -87,6 +87,8 @@ public abstract class TypeBlock extends Block
             return "org.freedesktop.enchant";
         } else if (module.equals("GtkSourceView")) {
             return "org.gnome.sourceview";
+        } else if (module.equals("GWeather")) {
+            return "org.gnome.weather";
         }
 
         /*

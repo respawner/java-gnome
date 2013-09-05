@@ -951,6 +951,11 @@ if ($os eq "gentoo") {
 			"Enchant",
 			"libenchant-dev");
 
+	check_system_library(@gnomedev_libs,
+			"gweather-3.0",
+			"GWeather",
+			"libgweather-3-dev");
+
 #	check_system_library(@gnomedev_libs,
 #			"gtkspell-3.0",
 #			"GtkSpell",
@@ -974,7 +979,8 @@ if ($os eq "gentoo") {
 		"/usr/share/gir-1.0/GtkSource-3.0.gir",
 		"/usr/share/gir-1.0/Notify-0.7.gir",
 		"/usr/share/gir-1.0/Pango-1.0.gir",
-		"/usr/share/gir-1.0/Rsvg-2.0.gir");
+		"/usr/share/gir-1.0/Rsvg-2.0.gir",
+		"/usr/share/gir-1.0/GWeather-3.0.gir");
 
 } elsif ($os eq "arch") {
 	check_system_library(@gnomedev_libs,

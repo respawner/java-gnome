@@ -172,6 +172,16 @@ abstract class TypeGenerator extends Generator
         generatedFileWarning(out);
         out.print("\n");
 
+        /*
+         * Yeah yeah we know it is unstable. Making us define something is
+         * just annoying.
+         */
+
+        if (objectType.bindingsPackage.equals("org.gnome.weather")) {
+            out.print("#define GWEATHER_I_KNOW_THIS_IS_UNSTABLE");
+            out.println("\n");
+        }
+
         out.print("#include <jni.h>\n");
         out.print("#include <gtk/gtk.h>\n");
 

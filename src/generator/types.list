@@ -573,5 +573,34 @@
     <thing name="rsvg_handle_set_base_gfile" ignore="1" />
   </type>
   <type name="RsvgMain" />
+  <type name="GWeatherLocation">
+    <header name="libgweather/gweather-weather.h" />
+  </type>
+  <type name="GWeatherTimezone">
+    <header name="libgweather/gweather-weather.h" />
+  </type>
+  <type name="GWeatherInfo">
+    <header name="libgweather/gweather-weather.h" />
+  </type>
+  <type name="GWeatherLocationEntry">
+    <header name="libgweather/location-entry.h" />
+  </type>
+  <type name="GWeatherTimezoneMenu">
+    <header name="libgweather/timezone-menu.h" />
+  </type>
+  <type name="GWeatherConditions">
+    <header name="libgweather/gweather-weather.h" />
+  </type>
+  <type name="GWeatherDistanceUnit" />
+  <type name="GWeatherConditionPhenomenon" />
+  <type name="GWeatherConditionQualifier" />
+  <type name="GWeatherDistanceUnit" />
+  <type name="GWeatherForecastType" />
+  <type name="GWeatherLocationLevel" />
+  <type name="GWeatherPressureUnit" />
+  <type name="GWeatherSky" />
+  <type name="GWeatherSpeedUnit" />
+  <type name="GWeatherTemperatureUnit" />
+  <type name="GWeatherWindDirection" />
   <type name="ScreenshotCapture" />
 </list>
