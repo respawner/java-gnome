@@ -34,17 +34,72 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the direction of the wind.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class WindDirection extends Constant
 {
     protected WindDirection(int ordinal, String nickname) {
         super(ordinal, nickname);
+    }
+
+    public static final WindDirection INVALID = new WindDirection(GWeatherWindDirection.INVALID,
+            "INVALID");
+
+    public static final WindDirection VARIABLE = new WindDirection(GWeatherWindDirection.VARIABLE,
+            "VARIABLE");
+
+    public static final WindDirection NORTH = new WindDirection(GWeatherWindDirection.N, "NORTH");
+
+    public static final WindDirection NORTH_NORTH_EAST = new WindDirection(GWeatherWindDirection.NNE,
+            "NORTH_NORTH_EAST");
+
+    public static final WindDirection NORTH_EAST = new WindDirection(GWeatherWindDirection.NE,
+            "NORTH_EAST");
+
+    public static final WindDirection EAST_NORTH_EAST = new WindDirection(GWeatherWindDirection.ENE,
+            "EAST_NORTH_EAST");
+
+    public static final WindDirection EAST = new WindDirection(GWeatherWindDirection.E, "EAST");
+
+    public static final WindDirection EAST_SOUTH_EAST = new WindDirection(GWeatherWindDirection.ESE,
+            "EAST_SOUTH_EAST");
+
+    public static final WindDirection SOUTH_EAST = new WindDirection(GWeatherWindDirection.SE,
+            "SOUTH_EAST");
+
+    public static final WindDirection SOUTH_SOUTH_EAST = new WindDirection(GWeatherWindDirection.SSE,
+            "SOUTH_SOUTH_EAST");
+
+    public static final WindDirection SOUTH = new WindDirection(GWeatherWindDirection.S, "SOUTH");
+
+    public static final WindDirection SOUTH_SOUTH_WEST = new WindDirection(GWeatherWindDirection.SSW,
+            "SOUTH_SOUTH_WEST");
+
+    public static final WindDirection SOUTH_WEST = new WindDirection(GWeatherWindDirection.SW,
+            "SOUTH_WEST");
+
+    public static final WindDirection WEST_SOUTH_WEST = new WindDirection(GWeatherWindDirection.WSW,
+            "WEST_SOUTH_WEST");
+
+    public static final WindDirection WEST = new WindDirection(GWeatherWindDirection.W, "WEST");
+
+    public static final WindDirection WEST_NORTH_WEST = new WindDirection(GWeatherWindDirection.WNW,
+            "WEST_NORTH_WEST");
+
+    public static final WindDirection NORTH_WEST = new WindDirection(GWeatherWindDirection.NW,
+            "NORTH_WEST");
+
+    public static final WindDirection NORTH_NORTH_WEST = new WindDirection(GWeatherWindDirection.NNW,
+            "NORTH_NORTH_WEST");
+
+    public static final WindDirection LAST = new WindDirection(GWeatherWindDirection.LAST, "LAST");
+
+    @Override
+    public String toString() {
+        return GWeatherMisc.windDirectionToString(this);
     }
 }

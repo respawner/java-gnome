@@ -34,17 +34,31 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the different units of pressure.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class PressureUnit extends Constant
 {
     protected PressureUnit(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final PressureUnit INVALID = new PressureUnit(GWeatherPressureUnit.INVALID, "INVALID");
+
+    public static final PressureUnit DEFAULT = new PressureUnit(GWeatherPressureUnit.DEFAULT, "DEFAULT");
+
+    public static final PressureUnit KPA = new PressureUnit(GWeatherPressureUnit.KPA, "KPA");
+
+    public static final PressureUnit HPA = new PressureUnit(GWeatherPressureUnit.HPA, "HPA");
+
+    public static final PressureUnit MB = new PressureUnit(GWeatherPressureUnit.MB, "MB");
+
+    public static final PressureUnit MM_HG = new PressureUnit(GWeatherPressureUnit.MM_HG, "MM_HG");
+
+    public static final PressureUnit INCH_HG = new PressureUnit(GWeatherPressureUnit.INCH_HG, "INCH_HG");
+
+    public static final PressureUnit ATM = new PressureUnit(GWeatherPressureUnit.ATM, "ATM");
 }

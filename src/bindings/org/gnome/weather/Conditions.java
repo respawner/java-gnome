@@ -34,13 +34,12 @@ package org.gnome.weather;
 
 import org.gnome.glib.Boxed;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Object representing conditions based on a {@link ConditionPhenomenon
+ * phenomenon} and a {@link ConditionQualifier qualifier}.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class Conditions extends Boxed
 {
@@ -50,6 +49,40 @@ public class Conditions extends Boxed
 
     @Override
     protected void release() {
-        // TODO Auto-generated method stub
+        /*
+         * Nothing to do, apparently.
+         */
+    }
+
+    /**
+     * Tells if the Conditions are significants.
+     * 
+     * @return
+     */
+    public boolean areSignificant() {
+        return GWeatherConditions.getSignificant(this);
+    }
+
+    /**
+     * Gets the phenomenon associated to these Conditions.
+     * 
+     * @return a {@link ConditionPhenomenon} constant.
+     */
+    public ConditionPhenomenon getPhenomenon() {
+        return GWeatherConditions.getPhenomenon(this);
+    }
+
+    /**
+     * Gets the qualifier associated to these Conditions.
+     * 
+     * @return a {@link ConditionQualifier} constant.
+     */
+    public ConditionQualifier getQualifier() {
+        return GWeatherConditions.getQualifier(this);
+    }
+
+    @Override
+    public String toString() {
+        return GWeatherConditions.toString(this);
     }
 }

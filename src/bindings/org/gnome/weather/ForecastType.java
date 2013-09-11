@@ -34,17 +34,22 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the types of forecast which are used when getting
+ * {@link Info information} on a {@link Location location}.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class ForecastType extends Constant
 {
     protected ForecastType(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final ForecastType STATE = new ForecastType(GWeatherForecastType.STATE, "STATE");
+
+    public static final ForecastType ZONE = new ForecastType(GWeatherForecastType.ZONE, "ZONE");
+
+    public static final ForecastType LIST = new ForecastType(GWeatherForecastType.LIST, "LIST");
 }

@@ -32,19 +32,79 @@
  */
 package org.gnome.weather;
 
-import org.gnome.glib.Object;
+import org.gnome.gtk.Entry;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * A subclass of {@link Entry} that provides autocompletion on
+ * {@link Location Locations}.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
-public class LocationEntry extends Object
+public class LocationEntry extends Entry
 {
     protected LocationEntry(long pointer) {
         super(pointer);
+    }
+
+    /**
+     * Creates a new {@link LocationEntry}.
+     * 
+     * @param location
+     *            the top-level location for the entry.
+     */
+    public LocationEntry(Location location) {
+        this(GWeatherLocationEntry.createLocationEntry(location));
+    }
+
+    /**
+     * Sets entry location, and updates the text of the entry accordingly.
+     * Note that if the database contains the given location, that will be
+     * chosen in place of the location.
+     * 
+     * @param location
+     *            a {@link Location}, or null to clear entry.
+     */
+    public void setLocation(Location location) {
+        GWeatherLocationEntry.setLocation(this, location);
+    }
+
+    /**
+     * Gets the location that was set by a previous call to
+     * {@link LocationEntry#setLocation(Location) setLocation()} or was
+     * selected by the user.
+     * 
+     * @return the selected location, or null if no location is selected.
+     */
+    public Location getLocation() {
+        return GWeatherLocationEntry.getLocation(this);
+    }
+
+    /**
+     * Checks whether or not entry's text has been modified by the user.
+     * {@link LocationEntry#getLocation() getLocation()} should be used for
+     * this.
+     * 
+     * @return : true if entry's text was modified by the user, or false if
+     *         it's set to the default text of a location.
+     */
+    public boolean hasCustomText() {
+        return GWeatherLocationEntry.hasCustomText(this);
+    }
+
+    /**
+     * Sets entry's location to a city with the given code, and given city
+     * name, if non-null. If there is no matching city, sets entry's location
+     * to null.
+     * 
+     * @param city
+     *            the city name, or null.
+     * @param code
+     *            the METAR station code
+     * @return true if entry's location could be set to a matching city, false
+     *         otherwise.
+     */
+    public boolean setCity(String city, String code) {
+        return GWeatherLocationEntry.setCity(this, city, code);
     }
 }

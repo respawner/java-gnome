@@ -34,17 +34,30 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the different units of temperature..
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class TemperatureUnit extends Constant
 {
     protected TemperatureUnit(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final TemperatureUnit INVALID = new TemperatureUnit(GWeatherTemperatureUnit.INVALID,
+            "INVALID");
+
+    public static final TemperatureUnit DEFAULT = new TemperatureUnit(GWeatherTemperatureUnit.DEFAULT,
+            "DEFAULT");
+
+    public static final TemperatureUnit KELVIN = new TemperatureUnit(GWeatherTemperatureUnit.KELVIN,
+            "KELVIN");
+
+    public static final TemperatureUnit CENTIGRADE = new TemperatureUnit(
+            GWeatherTemperatureUnit.CENTIGRADE, "CENTIGRADE");
+
+    public static final TemperatureUnit FAHRENHEIT = new TemperatureUnit(
+            GWeatherTemperatureUnit.FAHRENHEIT, "FAHRENHEIT");
 }

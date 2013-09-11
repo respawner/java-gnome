@@ -34,17 +34,61 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants giving an idea of the intensity of a {@link ConditionPhenomenon
+ * phenomenon}.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class ConditionQualifier extends Constant
 {
     protected ConditionQualifier(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final ConditionQualifier INVALID = new ConditionQualifier(
+            GWeatherConditionQualifier.INVALID, "INVALID");
+
+    public static final ConditionQualifier NONE = new ConditionQualifier(
+            GWeatherConditionQualifier.NONE, "NONE");
+
+    public static final ConditionQualifier VICINITY = new ConditionQualifier(
+            GWeatherConditionQualifier.VICINITY, "VICINITY");
+
+    public static final ConditionQualifier LIGHT = new ConditionQualifier(
+            GWeatherConditionQualifier.LIGHT, "LIGHT");
+
+    public static final ConditionQualifier MODERATE = new ConditionQualifier(
+            GWeatherConditionQualifier.MODERATE, "MODERATE");
+
+    public static final ConditionQualifier HEAVY = new ConditionQualifier(
+            GWeatherConditionQualifier.HEAVY, "HEAVY");
+
+    public static final ConditionQualifier SHALLOW = new ConditionQualifier(
+            GWeatherConditionQualifier.SHALLOW, "SHALLOW");
+
+    public static final ConditionQualifier PATCHES = new ConditionQualifier(
+            GWeatherConditionQualifier.PATCHES, "PATCHES");
+
+    public static final ConditionQualifier PARTIAL = new ConditionQualifier(
+            GWeatherConditionQualifier.PARTIAL, "PARTIAL");
+
+    public static final ConditionQualifier THUNDERSTORM = new ConditionQualifier(
+            GWeatherConditionQualifier.THUNDERSTORM, "THUNDERSTORM");
+
+    public static final ConditionQualifier BLOWING = new ConditionQualifier(
+            GWeatherConditionQualifier.BLOWING, "BLOWING");
+
+    public static final ConditionQualifier SHOWERS = new ConditionQualifier(
+            GWeatherConditionQualifier.SHOWERS, "SHOWERS");
+
+    public static final ConditionQualifier DRIFTING = new ConditionQualifier(
+            GWeatherConditionQualifier.DRIFTING, "DRIFTING");
+
+    public static final ConditionQualifier FREEZING = new ConditionQualifier(
+            GWeatherConditionQualifier.FREEZING, "FREEZING");
+
+    public static final ConditionQualifier LAST = new ConditionQualifier(
+            GWeatherConditionQualifier.LAST, "LAST");
 }

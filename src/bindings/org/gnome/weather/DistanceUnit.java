@@ -34,17 +34,25 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the the different units of distance.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class DistanceUnit extends Constant
 {
     protected DistanceUnit(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final DistanceUnit INVALID = new DistanceUnit(GWeatherDistanceUnit.INVALID, "INVALID");
+
+    public static final DistanceUnit DEFAULT = new DistanceUnit(GWeatherDistanceUnit.DEFAULT, "DEFAULT");
+
+    public static final DistanceUnit METERS = new DistanceUnit(GWeatherDistanceUnit.METERS, "METERS");
+
+    public static final DistanceUnit KM = new DistanceUnit(GWeatherDistanceUnit.KM, "KILOMETERS");
+
+    public static final DistanceUnit MILES = new DistanceUnit(GWeatherDistanceUnit.MILES, "MILES");
 }

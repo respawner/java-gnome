@@ -34,17 +34,34 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the state of the sky.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class Sky extends Constant
 {
     protected Sky(int ordinal, String nickname) {
         super(ordinal, nickname);
+    }
+
+    public static final Sky INVALID = new Sky(GWeatherSky.INVALID, "INVALID");
+
+    public static final Sky CLEAR = new Sky(GWeatherSky.CLEAR, "CLEAR");
+
+    public static final Sky BROKEN = new Sky(GWeatherSky.BROKEN, "BROKEN");
+
+    public static final Sky SCATTERED = new Sky(GWeatherSky.SCATTERED, "SCATTERED");
+
+    public static final Sky FEW = new Sky(GWeatherSky.FEW, "FEW");
+
+    public static final Sky OVERCAST = new Sky(GWeatherSky.OVERCAST, "OVERCAST");
+
+    public static final Sky LAST = new Sky(GWeatherSky.LAST, "LAST");
+
+    @Override
+    public String toString() {
+        return GWeatherMisc.skyToString(this);
     }
 }

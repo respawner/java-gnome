@@ -32,19 +32,47 @@
  */
 package org.gnome.weather;
 
-import org.gnome.glib.Object;
+import org.gnome.gtk.ComboBox;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Object used to display and interact with a list of time zones.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
-public class TimezoneMenu extends Object
+public class TimezoneMenu extends ComboBox
 {
     protected TimezoneMenu(long pointer) {
         super(pointer);
+    }
+
+    /**
+     * Create a new widget to display time zones.
+     * 
+     * @param location
+     *            the top-level location for the menu.
+     */
+    public TimezoneMenu(Location location) {
+        this(GWeatherTimezoneMenu.createTimezoneMenu(location));
+    }
+
+    /**
+     * Gets the menu time zone ID.
+     * 
+     * @return the ID of the time zone or null if no time zone is selected.
+     */
+    public String getTimezoneId() {
+        return GWeatherTimezoneMenu.getTzid(this);
+    }
+
+    /**
+     * Sets menu to the given time zone ID.
+     * 
+     * @param id
+     *            the time zone ID (eg, "America/New_York"), if id is null the
+     *            menu will be set to "Unknown".
+     */
+    public void setTimezoneId(String id) {
+        GWeatherTimezoneMenu.setTzid(this, id);
     }
 }

@@ -34,13 +34,17 @@ package org.gnome.weather;
 
 import org.gnome.glib.Boxed;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * A timezone.
+ * 
+ * <p>
+ * There are no public methods for creating timezones; they can only be
+ * created by calling the {@link Location#Location(boolean) Location
+ * constructor}, and then calling various {@link Location} methods to extract
+ * relevant timezones from the location hierarchy.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class Timezone extends Boxed
 {
@@ -50,6 +54,69 @@ public class Timezone extends Boxed
 
     @Override
     protected void release() {
-        // TODO Auto-generated method stub
+        GWeatherTimezone.unref(this);
+    }
+
+    /**
+     * Gets the UTC timezone.
+     * 
+     * @return a Timezone for UTC or null if there is an error.
+     */
+    public static Timezone getUtc() {
+        return GWeatherMisc.getUtc();
+    }
+
+    /**
+     * Gets zone's name; a translated, user-presentable string.
+     * 
+     * <p>
+     * Note that the returned name might not be unique among timezones, and
+     * may not make sense to the user unless it is presented along with the
+     * timezone's country's name (or in some context where the country is
+     * obvious).
+     * 
+     * @return the zone's name.
+     */
+    public String getName() {
+        return GWeatherTimezone.getName(this);
+    }
+
+    /**
+     * Gets zone's tzdata identifier, eg "America/New_York".
+     * 
+     * @return the zone's ID.
+     */
+    public String getId() {
+        return GWeatherTimezone.getTzid(this);
+    }
+
+    /**
+     * Gets zone's standard offset from UTC, in minutes. Eg, a value of 120
+     * would indicate "GMT+2".
+     * 
+     * @return the zone's standard offset, in minutes.
+     */
+    public int getOffset() {
+        return GWeatherTimezone.getOffset(this);
+    }
+
+    /**
+     * Checks if zone observes daylight/summer time for part of the year.
+     * 
+     * @return true if zone observes daylight/summer time.
+     */
+    public boolean hasDaylightSummerTime() {
+        return GWeatherTimezone.hasDst(this);
+    }
+
+    /**
+     * Gets zone's daylight/summer time offset from UTC, in minutes. Eg, a
+     * value of 120 would indicate "GMT+2". This is only meaningful if
+     * {@link #hasDaylightSummerTime()} returns true.
+     * 
+     * @return the zone's daylight/summer time offset, in minutes.
+     */
+    public int getDaylightSummerTimeOffset() {
+        return GWeatherTimezone.getDstOffset(this);
     }
 }

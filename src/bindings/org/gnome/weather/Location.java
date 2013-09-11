@@ -34,13 +34,13 @@ package org.gnome.weather;
 
 import org.gnome.glib.Boxed;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Object representing a location. This is used to retrieve the {@link Info
+ * information} about it. Locations can have different {@link LocationLevel
+ * levels}.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class Location extends Boxed
 {
@@ -48,8 +48,153 @@ public class Location extends Boxed
         super(pointer);
     }
 
+    /**
+     * Creates a new Location of type {@link LocationLevel#WORLD WORLD},
+     * representing a hierarchy containing all of the locations.
+     * 
+     * <p>
+     * If useRegions is true, the immediate children of the returned location
+     * will be {@link LocationLevel#REGION REGION} nodes, representing the
+     * top-level "regions" (the continents and a few other divisions), and the
+     * country-level nodes will be the children of the regions. If useRegions
+     * is false, the regions will be skipped, and the children of the returned
+     * location will be the {@link LocationLevel#COUNTRY COUNTRY} nodes.
+     * 
+     * @param useRegions
+     *            whether or not to divide the world into regions
+     */
+    public Location(boolean useRegions) {
+        this(GWeatherLocation.createLocationWorld(useRegions));
+    }
+
     @Override
     protected void release() {
-        // TODO Auto-generated method stub
+        GWeatherLocation.unref(this);
+    }
+
+    /**
+     * Retrieves the weather station identifier by the given station code.
+     * Note that multiple instances of the same weather station can exist in
+     * the database, and this function will return any of them, so this not
+     * usually what you want.
+     * 
+     * @param code
+     *            a 4 letter METAR code.
+     * @return a weather station level Location, or null if none exists in the
+     *         database.
+     */
+    public Location findByStationCode(String code) {
+        return GWeatherLocation.findByStationCode(this, code);
+    }
+
+    /**
+     * Gets the Location's level.
+     * 
+     * @return a level from {@link LocationLevel#WORLD WORLD} to
+     *         {@link LocationLevel#STATION STATION}.
+     */
+    public LocationLevel getLevel() {
+        return GWeatherLocation.getLevel(this);
+    }
+
+    /**
+     * Gets the Location's parent Location.
+     * 
+     * @return parent, or null if the current Location is a
+     *         {@link LocationLevel#WORLD WORLD} node.
+     */
+    public Location getParent() {
+        return GWeatherLocation.getParent(this);
+    }
+
+    /**
+     * Gets an array of Location's children.
+     * 
+     * @return the Location's children.
+     */
+    public Location[] getChildren() {
+        return GWeatherLocation.getChildren(this);
+    }
+
+    /**
+     * Gets Location's name, localized into the current language.
+     * 
+     * @return the name of the Location.
+     */
+    public String getName() {
+        return GWeatherLocation.getName(this);
+    }
+
+    /**
+     * Gets Location's "sort name", which is the name after having that you
+     * can use to sort locations, or to compare user input against a location
+     * name.
+     * 
+     * @return the Location's sort name.
+     */
+    public String getSortName() {
+        return GWeatherLocation.getSortName(this);
+    }
+
+    /**
+     * Determines the distance in kilometers between two Locations.
+     * 
+     * @param other
+     *            the second Location.
+     * @return the distance between the current Location and the other one.
+     */
+    public double getDistance(Location other) {
+        return GWeatherLocation.getDistance(this, other);
+    }
+
+    /**
+     * Gets the ISO 3166 country code of the Location.
+     * 
+     * @return country code (or null if the Location is a region or
+     *         world-level location).
+     */
+    public String getCountry() {
+        return GWeatherLocation.getCountry(this);
+    }
+
+    /**
+     * Gets the {@link Timezone} associated with the Location, if known.
+     * 
+     * @return the {@link Timezone}, or null.
+     */
+    public Timezone getTimezone() {
+        return GWeatherLocation.getTimezone(this);
+    }
+
+    /**
+     * Gets an array of all {@link Timezone} associated with any locations
+     * under this Location.
+     * 
+     * @return an array of {@link Timezone}.
+     */
+    public Timezone[] getTimezones() {
+        return GWeatherLocation.getTimezones(this);
+    }
+
+    /**
+     * Gets the METAR station code associated with a
+     * {@link LocationLevel#STATION STATION} Location.
+     * 
+     * @return a METAR station code, or null.
+     */
+    public String getCode() {
+        return GWeatherLocation.getCode(this);
+    }
+
+    /**
+     * For a {@link LocationLevel#CITY} location, this is equivalent to
+     * {@link #getName()}. For a {@link LocationLevel#STATION STATION}
+     * location, it is equivalent to calling {@link #getName()} on the
+     * location's parent. For other locations it will return null.
+     * 
+     * @return the city name, or null.
+     */
+    public String getCityName() {
+        return GWeatherLocation.getCityName(this);
     }
 }

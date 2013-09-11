@@ -34,17 +34,29 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants defining the different units of speed.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class SpeedUnit extends Constant
 {
     protected SpeedUnit(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final SpeedUnit INVALID = new SpeedUnit(GWeatherSpeedUnit.INVALID, "INVALID");
+
+    public static final SpeedUnit DEFAULT = new SpeedUnit(GWeatherSpeedUnit.DEFAULT, "DEFAULT");
+
+    public static final SpeedUnit MS = new SpeedUnit(GWeatherSpeedUnit.MS, "MS");
+
+    public static final SpeedUnit KPH = new SpeedUnit(GWeatherSpeedUnit.KPH, "KPH");
+
+    public static final SpeedUnit MPH = new SpeedUnit(GWeatherSpeedUnit.MPH, "MPH");
+
+    public static final SpeedUnit KNOTS = new SpeedUnit(GWeatherSpeedUnit.KNOTS, "KNOTS");
+
+    public static final SpeedUnit BFT = new SpeedUnit(GWeatherSpeedUnit.BFT, "BFT");
 }

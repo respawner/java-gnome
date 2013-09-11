@@ -34,17 +34,64 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * The size/scope of a particular {@link Location}.
+ * 
+ * <p>
+ * Locations form a hierarchy, with a {@link LocationLevel#WORLD WORLD}
+ * location at the top, divided into regions or countries, and so on.
+ * Countries may or may not be divided into "adm1"s, and "adm1"s may or may
+ * not be divided into "adm2"s. A city will have at least one, and possibly
+ * several, weather stations inside it. Weather stations will never appear
+ * outside of cities.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class LocationLevel extends Constant
 {
     protected LocationLevel(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    /**
+     * A location representing the entire world.
+     */
+    public static final LocationLevel WORLD = new LocationLevel(GWeatherLocationLevel.WORLD, "WORLD");
+
+    /**
+     * A location representing a continent or other top-level region.
+     */
+    public static final LocationLevel REGION = new LocationLevel(GWeatherLocationLevel.REGION, "REGION");
+
+    /**
+     * A location representing a "country" (or other geographic unit that has
+     * an ISO-3166 country code).
+     */
+    public static final LocationLevel COUNTRY = new LocationLevel(GWeatherLocationLevel.COUNTRY,
+            "COUNTRY");
+
+    /**
+     * A location representing a "first-level administrative division"; ie, a
+     * state, province, or similar division.
+     */
+    public static final LocationLevel ADM1 = new LocationLevel(GWeatherLocationLevel.ADM1, "ADM1");
+
+    /**
+     * A location representing a subdivision of a {@link LocationLevel#ADM1
+     * ADM1} location, or a direct subdivision of a country that is not
+     * represented in a {@link LocationEntry}.
+     */
+    public static final LocationLevel ADM2 = new LocationLevel(GWeatherLocationLevel.ADM2, "ADM2");
+
+    /**
+     * A location representing a city.
+     */
+    public static final LocationLevel CITY = new LocationLevel(GWeatherLocationLevel.CITY, "CITY");
+
+    /**
+     * A location representing a weather station.
+     */
+    public static final LocationLevel STATION = new LocationLevel(
+            GWeatherLocationLevel.WEATHER_STATION, "STATION");
 }

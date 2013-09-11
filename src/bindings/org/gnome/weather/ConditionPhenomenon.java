@@ -34,17 +34,93 @@ package org.gnome.weather;
 
 import org.freedesktop.bindings.Constant;
 
-/*
- * FIXME this is a placeholder stub for what will become the public API for
- * this type. Replace this comment with appropriate javadoc including author
- * and since tags. Note that the class may need to be made abstract, implement
- * interfaces, or even have its parent changed. No API stability guarantees
- * are made about this class until it has been reviewed by a hacker and this
- * comment has been replaced.
+/**
+ * Constants describing different condition phenomenon.
+ * 
+ * @author Guillaume Mazoyer
+ * @since 4.2.0
  */
 public class ConditionPhenomenon extends Constant
 {
     protected ConditionPhenomenon(int ordinal, String nickname) {
         super(ordinal, nickname);
     }
+
+    public static final ConditionPhenomenon INVALID = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.INVALID, "INVALID");
+
+    public static final ConditionPhenomenon NONE = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.NONE, "NONE");
+
+    public static final ConditionPhenomenon DRIZZLE = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.DRIZZLE, "DRIZZLE");
+
+    public static final ConditionPhenomenon RAIN = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.RAIN, "RAIN");
+
+    public static final ConditionPhenomenon SNOW = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.INVALID, "INVALID");
+
+    public static final ConditionPhenomenon SNOW_GRAINS = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SNOW_GRAINS, "SNOW_GRAINS");
+
+    public static final ConditionPhenomenon ICE_CRYSTALS = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.ICE_CRYSTALS, "ICE_CRYSTALS");
+
+    public static final ConditionPhenomenon ICE_PELLETS = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.ICE_PELLETS, "ICE_PELLETS");
+
+    public static final ConditionPhenomenon HAIL = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.HAIL, "HAIL");
+
+    public static final ConditionPhenomenon SMALL_HAIL = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SMALL_HAIL, "SMALL_HAIL");
+
+    public static final ConditionPhenomenon UNKNOWN_PRECIPITATION = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.UNKNOWN_PRECIPITATION, "UNKNOWN_PRECIPITATION");
+
+    public static final ConditionPhenomenon MIST = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.MIST, "MIST");
+
+    public static final ConditionPhenomenon FOG = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.FOG, "FOG");
+
+    public static final ConditionPhenomenon SMOKE = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SMOKE, "SMOKE");
+
+    public static final ConditionPhenomenon VOLCANIC_ASH = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.VOLCANIC_ASH, "VOLCANIC_ASH");
+
+    public static final ConditionPhenomenon SAND = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SAND, "SAND");
+
+    public static final ConditionPhenomenon HAZE = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.HAZE, "HAZE");
+
+    public static final ConditionPhenomenon SPRAY = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SPRAY, "SPRAY");
+
+    public static final ConditionPhenomenon DUST = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.DUST, "DUST");
+
+    public static final ConditionPhenomenon SQUALL = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SQUALL, "SQUALL");
+
+    public static final ConditionPhenomenon SANDSTORM = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.SANDSTORM, "SANDSTORM");
+
+    public static final ConditionPhenomenon DUSTSTORM = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.DUSTSTORM, "DUSTSTORM");
+
+    public static final ConditionPhenomenon FUNNEL_CLOUD = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.FUNNEL_CLOUD, "FUNNEL_CLOUD");
+
+    public static final ConditionPhenomenon TORNADO = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.TORNADO, "TORNADO");
+
+    public static final ConditionPhenomenon DUST_WHIRLS = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.DUST_WHIRLS, "DUST_WHIRLS");
+
+    public static final ConditionPhenomenon LAST = new ConditionPhenomenon(
+            GWeatherConditionPhenomenon.LAST, "LAST");
 }
