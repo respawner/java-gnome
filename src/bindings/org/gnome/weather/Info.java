@@ -32,7 +32,6 @@
  */
 package org.gnome.weather;
 
-import org.gnome.gdk.PixbufAnimation;
 import org.gnome.glib.Object;
 
 /**
@@ -307,10 +306,6 @@ public class Info extends Object
      */
     public String getForecast() {
         return GWeatherInfo.getForecast(this);
-    }
-
-    public PixbufAnimation getRadar() {
-        return GWeatherInfo.getRadar(this);
     }
 
     public int nextSunEvent() {

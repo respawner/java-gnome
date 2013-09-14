@@ -40,7 +40,7 @@
 #include "org_gnome_weather_GWeatherInfoOverride.h"
 
 JNIEXPORT jlong JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1update
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1update
 (
 	JNIEnv* env,
 	jclass cls,
@@ -66,7 +66,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1update
 }
 
 JNIEXPORT jint JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sky
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1sky
 (
 	JNIEnv* env,
 	jclass cls,
@@ -92,7 +92,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sky
 }
 
 JNIEXPORT jint JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1condition_1phenomenon
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1condition_1phenomenon
 (
 	JNIEnv* env,
 	jclass cls,
@@ -119,7 +119,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1condition_1phenomeno
 }
 
 JNIEXPORT jint JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1condition_1qualifier
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1condition_1qualifier
 (
 	JNIEnv* env,
 	jclass cls,
@@ -146,7 +146,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1condition_1qualifier
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1temperature
 (
 	JNIEnv* env,
 	jclass cls,
@@ -175,7 +175,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1min
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1min
 (
 	JNIEnv* env,
 	jclass cls,
@@ -204,7 +204,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1max
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1max
 (
 	JNIEnv* env,
 	jclass cls,
@@ -233,7 +233,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1temperature_1
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1dew
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1dew
 (
 	JNIEnv* env,
 	jclass cls,
@@ -262,7 +262,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1dew
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1apparent
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1apparent
 (
 	JNIEnv* env,
 	jclass cls,
@@ -291,7 +291,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1apparent
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1wind
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1wind
 (
 	JNIEnv* env,
 	jclass cls,
@@ -321,7 +321,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1wind
 }
 
 JNIEXPORT jint JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1wind_1direction
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1wind_1direction
 (
 	JNIEnv* env,
 	jclass cls,
@@ -348,7 +348,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1wind_1directi
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1pressure
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1pressure
 (
 	JNIEnv* env,
 	jclass cls,
@@ -377,7 +377,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1pressure
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1visibility
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1visibility
 (
 	JNIEnv* env,
 	jclass cls,
@@ -406,7 +406,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1visibility
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sunrise
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1sunrise
 (
 	JNIEnv* env,
 	jclass cls,
@@ -432,7 +432,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sunrise
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sunset
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1sunset
 (
 	JNIEnv* env,
 	jclass cls,
@@ -458,7 +458,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1sunset
 }
 
 JNIEXPORT jdoubleArray JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1moonphase
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1value_1moonphase
 (
 	JNIEnv* env,
 	jclass cls,
@@ -494,7 +494,7 @@ Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1value_1moonphase
 }
 
 JNIEXPORT jlongArray JNICALL
-Java_org_gnome_gtk_GWeatherInfoOverride_weather_1info_1get_1upcoming_1moonphases
+Java_org_gnome_weather_GWeatherInfoOverride_weather_1info_1get_1upcoming_1moonphases
 (
 	JNIEnv* env,
 	jclass cls,
