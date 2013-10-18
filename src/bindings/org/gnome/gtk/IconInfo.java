@@ -32,7 +32,7 @@
  */
 package org.gnome.gtk;
 
-import org.gnome.glib.Boxed;
+import org.gnome.glib.Object;
 
 /*
  * FIXME this is a placeholder stub for what will become the public API for
@@ -42,17 +42,9 @@ import org.gnome.glib.Boxed;
  * are made about this class until it has been reviewed by a hacker and this
  * comment has been replaced.
  */
-public final class IconInfo extends Boxed
+public final class IconInfo extends Object
 {
     protected IconInfo(long pointer) {
         super(pointer);
-    }
-
-    protected void release() {
-        /*
-         * FIXME This class's release() method must be implemented to call the
-         * correct free() or unref() function before it can be used.
-         */
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
