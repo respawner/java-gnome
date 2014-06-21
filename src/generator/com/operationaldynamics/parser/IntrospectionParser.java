@@ -1585,17 +1585,31 @@ public class IntrospectionParser
                     String type;
 
                     field = fields.get(fieldIndex);
-                    type = field.getChildElements().get(0).getAttributeValue("type", C_NAMESPACE);
                     name = field.getAttributeValue("name");
                     writable = (field.getAttributeValue("writable") != null);
+
+                    if (field.getChildElements("type", CORE_NAMESPACE).size() > 0) {
+                        type = field.getChildElements("type", CORE_NAMESPACE)
+                                .get(0)
+                                .getAttributeValue("type", C_NAMESPACE);
+                    } else {
+                        type = field.getChildElements().get(0).getAttributeValue("type");
+                    }
 
                     /*
                      * No C type just a name.
                      */
 
                     if (type == null) {
-                        type = typesList.getActualJavaPackage(namespaceName)
-                                + field.getChildElements().get(0).getAttributeValue("name");
+                        if (field.getChildElements("type", CORE_NAMESPACE).size() > 0) {
+                            type = typesList.getActualJavaPackage(namespaceName)
+                                    + field.getChildElements("type", CORE_NAMESPACE)
+                                            .get(0)
+                                            .getAttributeValue("name");
+                        } else {
+                            type = typesList.getActualJavaPackage(namespaceName)
+                                    + field.getChildElements().get(0).getAttributeValue("name");
+                        }
                     }
 
                     /*
