@@ -65,11 +65,11 @@ public class ValidateGlobalSettings extends GraphicalTestCase
 
         settings = Gtk.getSettings();
 
-        assertTrue(settings.getButtonImages());
-        settings.setButtonImages(false);
         assertFalse(settings.getButtonImages());
         settings.setButtonImages(true);
         assertTrue(settings.getButtonImages());
+        settings.setButtonImages(false);
+        assertFalse(settings.getButtonImages());
     }
 
     public final void testShowImagesInMenus() {
@@ -92,11 +92,11 @@ public class ValidateGlobalSettings extends GraphicalTestCase
          * not have GLib die for lack of a GParamSpec.
          */
 
-        assertTrue(settings.getMenuImages());
-        settings.setMenuImages(false);
         assertFalse(settings.getMenuImages());
         settings.setMenuImages(true);
         assertTrue(settings.getMenuImages());
+        settings.setMenuImages(false);
+        assertFalse(settings.getMenuImages());
     }
 
     public final void testShowInputMethodMenu() {
@@ -104,13 +104,13 @@ public class ValidateGlobalSettings extends GraphicalTestCase
 
         settings = Gtk.getSettings();
 
-        assertTrue(settings.getShowInputMethodMenu());
-
-        settings.setShowInputMethodMenu(false);
         assertFalse(settings.getShowInputMethodMenu());
 
         settings.setShowInputMethodMenu(true);
         assertTrue(settings.getShowInputMethodMenu());
+
+        settings.setShowInputMethodMenu(false);
+        assertFalse(settings.getShowInputMethodMenu());
     }
 
     public final void testShowUnicodeMenu() {
@@ -118,12 +118,12 @@ public class ValidateGlobalSettings extends GraphicalTestCase
 
         settings = Gtk.getSettings();
 
-        assertTrue(settings.getShowUnicodeMenu());
-
-        settings.setShowUnicodeMenu(false);
         assertFalse(settings.getShowUnicodeMenu());
 
         settings.setShowUnicodeMenu(true);
         assertTrue(settings.getShowUnicodeMenu());
+
+        settings.setShowUnicodeMenu(false);
+        assertFalse(settings.getShowUnicodeMenu());
     }
 }
