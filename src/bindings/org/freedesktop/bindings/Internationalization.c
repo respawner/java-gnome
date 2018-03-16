@@ -163,7 +163,7 @@ Java_org_freedesktop_bindings_Internationalization_bindtextdomain
 	 * from the environment.
 	 */
 
-	if (setlocale(LC_ALL, "") == NULL) {
+	if (setlocale(LC_ALL, NULL) == NULL) {
 		bindings_java_throw(env, "\nCall to setlocale() to initialize the program's locale failed");
 		return;
 	}
