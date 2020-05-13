@@ -60,7 +60,7 @@ $(DESTDIR)$(JARDIR)/gtk-$(APIVERSION).jar: tmp/gtk-$(APIVERSION).jar
 	@/bin/echo -e "INSTALL\t$@"
 	cp -f $< $@
 	@/bin/echo -e "JAR\t$@"
-	jar uf $@ .libdir
+	/usr/bin/jar uf $@ .libdir
 	@/bin/echo -e "SYMLINK\t$(@D)/gtk.jar -> gtk-$(APIVERSION).jar"
 	cd $(@D) && rm -f gtk.jar && ln -s gtk-$(APIVERSION).jar gtk.jar
 	

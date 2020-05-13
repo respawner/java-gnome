@@ -278,7 +278,7 @@ public class ValidateEnchantInternals extends GraphicalTestCase
         assertTrue(result);
 
         result = dict.check("system.");
-        assertTrue(result);
+        assertFalse(result);
 
         result = dict.check("systematic");
         assertTrue(result);
